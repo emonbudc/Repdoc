@@ -1,0 +1,48 @@
+# Repdoc — Git tracking rules
+# Required runtime DBs in love/ ARE tracked (see negations at bottom).
+# Only backups, logs, uploads, and local tooling are excluded.
+
+# Secrets / environment — never commit values
+.env
+love/hosting-config.php
+*.key
+*.pem
+
+# Backup duplicates (not runtime, preserve originals on disk but do not track)
+*.tools-backup.db
+*.backup
+*.bak
+*.old
+*~
+
+# Logs
+*.log
+access_log
+
+# Generated / user uploads — never commit (dirs stay, contents ignored)
+*/uploads/*
+**/qr_codes/*
+!*/uploads/.gitkeep
+
+# Build artifacts over InfinityFree 10 MB per-file limit (see tools/birthsearch/install.php)
+# Kept on disk, excluded from Git and FTP. MySQL import uses data/*.docx instead.
+*.zip
+
+# Local tooling (not runtime)
+.agents/
+.impeccable/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*.tmp
+
+# Explicitly keep required deployment assets (safety if wider rules are added later)
+!love/.htaccess
+!love/repdoc.db
+!love/birth_records.db
+!love/birth_register_src.db
+!tools/birthsearch/data/*.docx

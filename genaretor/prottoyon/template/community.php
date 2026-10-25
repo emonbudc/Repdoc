@@ -1,0 +1,21 @@
+<?php
+$user = $user ?? null;
+$certificate = $certificate ?? null;
+$certType = $certType ?? null;
+?>
+<div class="cert-text cert-text-block">
+  এই মর্মে প্রত্যয়ন করা যাইতেছে যে, <strong><?= e($user->name_bn ?? 'নাম') ?></strong>,
+  পিতাঃ <?= e($user->father_name ?? 'পিতার নাম') ?>,
+  মাতাঃ <?= e($user->mother_name ?? 'মাতার নাম') ?> —
+  <strong>গ্রামঃ <?= e($user->village ?? 'গ্রামের নাম') ?>, ওয়ার্ড নংঃ <?= e($user->ward_no ?? '০১') ?>,
+  উপজেলাঃ <?= e($user->upazila_name ?? 'উপজেলার নাম') ?>, জেলাঃ <?= e($user->district_name ?? 'জেলার নাম') ?></strong>
+  ঠিকানায় স্থায়ীভাবে বসবাস করেন।
+</div>
+
+<div class="cert-text">
+  উক্ত ব্যক্তি <strong><?= e($user->community_name ?: 'সম্প্রদায়') ?></strong> সম্প্রদায়ের সদস্য।
+  তিনি এই সম্প্রদায়ের একজন সুপরিচিত ও সম্মানিত ব্যক্তি।
+  তাঁর জাতীয় পরিচয়পত্র (NID) নংঃ <strong><?= e(en2bnNumber($user->nid ?? '') ?: 'N/A') ?></strong>।
+</div>
+
+<p class="wish">— সম্প্রদায়ের শান্তি ও সমৃদ্ধি কামনা করছি। —</p>

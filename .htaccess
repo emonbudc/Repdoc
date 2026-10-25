@@ -1,0 +1,4 @@
+# Repdoc — Apache wiring.
+# 404 page. If this site is deployed under a sub-folder instead of the
+# domain root, prefix that folder here, e.g. ErrorDocument 404 /Repdoc/404.php
+ErrorDocument 404 /404.php

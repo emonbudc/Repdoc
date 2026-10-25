@@ -1,0 +1,158 @@
+/* ═══════════════════════════════════════════════════════════════
+   Repdoc — site shell (shared chrome)
+   The sticky header, navigation, user chip and footer used by the
+   homepage AND every tool page, so the site looks like one product.
+   Load after tokens.css, before the page stylesheet.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Header ──────────────────────────────────────────────────── */
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg-surface); /* fallback for browsers without color-mix() */
+    background: color-mix(in srgb, var(--bg-surface) 88%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-color);
+}
+.header-inner {
+    min-height: var(--header-h);
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+}
+
+.brand { display: inline-flex; align-items: center; gap: 10px; flex: 0 0 auto; }
+.brand-logo { border-radius: 8px; }
+.brand-logo-only .brand-logo { height: 40px; width: auto; }
+.brand-text { display: flex; flex-direction: column; line-height: 1.15; }
+.brand-text strong { font-size: 1.12rem; font-weight: 800; letter-spacing: -.02em; }
+.brand-text small { font-size: .72rem; color: var(--text-muted); font-family: var(--font-mono); }
+
+.site-nav { display: flex; align-items: center; gap: 4px; margin-inline-start: var(--space-5); }
+.nav-link {
+    padding: 10px 14px;
+    border-radius: var(--radius-full);
+    color: var(--text-muted);
+    font-size: .94rem;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: color var(--transition-fast), background var(--transition-fast);
+}
+.nav-link:hover { color: var(--text-primary); background: var(--bg-muted); }
+.nav-link[aria-current="page"] { color: var(--primary); background: var(--primary-light); font-weight: 600; }
+
+.header-actions { display: flex; align-items: center; gap: 8px; margin-inline-start: auto; }
+
+.user-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    min-height: 40px;
+    padding: 6px 12px;
+    background: var(--bg-muted);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    font-size: .85rem;
+    white-space: nowrap;
+}
+.user-chip .icon { width: 16px; height: 16px; color: var(--primary); }
+.user-chip .who { max-width: 140px; overflow: hidden; text-overflow: ellipsis; }
+
+.icon-btn {
+    width: 44px; height: 44px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: color var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast);
+}
+.icon-btn:hover { color: var(--text-primary); background: var(--bg-muted); border-color: var(--border-color); }
+
+/* Theme toggle: one icon visible at a time, driven by the theme attribute. */
+.theme-toggle .icon-moon { display: none; }
+[data-theme="dark"] .theme-toggle .icon-sun { display: none; }
+[data-theme="dark"] .theme-toggle .icon-moon { display: block; }
+
+.nav-toggle { display: none; }
+.nav-toggle .nav-toggle-close { display: none; }
+.nav-toggle[aria-expanded="true"] .nav-toggle-open { display: none; }
+.nav-toggle[aria-expanded="true"] .nav-toggle-close { display: block; }
+
+/* ── Footer ──────────────────────────────────────────────────── */
+.site-footer { border-top: 1px solid var(--border-color); background: var(--bg-base); padding-top: var(--space-7); }
+.footer-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: var(--space-6); }
+.footer-brand p { margin-top: var(--space-3); color: var(--text-muted); font-size: .92rem; max-width: 320px; }
+.social-links { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.social-links a { color: var(--text-muted); font-size: .92rem; font-weight: 600; transition: color var(--transition-fast); }
+.social-links a:hover { color: var(--primary); }
+.footer-col h3 { font-size: .95rem; font-weight: 700; margin-bottom: var(--space-3); }
+.footer-col ul { display: flex; flex-direction: column; gap: 10px; }
+.footer-col a { color: var(--text-muted); font-size: .92rem; transition: color var(--transition-fast); }
+.footer-col a:hover { color: var(--primary); }
+
+.footer-bottom {
+    margin-top: var(--space-6);
+    padding: var(--space-4) var(--gutter);
+    border-top: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-size: .85rem;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap;
+}
+.back-top { font-weight: 600; color: var(--primary); white-space: nowrap; }
+.back-top:hover { color: var(--primary-hover); }
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: var(--space-5); }
+}
+
+@media (max-width: 900px) {
+    .nav-toggle { display: inline-flex; }
+    .site-nav {
+        position: absolute;
+        inset-inline: 0;
+        top: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 2px;
+        margin: 0;
+        padding: var(--space-3) var(--gutter) var(--space-5);
+        background: var(--bg-surface);
+        border-bottom: 1px solid var(--border-color);
+        box-shadow: var(--shadow-md);
+    }
+    .site-nav:not(.is-open) { display: none; }
+    .nav-link { padding: 14px 12px; border-radius: var(--radius-sm); }
+    .header-inner { position: relative; }
+}
+
+@media (max-width: 640px) {
+    :root { --space-8: 44px; --gutter: 16px; }
+    .footer-grid { grid-template-columns: 1fr; }
+}
+
+/* Keep the header on one line on very small screens: the login link becomes an
+   icon-only control (it keeps an aria-label), and the domain sub-line drops. */
+@media (max-width: 520px) {
+    .header-inner { gap: 8px; min-width: 0; }
+    .brand { gap: 8px; min-width: 0; }
+    .brand-logo { width: 30px; height: 30px; }
+    .brand-text { min-width: 0; }
+    .brand-text strong { font-size: 1rem; white-space: nowrap; }
+    .brand-text small { display: none; }
+    .header-actions { gap: 6px; min-width: 0; margin-inline-start: auto; }
+    .btn-login span { display: none; }
+    .btn-login { padding: 10px 12px; }
+    .user-chip { padding: 6px 10px; max-width: 110px; overflow: hidden; }
+    .user-chip .who { max-width: 70px; }
+}
+
+@media (max-width: 360px) {
+    .header-inner { gap: 6px; }
+    .header-actions { gap: 4px; }
+    .icon-btn { width: 40px; height: 40px; }
+    .user-chip { max-width: 92px; font-size: .8rem; }
+}

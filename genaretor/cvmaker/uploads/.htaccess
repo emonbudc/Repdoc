@@ -1,0 +1,6 @@
+# Uploads: images only — never execute scripts here.
+Options -ExecCGI -Indexes
+RemoveHandler .php .phtml .phar .cgi .pl .py .sh
+<FilesMatch "\.(php|phtml|phar|cgi|pl|py|sh|htaccess)$">
+  Require all denied
+</FilesMatch>

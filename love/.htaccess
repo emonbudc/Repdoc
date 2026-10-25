@@ -1,0 +1,7 @@
+# Repdoc — shared data folder.
+# Holds the databases only; PHP includes them from disk, they are never served.
+AddDefaultCharset UTF-8
+
+<FilesMatch ".*">
+  Require all denied
+</FilesMatch>

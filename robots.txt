@@ -1,0 +1,31 @@
+# Repdoc — crawler permissions (production: https://repdoc.freedev.app/robots.txt)
+#
+# Gated application pages (login-required tools, panels, admin) redirect
+# unauthenticated crawlers to the noindex login page, but they are also
+# disallowed here to save crawl budget. robots.txt is NOT access control —
+# authentication in src/bootstrap.php (require_login/require_admin) and the
+# /love/.htaccess database deny remain the real protection.
+User-agent: *
+Allow: /
+
+# Admin + operator panels (authenticated apps, never indexable content).
+Disallow: /admin/
+Disallow: /Entrepreneur/panel/
+
+# Internal search/management console (admin-only, personal records).
+Disallow: /tools/
+
+# Login-required generator apps (they 302 to the noindex login page).
+# Landing sections below re-allow the two public browsable directories.
+Disallow: /genaretor/
+Allow: /genaretor/certificate/
+Allow: /showcase/
+Allow: /offlinefiles/
+Allow: /officefiles/
+
+# Code, data, and design sources (never content).
+Disallow: /love/
+Disallow: /src/
+Disallow: /design-system/
+
+Sitemap: https://repdoc.freedev.app/sitemap.xml

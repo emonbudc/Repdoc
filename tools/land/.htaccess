@@ -1,0 +1,10 @@
+# Land record search — Apache settings (InfinityFree-safe)
+AddDefaultCharset UTF-8
+
+<IfModule mod_autoindex.c>
+    Options -Indexes
+</IfModule>
+
+<IfModule mod_headers.c>
+    Header set X-Robots-Tag "noindex, nofollow"
+</IfModule>
