@@ -717,8 +717,8 @@ $showAllCount = $counts['all'];
             <div class="of-container of-hero-inner">
                 <div>
                     <p class="of-kicker"><i aria-hidden="true"></i> ডকুমেন্ট ও ডিজাইন টেমপ্লেট কালেকশন</p>
-                    <h1 id="ofHeroTitle">প্রয়োজনীয় সকল ফাইল <span>এক জায়গায়</span></h1>
-                    <p class="of-lead">Microsoft Word, Excel ও PowerPoint টেমপ্লেট ডাউনলোড করুন সহজে, দ্রুত ও নিরাপদে। PSD, AI ও PLP ফাইলের জন্য <a href="<?= e($OFFLINE_URL) ?>" style="color:#54E7A5;font-weight:700">অফলাইন ফাইল হাব</a> দেখুন।</p>
+                    <h1 id="ofHeroTitle">গুরুত্বপূর্ণ লিংক <span>এক জায়গায়</span></h1>
+                    <p class="of-lead">দরকারি ওয়েবসাইট ও সেবার লিংক এক জায়গায় — ক্লিক করে সরাসরি খুলুন।</p>
 
                     <form class="of-search" id="ofSearchForm" role="search">
                         <svg class="of-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-search"/></svg>
