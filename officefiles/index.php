@@ -738,6 +738,21 @@ $showAllCount = $counts['all'];
                     <span class="of-cat-text"><strong>MS Office</strong><small>Word, Excel, PowerPoint</small></span>
                     <svg class="of-icon of-chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg>
                 </button>
+                <a class="of-cat" href="<?= e($HOME) ?>officefiles/">
+                    <?= officefiles_logo_icon('word', 'fi-office') ?>
+                    <span class="of-cat-text"><strong>MS Word</strong><small>Word Templates</small></span>
+                    <svg class="of-icon of-chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg>
+                </a>
+                <a class="of-cat" href="<?= e($HOME) ?>officefiles/">
+                    <?= officefiles_logo_icon('excel', 'fi-office') ?>
+                    <span class="of-cat-text"><strong>MS Excel</strong><small>Excel Templates</small></span>
+                    <svg class="of-icon of-chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg>
+                </a>
+                <a class="of-cat" href="<?= e($HOME) ?>officefiles/">
+                    <?= officefiles_logo_icon('ppt', 'fi-office') ?>
+                    <span class="of-cat-text"><strong>MS PowerPoint</strong><small>PowerPoint Templates</small></span>
+                    <svg class="of-icon of-chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg>
+                </a>
             </div>
         </section>
 
