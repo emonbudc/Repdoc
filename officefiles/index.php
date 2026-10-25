@@ -761,7 +761,6 @@ $showAllCount = $counts['all'];
                 <div class="of-section-head" id="files">
                     <div>
                         <h2 class="of-section-title"><span class="of-title-icon" aria-hidden="true"><svg class="of-icon" viewBox="0 0 24 24"><use href="#of-i-grid"/></svg></span></h2>
-                        <button type="button" class="of-filter is-active" data-filter="all" style="margin-left:10px">সব ফাইল</button>
                     </div>
                     <a class="of-show-all" href="#files" id="ofShowAll">সব দেখুন <svg class="of-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg></a>
                 </div>
