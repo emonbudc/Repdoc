@@ -838,29 +838,7 @@ $showAllCount = $counts['all'];
                     </div>
                 <?php endif; ?>
 
-                <section class="of-guide" id="guide" aria-labelledby="ofGuideTitle">
-                    <div class="of-guide-head">
-                        <span class="of-guide-kicker">ডাউনলোড গাইড</span>
-                        <h2 id="ofGuideTitle">মাত্র ৩ ধাপে ফাইল ডাউনলোড করুন</h2>
-                    </div>
-                    <div class="of-steps">
-                        <div class="of-step">
-                            <span class="of-step-num">১</span>
-                            <h3>অ্যাকাউন্ট নিন</h3>
-                            <p><a href="<?= e($APPLY_URL) ?>">অপারেটর অ্যাকাউন্টের জন্য আবেদন করুন</a> — অনুমোদন পেলে সব ফরম্যাট আনলক হয়।</p>
-                        </div>
-                        <div class="of-step">
-                            <span class="of-step-num">২</span>
-                            <h3>পছন্দের ফাইল খুঁজুন</h3>
-                            <p>নাম, ক্যাটাগরি বা বিবরণ দিয়ে সার্চ করুন — প্রতিটি ফাইলের পাশে সাইজ ও আপডেট তারিখ দেখে নিন।</p>
-                        </div>
-                        <div class="of-step">
-                            <span class="of-step-num">৩</span>
-                            <h3>ডাউনলোড ও এডিট</h3>
-                            <p>ডাউনলোড বাটনে চাপুন, তারপর নিজের নাম, ঠিকানা ও তথ্য বসিয়ে ফাইলটি ব্যবহার করুন।</p>
-                        </div>
-                    </div>
-                </section>
+                
             </div>
 
             <aside class="of-sidebar" aria-label="সহায়ক তথ্য">
