@@ -738,6 +738,21 @@ $showAllCount = $counts['all'];
                     <span class="of-cat-text"><strong>MS Office</strong><small>Word, Excel, PowerPoint</small></span>
                     <svg class="of-icon of-chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg>
                 </button>
+                <a class="of-cat" href="<?= e($HOME) ?>officefiles/">
+                    <?= officefiles_logo_icon('word', 'fi-office') ?>
+                    <span class="of-cat-text"><strong>Word</strong><small>MS Word</small></span>
+                    <svg class="of-icon of-chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg>
+                </a>
+                <a class="of-cat" href="<?= e($HOME) ?>officefiles/">
+                    <?= officefiles_logo_icon('excel', 'fi-office') ?>
+                    <span class="of-cat-text"><strong>Excel</strong><small>MS Excel</small></span>
+                    <svg class="of-icon of-chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg>
+                </a>
+                <a class="of-cat" href="<?= e($HOME) ?>officefiles/">
+                    <?= officefiles_logo_icon('ppt', 'fi-office') ?>
+                    <span class="of-cat-text"><strong>PowerPoint</strong><small>MS PowerPoint</small></span>
+                    <svg class="of-icon of-chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg>
+                </a>
                 <a class="of-cat" href="<?= e($OFFLINE_URL) ?>">
                     <?= officefiles_logo_icon('psd', 'fi-psd') ?>
                     <span class="of-cat-text"><strong>PSD Files</strong><small>Photoshop Design</small></span>
