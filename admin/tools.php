@@ -26,7 +26,9 @@ $allTools = [
     ['name' => 'Template Showcase', 'cat' => 'Templates', 'url' => '../showcase/', 'check' => '../showcase/index.php'],
     ['name' => 'PSD / AI / PLP Files', 'cat' => 'Templates', 'url' => '../offlinefiles/', 'check' => '../offlinefiles/index.php'],
     ['name' => 'Word / Excel Files', 'cat' => 'Templates', 'url' => '../officefiles/', 'check' => '../officefiles/index.php'],
+    ['name' => 'Important Links Directory', 'cat' => 'Public pages', 'url' => '../importantlinks/', 'check' => '../importantlinks/index.php'],
     ['name' => 'File Packs (admin upload)', 'cat' => 'Admin', 'url' => 'files.php', 'check' => 'files.php'],
+    ['name' => 'Important Links (admin editor)', 'cat' => 'Admin', 'url' => 'important-links.php', 'check' => 'important-links.php'],
     ['name' => 'Entrepreneur Application Form', 'cat' => 'Applications', 'url' => '../Entrepreneur/apply/', 'check' => '../Entrepreneur/apply/index.php'],
 ];
 

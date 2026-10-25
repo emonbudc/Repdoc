@@ -20,6 +20,7 @@ function admin_nav_items(): array
         'tools.php'        => ['label' => 'Tools',             'icon' => 'a-layout'],
         '../tools/passport/' => ['label' => 'Passport Photo', 'icon' => 'a-id'],
         'files.php'        => ['label' => 'File Packs',        'icon' => 'a-file'],
+        'important-links.php' => ['label' => 'Important Links', 'icon' => 'a-link'],
         'documents.php'    => ['label' => 'Document Logs',   'icon' => 'a-id'],
         'prottoyon.php'    => ['label' => 'Prottoyon Logs',  'icon' => 'a-file'],
         'transactions.php' => ['label' => 'Transactions',      'icon' => 'a-wallet'],
@@ -58,7 +59,7 @@ function admin_page_start(string $title, string $active): void
     <link rel="icon" type="image/png" href="assets/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../src/assets/css/tokens.css?v=1">
     <link rel="stylesheet" href="../src/assets/css/app.css?v=1">
 </head>
@@ -81,6 +82,7 @@ function admin_page_start(string $title, string $active): void
             <symbol id="a-x" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
             <symbol id="a-login" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></symbol>
             <symbol id="a-external" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></symbol>
+            <symbol id="a-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></symbol>
         </defs>
     </svg>
 

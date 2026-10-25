@@ -232,6 +232,8 @@ if (!function_exists('repdoc_catalog_header')) {
         $showcase  = repdoc_url('showcase/');
         $office    = repdoc_url('officefiles/');
         $offline   = repdoc_url('offlinefiles/');
+        $important = repdoc_url('importantlinks/');
+        $guide     = $active === 'importantlinks' ? 'লিংক গাইড' : 'ডাউনলোড গাইড';
         $current   = static fn(string $key): string => $active === $key ? ' aria-current="page"' : '';
         ?>
         <header class="site-header" id="top">
@@ -253,7 +255,8 @@ if (!function_exists('repdoc_catalog_header')) {
                         </div>
                     </details>
                     <a class="nav-link" href="#library">ফাইল লাইব্রেরি</a>
-                    <a class="nav-link" href="#guide">ডাউনলোড গাইড</a>
+                    <a class="nav-link" href="<?= e($important) ?>"<?= $current('importantlinks') ?>>গুরুত্বপূর্ণ লিংক</a>
+                    <a class="nav-link" href="#guide"><?= e($guide) ?></a>
                     <a class="nav-link" href="<?= e($home) ?>#about">সম্পর্কে</a>
                 </nav>
 
