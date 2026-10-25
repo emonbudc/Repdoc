@@ -1058,7 +1058,7 @@ alt="" /></div>
                                                     <img class="w-[78px] ml-[18px] -mb-[3px]" style="margin-bottom: 3px;height:27.3px;" src="assets/Images/lastadminsig.JPG" />
                                                     <div class="flex justify-between items-center -mt-[5px]">
                                                        <p class="bn" style="font-size:14px">প্রদানকারী কর্তৃপক্ষের স্বাক্ষর</p>
-                                                       <span class="pr-4 bn" style="font-size:12px;padding-top:1px">প্রদানের তারিখ:<span class="ml-2.5" id="card_date"></span><?php echo e(isset($_POST['card_date']) ? (string) $_POST['card_date'] : ''); ?></span>
+                                                       <span class="pr-4 bn" style="font-size:12px;padding-top:1px">প্রদানের তারিখ:<span class="ml-1" id="card_date"></span><?php echo e(isset($_POST['card_date']) ? (string) $_POST['card_date'] : ''); ?></span>
                                                     </div>
                                                     <div id="barcode" class="w-full h-[39px] mt-1" alt="NID Card Generator" style="margin-top: 1.5px; margin-left: -3px; overflow: visible; display: block;">
                                                        <style>
