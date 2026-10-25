@@ -467,6 +467,16 @@ function repdoc_ensure_schema(PDO $db): void
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )$suffix");
 
+    // Per-file descriptions for the public file showcase (admin/files.php).
+    // Keyed by format folder + filename; edited from the admin panel.
+    $db->exec("CREATE TABLE IF NOT EXISTS file_descriptions (
+        file_type VARCHAR(32) NOT NULL,
+        file_name VARCHAR(150) NOT NULL,
+        description TEXT,
+        updated_at DATETIME NULL,
+        PRIMARY KEY (file_type, file_name)
+    )$suffix");
+
     // UDC office profile: chairman/pouro admin + office identity per operator.
     $db->exec("CREATE TABLE IF NOT EXISTS office_profiles (
         user_id INT PRIMARY KEY,

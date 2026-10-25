@@ -1,0 +1,7 @@
+# Repdoc — public file thumbnails (images only).
+Options -Indexes
+AddDefaultCharset UTF-8
+
+<FilesMatch "(?i)\.(php|phtml|phar|pl|py|cgi|sh)$">
+  Require all denied
+</FilesMatch>

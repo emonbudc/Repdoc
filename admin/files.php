@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Repdoc — admin: file packs (PSD / AI / PLP + Word / Excel).
+ * Repdoc — admin: file packs (PSD / AI / PLP + Word / Excel / PowerPoint).
  *
  * Admin-only (NOT UDC panel): upload new packs and manage the published
  * ones. Files live in:
@@ -13,16 +13,19 @@ declare(strict_types=1);
  */
 
 require_once __DIR__ . '/includes/layout.php';
+require_once dirname(__DIR__) . '/src/filemeta.php';
 
 const FILES_MAX_BYTES = 10 * 1024 * 1024; // 10 MB — InfinityFree per-file limit.
+const FILES_DESC_MAX = 2000;
 
 /** Format key => hub dir, label, allowed extensions. */
 $FORMATS = [
     'psd'   => ['hub' => 'offlinefiles', 'label' => 'PSD',   'exts' => ['psd', 'psb', 'zip']],
     'ai'    => ['hub' => 'offlinefiles', 'label' => 'AI',    'exts' => ['ai', 'eps', 'zip']],
     'plp'   => ['hub' => 'offlinefiles', 'label' => 'PLP',   'exts' => ['plp', 'zip']],
-    'word'  => ['hub' => 'officefiles',  'label' => 'Word',  'exts' => ['doc', 'docx', 'rtf', 'odt', 'zip']],
-    'excel' => ['hub' => 'officefiles',  'label' => 'Excel', 'exts' => ['xls', 'xlsx', 'csv', 'zip']],
+    'word'  => ['hub' => 'officefiles',  'label' => 'Word',       'exts' => ['doc', 'docx', 'rtf', 'odt', 'zip']],
+    'excel' => ['hub' => 'officefiles',  'label' => 'Excel',      'exts' => ['xls', 'xlsx', 'csv', 'zip']],
+    'ppt'   => ['hub' => 'officefiles',  'label' => 'PowerPoint', 'exts' => ['ppt', 'pptx', 'zip']],
 ];
 
 $ROOT = dirname(__DIR__);
@@ -123,9 +126,89 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             redirect('files.php?type=' . rawurlencode($type));
         }
         @chmod($target, 0644);
+
+        $description = trim((string) ($_POST['description'] ?? ''));
+        $description = str_replace(["\r\n", "\r"], "\n", $description);
+        if (mb_strlen($description, 'UTF-8') > FILES_DESC_MAX) {
+            $description = mb_substr($description, 0, FILES_DESC_MAX, 'UTF-8');
+        }
+        $descSaved = false;
+        if ($description !== '') {
+            $descSaved = repdoc_file_description_save($type, $safe, $description);
+        }
+
+        $thumbNote = '';
+        $thumbFile = $_FILES['thumb'] ?? null;
+        if (is_array($thumbFile) && ($thumbFile['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) {
+            [$thumbOk, $thumbErr] = repdoc_file_thumb_save($type, $safe, $thumbFile);
+            $thumbNote = $thumbOk ? ' · thumbnail added' : ' · thumbnail: ' . $thumbErr;
+        }
+
         $me = current_user();
-        if ($me !== null) log_usage((int) $me['id'], 'admin-files', 'ok', 'upload:' . $type . ':' . $safe);
-        flash_set('ok', $FORMATS[$type]['label'] . ' uploaded: ' . $safe . ' (' . files_human_size($size) . ').');
+        if ($me !== null) {
+            log_usage((int) $me['id'], 'admin-files', 'ok',
+                'upload:' . $type . ':' . $safe . ($description !== '' ? ':described' : ''));
+        }
+        $note = $description !== ''
+            ? ($descSaved ? ' · description saved' : ' · description not saved (database unavailable)')
+            : ' · no description yet';
+        $flashType = ($description !== '' && !$descSaved) || str_contains($thumbNote, 'thumbnail:') ? 'error' : 'ok';
+        flash_set($flashType, $FORMATS[$type]['label'] . ' uploaded: ' . $safe . ' (' . files_human_size($size) . ')' . $note . $thumbNote . '.');
+        redirect('files.php?type=' . rawurlencode($type));
+    }
+
+    if ($action === 'describe') {
+        $type = strtolower((string) ($_POST['type'] ?? ''));
+        $name = basename((string) ($_POST['file'] ?? ''));
+        if (!isset($FORMATS[$type]) || $name === '' || str_starts_with($name, '.')) {
+            flash_set('error', 'Unknown file.');
+            redirect('files.php');
+        }
+        $ext = strtolower((string) pathinfo($name, PATHINFO_EXTENSION));
+        $dir = files_dir($ROOT, $FORMATS, $type);
+        if (!in_array($ext, $FORMATS[$type]['exts'], true) || !is_file($dir . DIRECTORY_SEPARATOR . $name)) {
+            flash_set('error', 'File not found.');
+            redirect('files.php?type=' . rawurlencode($type));
+        }
+        $description = trim((string) ($_POST['description'] ?? ''));
+        $description = str_replace(["\r\n", "\r"], "\n", $description);
+        if (mb_strlen($description, 'UTF-8') > FILES_DESC_MAX) {
+            $description = mb_substr($description, 0, FILES_DESC_MAX, 'UTF-8');
+        }
+        $saved = repdoc_file_description_save($type, $name, $description);
+
+        $thumbAction = '';
+        $thumbError = '';
+        if (!empty($_POST['remove_thumb'])) {
+            repdoc_file_thumb_delete($type, $name);
+            $thumbAction = 'thumbnail removed';
+        }
+        $thumb = $_FILES['thumb'] ?? null;
+        if (is_array($thumb) && ($thumb['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) {
+            [$thumbOk, $thumbErr] = repdoc_file_thumb_save($type, $name, $thumb);
+            if ($thumbOk) {
+                $thumbAction = 'thumbnail updated';
+            } else {
+                $thumbError = $thumbErr;
+            }
+        }
+
+        $me = current_user();
+        if ($me !== null) {
+            log_usage((int) $me['id'], 'admin-files', 'ok',
+                'describe:' . $type . ':' . $name . ':' . ($description === '' ? 'cleared' : 'saved')
+                . ($thumbAction !== '' ? ':' . $thumbAction : ''));
+        }
+
+        $parts = [];
+        if ($saved) {
+            $parts[] = $description === '' ? 'Description cleared' : 'Description saved';
+        } else {
+            $parts[] = 'Description could not be saved (database unavailable)';
+        }
+        if ($thumbAction !== '') $parts[] = ucfirst($thumbAction);
+        if ($thumbError !== '') $parts[] = 'Thumbnail: ' . $thumbError;
+        flash_set(($thumbError !== '' || !$saved) ? 'error' : 'ok', implode(' · ', $parts) . ': ' . $name . '.');
         redirect('files.php?type=' . rawurlencode($type));
     }
 
@@ -152,6 +235,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             flash_set('error', 'Delete failed — check file permissions.');
             redirect('files.php?type=' . rawurlencode($type));
         }
+        repdoc_file_description_delete($type, $name);
+        repdoc_file_thumb_delete($type, $name);
         $me = current_user();
         if ($me !== null) log_usage((int) $me['id'], 'admin-files', 'ok', 'delete:' . $type . ':' . $name);
         flash_set('ok', 'Deleted: ' . $name . '.');
@@ -196,29 +281,135 @@ if ($filter !== 'all') {
 }
 $totalFiles = array_sum(array_column($totals, 'n'));
 $totalBytes = array_sum(array_column($totals, 'bytes'));
+$descriptions = repdoc_file_descriptions_all();
+$described = 0;
+foreach ($rows as $r) {
+    if (($descriptions[repdoc_file_description_key($r['type'], $r['name'])] ?? '') !== '') $described++;
+}
 
 admin_page_start('File Packs', 'files.php');
 admin_notice();
 ?>
 
+<style>
+    .desc-cell { max-width: 300px; }
+    .desc-preview {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        overflow-wrap: anywhere;
+        margin-bottom: 4px;
+    }
+    .desc-editor summary {
+        cursor: pointer;
+        color: var(--primary);
+        font-size: .78rem;
+        font-weight: 700;
+        list-style: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 9px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        background: var(--bg-surface);
+    }
+    .desc-editor summary:hover { border-color: var(--primary); background: var(--primary-light); }
+    .desc-editor summary::-webkit-details-marker { display: none; }
+    .desc-editor summary::before { content: "+"; font-weight: 800; line-height: 1; }
+    .desc-editor[open] summary::before { content: "−"; }
+    .upload-form { display: grid; grid-template-columns: minmax(170px, .8fr) minmax(220px, 1.2fr) auto; gap: 12px; align-items: end; }
+    .upload-form label { display: grid; gap: 6px; min-width: 0; }
+    .upload-form .upload-wide { grid-column: 1 / -1; }
+    .upload-form select,
+    .upload-form input[type="file"],
+    .upload-form textarea {
+        width: 100%;
+        min-height: 44px;
+        padding: 10px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        background: #fff;
+        color: var(--text-primary);
+        font: inherit;
+        font-size: .88rem;
+    }
+    .upload-form textarea { min-height: 78px; line-height: 1.55; resize: vertical; }
+    .upload-form .upload-note { font-size: .74rem; color: var(--text-muted); }
+    .upload-form .upload-submit { align-self: end; }
+    @media (max-width: 760px) {
+        .upload-form { grid-template-columns: 1fr; }
+        .upload-form .upload-submit { width: 100%; }
+    }
+    .desc-form { display: grid; gap: 8px; margin-top: 8px; min-width: 260px; }
+    .desc-form textarea {
+        width: 100%;
+        min-height: 84px;
+        padding: 9px 11px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font: inherit;
+        font-size: .86rem;
+        line-height: 1.5;
+        resize: vertical;
+        background: #fff;
+    }
+    .desc-form-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .desc-count { font-size: .74rem; color: var(--text-muted); }
+    .file-cell { display: flex; align-items: center; gap: 10px; }
+    .file-cell-text { min-width: 0; }
+    .file-thumb-mini {
+        flex: none;
+        width: 48px; height: 34px;
+        object-fit: cover;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-muted);
+        display: block;
+    }
+    .file-thumb-empty {
+        display: grid; place-items: center;
+        font-family: var(--font-mono); font-size: .7rem; font-weight: 700;
+        color: var(--text-muted);
+    }
+    .desc-thumb-row {
+        display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px;
+        padding: 8px;
+        border: 1px dashed var(--border-color);
+        border-radius: 8px;
+        background: var(--bg-base);
+    }
+    .desc-thumb-preview {
+        width: 84px; height: 56px;
+        object-fit: cover;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        background: #fff;
+    }
+    .thumb-input { display: grid; gap: 4px; flex: 1 1 180px; min-width: 0; }
+    .thumb-input input { font-size: .78rem; max-width: 100%; }
+    .thumb-remove { display: inline-flex; align-items: center; gap: 5px; font-size: .76rem; color: var(--danger); }
+</style>
+
 <div class="admin-page-head">
     <div>
         <p class="kicker">Uploads</p>
         <h1 class="admin-title">File Packs</h1>
-        <p class="admin-sub">PSD / AI / PLP + Word / Excel — <?= number_format($totalFiles) ?> files · <?= e(files_human_size($totalBytes)) ?> total. Public pages update instantly.</p>
+        <p class="admin-sub">PSD / AI / PLP + Word / Excel / PowerPoint — <?= number_format($totalFiles) ?> files · <?= e(files_human_size($totalBytes)) ?> total · <?= number_format($described) ?> with a description. Public pages update instantly.</p>
     </div>
 </div>
 
 <div class="panel">
     <div class="panel-head">Upload a pack <span class="count">max 10 MB</span></div>
     <div class="panel-body">
-        <form method="post" enctype="multipart/form-data" action="files.php" style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end">
+        <form method="post" enctype="multipart/form-data" action="files.php" class="upload-form">
             <?= csrf_field() ?>
             <input type="hidden" name="action" value="upload">
             <input type="hidden" name="MAX_FILE_SIZE" value="<?= FILES_MAX_BYTES ?>">
-            <label style="display:grid;gap:6px;min-width:200px">
+            <label>
                 <span class="cell-sub">Format</span>
-                <select name="type" required style="min-height:44px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font:inherit">
+                <select name="type" required>
                     <?php foreach ($FORMATS as $type => $meta): ?>
                         <option value="<?= e($type) ?>"<?= $filter === $type ? ' selected' : '' ?>>
                             <?= e($meta['label']) ?> — <?= e($meta['hub']) ?>/<?= e($type) ?>/ (<?= e(implode(', ', $meta['exts'])) ?>)
@@ -226,13 +417,21 @@ admin_notice();
                     <?php endforeach; ?>
                 </select>
             </label>
-            <label style="display:grid;gap:6px;flex:1 1 240px">
+            <label>
                 <span class="cell-sub">File (same name goes live)</span>
-                <input type="file" name="pack" required style="min-height:44px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font:inherit;background:#fff">
+                <input type="file" name="pack" required>
             </label>
-            <button type="submit" class="btn btn-primary">Upload</button>
+            <button type="submit" class="btn btn-primary upload-submit">Upload</button>
+            <label class="upload-wide">
+                <span class="cell-sub">Description <span class="upload-note">— optional, shown on the public showcase</span></span>
+                <textarea name="description" rows="2" maxlength="<?= FILES_DESC_MAX ?>" placeholder="এই ফাইলটি কী কাজে লাগবে, কীভাবে ব্যবহার করবেন — সংক্ষেপে লিখুন…"></textarea>
+            </label>
+            <label class="upload-wide">
+                <span class="cell-sub">Thumbnail <span class="upload-note">— optional JPG, PNG, WebP or GIF · max 2 MB</span></span>
+                <input type="file" name="thumb" accept="image/jpeg,image/png,image/webp,image/gif">
+            </label>
         </form>
-        <p class="admin-sub" style="margin:10px 0 0">Existing names are never overwritten — a duplicate becomes <span class="cell-sub">name-2.ext</span>. Server upload limit: <?= e((string) ini_get('upload_max_filesize')) ?>.</p>
+        <p class="admin-sub" style="margin:10px 0 0">The description is saved against the final filename, so duplicates stay independent. Existing names are never overwritten — a duplicate becomes <span class="cell-sub">name-2.ext</span>. Server upload limit: <?= e((string) ini_get('upload_max_filesize')) ?>.</p>
     </div>
 </div>
 
@@ -252,17 +451,64 @@ admin_notice();
     <?php else: ?>
         <div class="table-wrap">
             <table class="data">
-                <thead><tr><th>File</th><th>Format</th><th>Size</th><th>Updated</th><th>Public page</th><th></th><th></th></tr></thead>
+                <thead><tr><th>File</th><th>Format</th><th>Size</th><th>Updated</th><th>Description</th><th>Public page</th><th></th><th></th></tr></thead>
                 <tbody>
                 <?php foreach ($rows as $r):
                     $dl = '../' . $r['hub'] . '/download.php?type=' . rawurlencode($r['type']) . '&file=' . rawurlencode($r['name']);
                     $page = '../' . $r['hub'] . '/';
+                    $desc = $descriptions[repdoc_file_description_key($r['type'], $r['name'])] ?? '';
+                    $thumbUrl = repdoc_file_thumb_url($r['type'], $r['name']);
                 ?>
-                    <tr>
-                        <td><span class="cell-name"><?= e($r['name']) ?></span><span class="cell-sub"><?= e($r['hub']) ?>/<?= e($r['type']) ?>/</span></td>
+                    <tr id="file-<?= e(substr(md5($r['type'] . ':' . $r['name']), 0, 10)) ?>">
+                        <td>
+                            <div class="file-cell">
+                                <?php if ($thumbUrl !== ''): ?>
+                                    <img class="file-thumb-mini" src="<?= e($thumbUrl) ?>" alt="" width="48" height="34" loading="lazy">
+                                <?php else: ?>
+                                    <span class="file-thumb-mini file-thumb-empty" aria-hidden="true"><?= e(strtoupper(substr($r['type'], 0, 1))) ?></span>
+                                <?php endif; ?>
+                                <span class="file-cell-text"><span class="cell-name"><?= e($r['name']) ?></span><span class="cell-sub"><?= e($r['hub']) ?>/<?= e($r['type']) ?>/</span></span>
+                            </div>
+                        </td>
                         <td><span class="pill pill-approved"><?= e(strtoupper($r['type']) . ' · ' . strtoupper($r['ext'])) ?></span></td>
                         <td class="balance"><?= e(files_human_size($r['size'])) ?></td>
                         <td class="cell-sub"><?= $r['mtime'] > 0 ? e(date('d-m-Y H:i', $r['mtime'])) : '—' ?></td>
+                        <td class="desc-cell">
+                            <?php if ($desc !== ''): ?>
+                                <span class="cell-sub desc-preview" title="<?= e($desc) ?>"><?= e($desc) ?></span>
+                            <?php else: ?>
+                                <span class="cell-sub">No description</span>
+                            <?php endif; ?>
+                            <details class="desc-editor">
+                                <summary><?= ($desc === '' && $thumbUrl === '') ? 'Add description' : 'Edit description' ?></summary>
+                                <form method="post" action="files.php" class="desc-form" enctype="multipart/form-data">
+                                    <?= csrf_field() ?>
+                                    <input type="hidden" name="action" value="describe">
+                                    <input type="hidden" name="type" value="<?= e($r['type']) ?>">
+                                    <input type="hidden" name="file" value="<?= e($r['name']) ?>">
+                                    <textarea name="description" rows="3" maxlength="<?= FILES_DESC_MAX ?>"
+                                              placeholder="Showcase text shown under this file on the public page…"
+                                              oninput="var c=this.closest('form').querySelector('.desc-count'); if(c){c.textContent=this.value.length+'/<?= FILES_DESC_MAX ?>';}"><?= e($desc) ?></textarea>
+                                    <div class="desc-thumb-row">
+                                        <?php if ($thumbUrl !== ''): ?>
+                                            <img class="desc-thumb-preview" src="<?= e($thumbUrl) ?>" alt="Current thumbnail" width="84" height="56" loading="lazy">
+                                        <?php endif; ?>
+                                        <label class="thumb-input">
+                                            <span class="cell-sub">Thumbnail — JPG, PNG, WebP or GIF · max 2 MB</span>
+                                            <input type="file" name="thumb" accept="image/jpeg,image/png,image/webp,image/gif">
+                                        </label>
+                                        <?php if ($thumbUrl !== ''): ?>
+                                            <label class="thumb-remove"><input type="checkbox" name="remove_thumb" value="1"> Remove thumbnail</label>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="desc-form-actions">
+                                        <button type="submit" class="btn btn-primary btn-sm">Save description &amp; thumbnail</button>
+                                        <span class="desc-count"><?= mb_strlen($desc, 'UTF-8') ?>/<?= FILES_DESC_MAX ?></span>
+                                        <span class="cell-sub">Leave the description empty to remove it</span>
+                                    </div>
+                                </form>
+                            </details>
+                        </td>
                         <td><a class="btn btn-secondary btn-sm" href="<?= e($page) ?>" target="_blank" rel="noopener">View</a></td>
                         <td><a class="btn btn-secondary btn-sm" href="<?= e($dl) ?>">Download</a></td>
                         <td>
@@ -285,8 +531,9 @@ admin_notice();
     <div class="panel-body" style="padding-top:0">
         <p class="admin-sub" style="margin:0">
             Storage: offlinefiles/psd+ai+plp → <a href="../offlinefiles/" target="_blank" rel="noopener">/offlinefiles/</a> ·
-            officefiles/word+excel → <a href="../officefiles/" target="_blank" rel="noopener">/officefiles/</a>.
+            officefiles/word+excel+ppt → <a href="../officefiles/" target="_blank" rel="noopener">/officefiles/</a>.
             Only the listed extensions are served; everything else in those folders is ignored.
+            Descriptions appear under each file on <a href="../officefiles/" target="_blank" rel="noopener">the public showcase</a> — leave one empty to fall back to the format note.
         </p>
     </div>
 </div>

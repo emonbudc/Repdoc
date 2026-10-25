@@ -4,7 +4,7 @@ declare(strict_types=1);
 /**
  * Repdoc — officefiles download endpoint.
  *
- * Login-gated file serve for Word / Excel packs. Listing page
+ * Login-gated file serve for Word / Excel / PowerPoint packs. Listing page
  * (officefiles/index.php) is public; the bytes require an approved
  * operator login — same contract as every other tool (one account,
  * every tool). Direct folder URLs still work on hosts without
@@ -21,6 +21,7 @@ require_login();
 $ALLOWED = [
     'word'  => ['doc', 'docx', 'rtf', 'odt', 'zip'],
     'excel' => ['xls', 'xlsx', 'csv', 'zip'],
+    'ppt'   => ['ppt', 'pptx', 'zip'],
 ];
 
 $type = strtolower((string) ($_GET['type'] ?? ''));
@@ -73,6 +74,8 @@ $mime = [
     'xls'  => 'application/vnd.ms-excel',
     'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     'csv'  => 'text/csv',
+    'ppt'  => 'application/vnd.ms-powerpoint',
+    'pptx' => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
     'zip'  => 'application/zip',
 ][$ext] ?? 'application/octet-stream';
 
