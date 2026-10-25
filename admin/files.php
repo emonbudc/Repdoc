@@ -28,6 +28,23 @@ $FORMATS = [
     'ppt'   => ['hub' => 'officefiles',  'label' => 'PowerPoint', 'exts' => ['ppt', 'pptx', 'zip']],
 ];
 
+/** Format key => logo filename in src/assets/image/file-logos/. */
+$FORMAT_LOGOS = [
+    'psd'   => 'photoshop.svg',
+    'ai'    => 'illustrator.svg',
+    'plp'   => 'pixellab.png',
+    'word'  => 'word.svg',
+    'excel' => 'excel.svg',
+    'ppt'   => 'powerpoint.svg',
+];
+
+function admin_format_logo_url(string $type): string
+{
+    global $FORMAT_LOGOS;
+    $file = $FORMAT_LOGOS[$type] ?? 'microsoft-office.svg';
+    return repdoc_url('src/assets/image/file-logos/' . $file);
+}
+
 $ROOT = dirname(__DIR__);
 
 function files_human_size(int $bytes): string
@@ -442,7 +459,7 @@ admin_notice();
         <span style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
             <a class="btn btn-secondary btn-sm" href="files.php"<?= $filter === 'all' ? ' aria-current="page"' : '' ?>>All (<?= (int) $totalFiles ?>)</a>
             <?php foreach ($FORMATS as $type => $meta): ?>
-                <a class="btn btn-secondary btn-sm" href="files.php?type=<?= e($type) ?>"<?= $filter === $type ? ' aria-current="page"' : '' ?>><?= e($meta['label']) ?> (<?= (int) $totals[$type]['n'] ?>)</a>
+                <a class="btn btn-secondary btn-sm" href="files.php?type=<?= e($type) ?>"<?= $filter === $type ? ' aria-current="page"' : '' ?>><img src="<?= e(admin_format_logo_url($type)) ?>" alt="" width="14" height="14" loading="lazy" decoding="async" style="vertical-align:middle;margin-right:4px"> <?= e($meta['label']) ?> (<?= (int) $totals[$type]['n'] ?>)</a>
             <?php endforeach; ?>
         </span>
     </div>
@@ -465,12 +482,12 @@ admin_notice();
                                 <?php if ($thumbUrl !== ''): ?>
                                     <img class="file-thumb-mini" src="<?= e($thumbUrl) ?>" alt="" width="48" height="34" loading="lazy">
                                 <?php else: ?>
-                                    <span class="file-thumb-mini file-thumb-empty" aria-hidden="true"><?= e(strtoupper(substr($r['type'], 0, 1))) ?></span>
+                                    <span class="file-thumb-mini file-thumb-empty" aria-hidden="true"><img src="<?= e(admin_format_logo_url($r['type'])) ?>" alt="" width="28" height="28" loading="lazy" decoding="async"></span>
                                 <?php endif; ?>
                                 <span class="file-cell-text"><span class="cell-name"><?= e($r['name']) ?></span><span class="cell-sub"><?= e($r['hub']) ?>/<?= e($r['type']) ?>/</span></span>
                             </div>
                         </td>
-                        <td><span class="pill pill-approved"><?= e(strtoupper($r['type']) . ' · ' . strtoupper($r['ext'])) ?></span></td>
+                        <td><span class="pill pill-approved"><img src="<?= e(admin_format_logo_url($r['type'])) ?>" alt="" width="12" height="12" loading="lazy" decoding="async" style="vertical-align:middle;margin-right:4px"><?= e(strtoupper($r['type']) . ' · ' . strtoupper($r['ext'])) ?></span></td>
                         <td class="balance"><?= e(files_human_size($r['size'])) ?></td>
                         <td class="cell-sub"><?= $r['mtime'] > 0 ? e(date('d-m-Y H:i', $r['mtime'])) : '—' ?></td>
                         <td class="desc-cell">
