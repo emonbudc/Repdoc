@@ -65,43 +65,10 @@ $FORMATS = [
         'exts'  => ['ppt', 'pptx', 'zip'],
         'note'  => 'মিটিং, প্রেজেন্টেশন ও অফিসিয়াল প্রেজেন্টেশনের জন্য প্রস্তুত Microsoft PowerPoint স্লাইড — নিজের তথ্য বসিয়ে ব্যবহার করুন।',
     ],
-    'psd' => [
-        'label' => 'PSD Files',
-        'full'  => 'Adobe Photoshop',
-        'hub'   => 'offlinefiles',
-        'group' => 'psd',
-        'brand' => '#1D4ED8',
-        'soft'  => '#E9EFFD',
-        'exts'  => ['psd', 'psb', 'zip'],
-        'note'  => 'লেয়ার-ভিত্তিক Adobe Photoshop টেমপ্লেট — পোস্টার, ব্যানার ও প্রোফাইল কভার নিজের মতো এডিট করার জন্য সম্পূর্ণ রেডি।',
-    ],
-    'ai' => [
-        'label' => 'AI Files',
-        'full'  => 'Adobe Illustrator',
-        'hub'   => 'offlinefiles',
-        'group' => 'ai',
-        'brand' => '#B45309',
-        'soft'  => '#FDF3E3',
-        'exts'  => ['ai', 'eps', 'zip'],
-        'note'  => 'ভেক্টর Adobe Illustrator ফাইল — লোগো, লেটারহেড ও প্রিন্ট-রেডি ডিজাইন, যেকোনো সাইজে স্কেল করা যায়।',
-    ],
-    'plp' => [
-        'label' => 'PLP Files',
-        'full'  => 'PixelLab',
-        'hub'   => 'offlinefiles',
-        'group' => 'plp',
-        'brand' => '#7C3AED',
-        'soft'  => '#F2EEFD',
-        'exts'  => ['plp', 'zip'],
-        'note'  => 'মোবাইলে PixelLab দিয়ে খোলা ও এডিট করার জন্য প্রস্তুত PLP প্রজেক্ট ফাইল — টেক্সট, ছবি ও কালার বদলে ব্যবহার করুন।',
-    ],
 ];
 
 $GROUPS = [
     'office' => ['label' => 'MS Office', 'sub' => 'Word, Excel, PowerPoint'],
-    'psd'    => ['label' => 'PSD Files', 'sub' => 'Photoshop Design'],
-    'ai'     => ['label' => 'AI Files',  'sub' => 'Illustrator Vector'],
-    'plp'    => ['label' => 'PLP Files', 'sub' => 'Poster / Flex Design'],
 ];
 
 /** Official software logos used by the category tiles and preview art. */
@@ -260,7 +227,7 @@ foreach ($FORMATS as $type => $meta) {
 }
 usort($files, static fn(array $a, array $b): int => $b['mtime'] <=> $a['mtime']);
 
-$counts = ['all' => count($files), 'office' => 0, 'psd' => 0, 'ai' => 0, 'plp' => 0];
+$counts = ['all' => count($files), 'office' => 0];
 $typeCounts = array_fill_keys(array_keys($FORMATS), 0);
 $descriptions = repdoc_file_descriptions_all();
 $described = 0;
@@ -709,9 +676,6 @@ $showAllCount = $counts['all'];
                     <summary class="is-active">সকল ফাইল <svg class="of-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-chevron"/></svg></summary>
                     <div class="of-dropdown-menu">
                         <a href="#files" data-filter="office">MS Office <span class="of-count"><?= e(officefiles_bn_digits((string) $counts['office'])) ?></span></a>
-                        <a href="#files" data-filter="psd">PSD Files <span class="of-count"><?= e(officefiles_bn_digits((string) $counts['psd'])) ?></span></a>
-                        <a href="#files" data-filter="ai">AI Files <span class="of-count"><?= e(officefiles_bn_digits((string) $counts['ai'])) ?></span></a>
-                        <a href="#files" data-filter="plp">PLP Files <span class="of-count"><?= e(officefiles_bn_digits((string) $counts['plp'])) ?></span></a>
                         <div class="of-dropdown-sep"></div>
                         <a href="<?= e($OFFLINE_URL) ?>">অফলাইন ফাইল হাব</a>
                         <a href="<?= e($SHOWCASE_URL) ?>">সব টেমপ্লেট শোকেস</a>
@@ -782,21 +746,6 @@ $showAllCount = $counts['all'];
                     <span class="of-cat-text"><strong>MS Office</strong><small>Word, Excel, PowerPoint</small></span>
                     <svg class="of-icon of-chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg>
                 </button>
-                <button type="button" class="of-cat" data-filter="psd">
-                    <?= officefiles_logo_icon('psd', 'fi-psd') ?>
-                    <span class="of-cat-text"><strong>PSD Files</strong><small>Photoshop Design</small></span>
-                    <svg class="of-icon of-chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg>
-                </button>
-                <button type="button" class="of-cat" data-filter="ai">
-                    <?= officefiles_logo_icon('ai', 'fi-ai') ?>
-                    <span class="of-cat-text"><strong>AI Files</strong><small>Illustrator Vector</small></span>
-                    <svg class="of-icon of-chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg>
-                </button>
-                <button type="button" class="of-cat" data-filter="plp">
-                    <?= officefiles_logo_icon('plp', 'fi-plp') ?>
-                    <span class="of-cat-text"><strong>PLP Files</strong><small>Poster / Flex Design</small></span>
-                    <svg class="of-icon of-chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg>
-                </button>
                 <a class="of-cat-promo" href="<?= e($PROTTOYON_URL) ?>">
                     <span class="of-promo-icon" aria-hidden="true"><svg class="of-icon" viewBox="0 0 24 24"><use href="#of-i-file"/></svg></span>
                     <span><strong>সকল ধরনের অফলাইন প্রত্যয়ন</strong><small>ডাউনলোড করুন +</small></span>
@@ -817,18 +766,12 @@ $showAllCount = $counts['all'];
                 <div class="of-filters" role="group" aria-label="ফাইল ফিল্টার">
                     <button type="button" class="of-filter is-active" data-filter="all">সব ফাইল</button>
                     <button type="button" class="of-filter" data-filter="office">MS Office</button>
-                    <button type="button" class="of-filter" data-filter="psd">PSD</button>
-                    <button type="button" class="of-filter" data-filter="ai">AI</button>
-                    <button type="button" class="of-filter" data-filter="plp">PLP</button>
                 </div>
 
                 <?php if ($files === []): ?>
                     <div class="of-empty" role="status">
                         <div class="of-empty-art" aria-hidden="true">
                             <?= officefiles_logo_icon('office', 'fi-office') ?>
-                            <?= officefiles_logo_icon('psd', 'fi-psd') ?>
-                            <?= officefiles_logo_icon('ai', 'fi-ai') ?>
-                            <?= officefiles_logo_icon('plp', 'fi-plp') ?>
                         </div>
                         <h3>ফাইল কালেকশন প্রস্তুত হচ্ছে</h3>
                         <p>খুব শীঘ্রই Word, Excel, PowerPoint, PSD, AI ও PLP ফাইল এখানে যুক্ত হবে।<br>অ্যাকাউন্ট নিলে নতুন ফাইল প্রকাশের সাথে সাথেই ডাউনলোড করতে পারবেন।</p>
@@ -934,18 +877,6 @@ $showAllCount = $counts['all'];
                         <button type="button" class="of-sidecat-item" data-filter="office">
                             <?= officefiles_logo_icon('office', 'of-mini fi-office') ?>
                             MS Office <span class="of-count"><?= e(officefiles_bn_digits((string) $counts['office'])) ?></span>
-                        </button>
-                        <button type="button" class="of-sidecat-item" data-filter="psd">
-                            <?= officefiles_logo_icon('psd', 'of-mini fi-psd') ?>
-                            PSD Files <span class="of-count"><?= e(officefiles_bn_digits((string) $counts['psd'])) ?></span>
-                        </button>
-                        <button type="button" class="of-sidecat-item" data-filter="ai">
-                            <?= officefiles_logo_icon('ai', 'of-mini fi-ai') ?>
-                            AI Files <span class="of-count"><?= e(officefiles_bn_digits((string) $counts['ai'])) ?></span>
-                        </button>
-                        <button type="button" class="of-sidecat-item" data-filter="plp">
-                            <?= officefiles_logo_icon('plp', 'of-mini fi-plp') ?>
-                            PLP Files <span class="of-count"><?= e(officefiles_bn_digits((string) $counts['plp'])) ?></span>
                         </button>
                         <a class="of-sidecat-item" href="<?= e($PROTTOYON_URL) ?>">
                             <span class="of-format-icon of-mini fi-file" aria-hidden="true"><svg class="of-icon" viewBox="0 0 24 24" style="width:14px;height:14px"><use href="#of-i-file"/></svg></span>
