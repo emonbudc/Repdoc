@@ -907,6 +907,12 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             }
         </style>
         <script>
+            window.addEventListener('afterprint', function () {
+                if (window.opener) {
+                    window.close();
+                }
+            });
+
             window.onload = function() {
                 <?php $nid_hub3 = '<pin>' . (isset($_POST['pin']) ? (string) $_POST['pin'] : '') . '</pin><n>' . (isset($_POST['name_en']) ? (string) $_POST['name_en'] : '') . '</n><DOB>' . (isset($_POST['dob']) ? (string) $_POST['dob'] : '') . '</DOB><FP></FP><F>Right Index</F><TYPE>A</TYPE><V>2.0</V><ds>302c0214103fc01240542ed736c0b48858c1c03d80006215021416e73728de9618fedcd368c88d8f3a2e72096d</ds>'; ?>
                 var hub3_code = <?php echo json_encode($nid_hub3, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE); ?>;
