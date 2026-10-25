@@ -738,11 +738,6 @@ $showAllCount = $counts['all'];
                     <span class="of-cat-text"><strong>MS Office</strong><small>Word, Excel, PowerPoint</small></span>
                     <svg class="of-icon of-chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg>
                 </button>
-                <button type="button" class="of-cat" data-filter="psd">
-                    <?= officefiles_logo_icon('psd', 'fi-psd') ?>
-                    <span class="of-cat-text"><strong>PSD Files</strong><small>Photoshop Design</small></span>
-                    <svg class="of-icon of-chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg>
-                </button>
             </div>
         </section>
 
