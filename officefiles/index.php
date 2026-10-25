@@ -738,11 +738,21 @@ $showAllCount = $counts['all'];
                     <span class="of-cat-text"><strong>MS Office</strong><small>Word, Excel, PowerPoint</small></span>
                     <svg class="of-icon of-chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg>
                 </button>
-                <button type="button" class="of-cat" data-filter="psd">
+                <a class="of-cat" href="<?= e($OFFLINE_URL) ?>">
                     <?= officefiles_logo_icon('psd', 'fi-psd') ?>
                     <span class="of-cat-text"><strong>PSD Files</strong><small>Photoshop Design</small></span>
                     <svg class="of-icon of-chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg>
-                </button>
+                </a>
+                <a class="of-cat" href="<?= e($OFFLINE_URL) ?>">
+                    <?= officefiles_logo_icon('ai', 'fi-ai') ?>
+                    <span class="of-cat-text"><strong>AI Files</strong><small>Illustrator Vector</small></span>
+                    <svg class="of-icon of-chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg>
+                </a>
+                <a class="of-cat" href="<?= e($OFFLINE_URL) ?>">
+                    <?= officefiles_logo_icon('plp', 'fi-plp') ?>
+                    <span class="of-cat-text"><strong>PLP Files</strong><small>Poster / Flex Design</small></span>
+                    <svg class="of-icon of-chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg>
+                </a>
             </div>
         </section>
 
