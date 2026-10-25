@@ -842,7 +842,7 @@ $showAllCount = $counts['all'];
                 </div>
 
                 <div class="of-side-card">
-                    <h2 class="of-side-title">ফাইল ক্যাটাগরি</h2>
+                    <h2 class="of-side-title">ফাইল ডাউনলোড</h2>
                     <div class="of-sidecat-list">
                         <button type="button" class="of-sidecat-item" data-filter="office">
                             <?= officefiles_logo_icon('office', 'of-mini fi-office') ?>
