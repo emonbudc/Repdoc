@@ -768,7 +768,6 @@ $showAllCount = $counts['all'];
 
                 <div class="of-filters" role="group" aria-label="ফাইল ফিল্টার">
                     <button type="button" class="of-filter is-active" data-filter="all">সব ফাইল</button>
-                    <button type="button" class="of-filter" data-filter="office">MS Office</button>
                 </div>
 
                 <?php if ($files === []): ?>
