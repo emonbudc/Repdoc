@@ -845,17 +845,6 @@ $showAllCount = $counts['all'];
             </div>
 
             <aside class="of-sidebar" aria-label="সহায়ক তথ্য">
-                <div class="of-side-card">
-                    <h2 class="of-side-title">কেন Repdoc?</h2>
-                    <ul class="of-checks">
-                        <li><span class="of-check" aria-hidden="true"><svg class="of-icon" viewBox="0 0 24 24"><use href="#of-i-check"/></svg></span> ১০০% নিরাপদ ও ভাইরাস-মুক্ত ফাইল</li>
-                        <li><span class="of-check" aria-hidden="true"><svg class="of-icon" viewBox="0 0 24 24"><use href="#of-i-check"/></svg></span> উচ্চ মানের ও প্রফেশনাল ডিজাইন</li>
-                        <li><span class="of-check" aria-hidden="true"><svg class="of-icon" viewBox="0 0 24 24"><use href="#of-i-check"/></svg></span> সহজ ও দ্রুত ডাউনলোড ব্যবস্থা</li>
-                        <li><span class="of-check" aria-hidden="true"><svg class="of-icon" viewBox="0 0 24 24"><use href="#of-i-check"/></svg></span> রেগুলার আপডেট ও নতুন ফাইল</li>
-                        <li><span class="of-check" aria-hidden="true"><svg class="of-icon" viewBox="0 0 24 24"><use href="#of-i-check"/></svg></span> সবার জন্য ফ্রি ও সহজলভ্য</li>
-                    </ul>
-                </div>
-
                 <div class="of-side-promo">
                     <span class="of-promo-bolt" aria-hidden="true"><svg class="of-icon" viewBox="0 0 24 24"><use href="#of-i-bolt"/></svg></span>
                     <h3>আপনার প্রয়োজনীয় ফাইল পেতে আজই অ্যাকাউন্ট খুলুন</h3>
