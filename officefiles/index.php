@@ -856,7 +856,7 @@ $showAllCount = $counts['all'];
                                     <?php else: ?>
                                         <?= officefiles_preview_art($f['type']) ?>
                                     <?php endif; ?>
-                                    <span class="of-file-badge badge-<?= e($group) ?>"><?= e($badge) ?></span>
+                                    <span class="of-file-badge badge-<?= e($group) ?>"><img src="<?= e(officefiles_logo_url($f['type'])) ?>" alt="" width="14" height="14" loading="lazy" decoding="async"></span>
                                     <?php if ($isNew): ?><span class="of-new">নতুন</span><?php endif; ?>
                                 </div>
                                 <div class="of-file-body">
