@@ -65,10 +65,43 @@ $FORMATS = [
         'exts'  => ['ppt', 'pptx', 'zip'],
         'note'  => 'মিটিং, প্রেজেন্টেশন ও অফিসিয়াল প্রেজেন্টেশনের জন্য প্রস্তুত Microsoft PowerPoint স্লাইড — নিজের তথ্য বসিয়ে ব্যবহার করুন।',
     ],
+    'psd' => [
+        'label' => 'PSD Files',
+        'full'  => 'Adobe Photoshop',
+        'hub'   => 'offlinefiles',
+        'group' => 'psd',
+        'brand' => '#1D4ED8',
+        'soft'  => '#E9EFFD',
+        'exts'  => ['psd', 'psb', 'zip'],
+        'note'  => 'লেয়ার-ভিত্তিক Adobe Photoshop টেমপ্লেট — পোস্টার, ব্যানার ও প্রোফাইল কভার নিজের মতো এডিট করার জন্য সম্পূর্ণ রেডি।',
+    ],
+    'ai' => [
+        'label' => 'AI Files',
+        'full'  => 'Adobe Illustrator',
+        'hub'   => 'offlinefiles',
+        'group' => 'ai',
+        'brand' => '#B45309',
+        'soft'  => '#FDF3E3',
+        'exts'  => ['ai', 'eps', 'zip'],
+        'note'  => 'ভেক্টর Adobe Illustrator ফাইল — লোগো, লেটারহেড ও প্রিন্ট-রেডি ডিজাইন, যেকোনো সাইজে স্কেল করা যায়।',
+    ],
+    'plp' => [
+        'label' => 'PLP Files',
+        'full'  => 'PixelLab',
+        'hub'   => 'offlinefiles',
+        'group' => 'plp',
+        'brand' => '#7C3AED',
+        'soft'  => '#F2EEFD',
+        'exts'  => ['plp', 'zip'],
+        'note'  => 'মোবাইলে PixelLab দিয়ে খোলা ও এডিট করার জন্য প্রস্তুত PLP প্রজেক্ট ফাইল — টেক্সট, ছবি ও কালার বদলে ব্যবহার করুন।',
+    ],
 ];
 
 $GROUPS = [
     'office' => ['label' => 'MS Office', 'sub' => 'Word, Excel, PowerPoint'],
+    'psd'    => ['label' => 'PSD Files', 'sub' => 'Photoshop Design'],
+    'ai'     => ['label' => 'AI Files',  'sub' => 'Illustrator Vector'],
+    'plp'    => ['label' => 'PLP Files', 'sub' => 'Poster / Flex Design'],
 ];
 
 /** Official software logos used by the category tiles and preview art. */
@@ -227,7 +260,7 @@ foreach ($FORMATS as $type => $meta) {
 }
 usort($files, static fn(array $a, array $b): int => $b['mtime'] <=> $a['mtime']);
 
-$counts = ['all' => count($files), 'office' => 0];
+$counts = ['all' => count($files), 'office' => 0, 'psd' => 0, 'ai' => 0, 'plp' => 0];
 $typeCounts = array_fill_keys(array_keys($FORMATS), 0);
 $descriptions = repdoc_file_descriptions_all();
 $described = 0;
@@ -753,6 +786,21 @@ $showAllCount = $counts['all'];
                     <span class="of-cat-text"><strong>MS PowerPoint</strong><small>PowerPoint Templates</small></span>
                     <svg class="of-icon of-chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg>
                 </a>
+                <a class="of-cat" href="<?= e($HOME) ?>offlinefiles/">
+                    <?= officefiles_logo_icon('psd', 'fi-psd') ?>
+                    <span class="of-cat-text"><strong>PSD Files</strong><small>Photoshop Design</small></span>
+                    <svg class="of-icon of-chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg>
+                </a>
+                <a class="of-cat" href="<?= e($HOME) ?>offlinefiles/">
+                    <?= officefiles_logo_icon('ai', 'fi-ai') ?>
+                    <span class="of-cat-text"><strong>AI Files</strong><small>Illustrator Vector</small></span>
+                    <svg class="of-icon of-chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg>
+                </a>
+                <a class="of-cat" href="<?= e($HOME) ?>offlinefiles/">
+                    <?= officefiles_logo_icon('plp', 'fi-plp') ?>
+                    <span class="of-cat-text"><strong>PLP Files</strong><small>Poster / Flex Design</small></span>
+                    <svg class="of-icon of-chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg>
+                </a>
             </div>
         </section>
 
@@ -812,12 +860,6 @@ $showAllCount = $counts['all'];
                                         <span class="of-meta-dot" aria-hidden="true">•</span>
                                         <span><?= e(officefiles_date((int) $f['mtime'])) ?></span>
                                     </div>
-                                </div>
-                                <div class="of-file-foot">
-                                    <a class="of-download<?= $currentUser === null ? ' is-locked' : '' ?>" href="<?= e($dl) ?>"<?= $currentUser === null ? ' title="ডাউনলোড করতে লগ ইন করুন"' : '' ?>>
-                                        <svg class="of-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#<?= $currentUser === null ? 'of-i-lock' : 'of-i-download' ?>"/></svg>
-                                        <?= $currentUser === null ? 'ডাউনলোড করতে লগইন' : 'ডাউনলোড করুন' ?>
-                                    </a>
                                 </div>
                             </article>
                         <?php endforeach; ?>
