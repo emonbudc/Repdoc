@@ -17,7 +17,7 @@ require_once dirname(__DIR__) . '/src/seo.php';
 require_once dirname(__DIR__) . '/src/filemeta.php';
 
 $SEO_TITLE = 'টেমপ্লেট শোকেস — Repdoc';
-$SEO_DESC  = 'Repdoc ফাইল শোকেস: Microsoft Word, Excel ও PowerPoint টেমপ্লেট — প্রতিটি ফাইলের বিবরণসহ। লগ ইন করে ডাউনলোড করুন।';
+$SEO_DESC  = 'Repdoc টেমপ্লেট শোকেস: Word, PDF, Excel, PSD, AI ও PLP ফরম্যাটের রেডি-টু-ইউজ টেমপ্লেট ও ফরম — এক অ্যাকাউন্টে সব আনলক।';
 $CANON     = repdoc_canonical('showcase/');
 $HOME      = repdoc_url('/');
 $LOGIN_URL = repdoc_url('public/login/');
@@ -709,9 +709,9 @@ $showAllCount = $counts['all'];
         <section class="of-hero" aria-labelledby="ofHeroTitle">
             <div class="of-container of-hero-inner">
                 <div>
-                    <p class="of-kicker"><i aria-hidden="true"></i> ডকুমেন্ট ও ডিজাইন টেমপ্লেট কালেকশন</p>
-                    <h1 id="ofHeroTitle">প্রয়োজনীয় সকল ফাইল <span>এক জায়গায়</span></h1>
-                    <p class="of-lead">Microsoft Word, Excel ও PowerPoint টেমপ্লেট ডাউনলোড করুন সহজে, দ্রুত ও নিরাপদে। PSD, AI ও PLP ফাইলের জন্য <a href="<?= e($OFFLINE_URL) ?>" style="color:#54E7A5;font-weight:700">অফলাইন ফাইল হাব</a> দেখুন।</p>
+                    <p class="of-kicker"><i aria-hidden="true"></i> টেমপ্লেট ও ফরম কালেকশন</p>
+                    <h1 id="ofHeroTitle">রেডি-টু-ইউজ টেমপ্লেট <span>শোকেস</span></h1>
+                    <p class="of-lead">Word, PDF, Excel, PSD, AI ও PLP — সব ফরম্যাটের টেমপ্লেট ও ফরম এক জায়গায়। পছন্দের টেমপ্লেট বেছে নিন, নিজের তথ্য বসান, আর ডাউনলোড করে সরাসরি ব্যবহার করুন।</p>
 
                     <form class="of-search" id="ofSearchForm" role="search">
                         <svg class="of-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-search"/></svg>
