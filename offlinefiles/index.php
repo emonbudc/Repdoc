@@ -725,14 +725,6 @@ $showAllCount = $counts['all'];
                         <button type="submit">খুঁজুন</button>
                     </form>
 
-                    <div class="of-tags" aria-label="জনপ্রিয় সার্চ">
-                        <span>জনপ্রিয় সার্চ:</span>
-                        <button type="button" class="of-tag" data-q="নিয়োগপত্র">নিয়োগপত্র</button>
-                        <button type="button" class="of-tag" data-q="বায়োডাটা">বায়োডাটা</button>
-                        <button type="button" class="of-tag" data-q="সার্টিফিকেট">সার্টিফিকেট</button>
-                        <button type="button" class="of-tag" data-q="আইডি কার্ড">আইডি কার্ড</button>
-                        <button type="button" class="of-tag" data-q="লেটারহেড">লেটারহেড</button>
-                    </div>
                 </div>
 
                 <div class="of-hero-art">
