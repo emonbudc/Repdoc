@@ -842,27 +842,6 @@ $showAllCount = $counts['all'];
                 
             </div>
 
-            <aside class="of-sidebar" aria-label="সহায়ক তথ্য">
-                <div class="of-side-promo">
-                    <span class="of-promo-bolt" aria-hidden="true"><svg class="of-icon" viewBox="0 0 24 24"><use href="#of-i-bolt"/></svg></span>
-                    <h3>আপনার প্রয়োজনীয় ফাইল পেতে আজই অ্যাকাউন্ট খুলুন</h3>
-                    <a href="<?= e($currentUser === null ? $APPLY_URL : $dashUrl) ?>"><?= $currentUser === null ? 'সাইন আপ করুন' : 'ড্যাশবোর্ডে যান' ?> <svg class="of-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg></a>
-                </div>
-
-                <div class="of-side-card">
-                    <h2 class="of-side-title">ফাইল ডাউনলোড</h2>
-                    <div class="of-sidecat-list">
-                        <button type="button" class="of-sidecat-item" data-filter="office">
-                            <?= officefiles_logo_icon('office', 'of-mini fi-office') ?>
-                            MS Office <span class="of-count"><?= e(officefiles_bn_digits((string) $counts['office'])) ?></span>
-                        </button>
-                        <a class="of-sidecat-item" href="<?= e($PROTTOYON_URL) ?>">
-                            <span class="of-format-icon of-mini fi-file" aria-hidden="true"><svg class="of-icon" viewBox="0 0 24 24" style="width:14px;height:14px"><use href="#of-i-file"/></svg></span>
-                            প্রত্যয়ন (অফলাইন) <span class="of-count"><?= e(officefiles_bn_digits((string) $attestationCount)) ?></span>
-                        </a>
-                    </div>
-                </div>
-            </aside>
         </div>
     </main>
 
