@@ -341,7 +341,7 @@ $showAllCount = $counts['all'];
             color: var(--of-ink);
         }
 
-        .of-container { width: 100%; max-width: 1600px; margin-inline: auto; padding-inline: 22px; }
+        .of-container { width: 100%; max-width: 1180px; margin-inline: auto; padding-inline: 22px; }
         .of-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
         .of-icon { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 
