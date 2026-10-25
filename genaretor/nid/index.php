@@ -18,32 +18,55 @@ $userPhotoPath = '';
 $userSignaturePath = '';
 $formError = '';
 
-if (isset($_POST['submit'])) {
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    // PHP throws away $_POST and $_FILES entirely when the request body is
+    // bigger than post_max_size, which used to look like "submit did nothing".
+    // Detect it from CONTENT_LENGTH so the user gets a real message instead.
+    $contentLength = (int) ($_SERVER['CONTENT_LENGTH'] ?? 0);
+    if ($contentLength > 0 && $_POST === [] && $_FILES === []) {
+        $formError = 'আপলোড অনেক বড় — সার্ভার সর্বোচ্চ ' . ini_get('post_max_size')
+            . ' পর্যন্ত নেয়। ছবি ও স্বাক্ষর ২MB-এর নিচে রেখে আবার চেষ্টা করুন।';
+    }
+
     // Handle photo upload (server-side validated: ext + finfo MIME + getimagesize + ≤2MB).
-    if (isset($_FILES['photo']) && ($_FILES['photo']['error'] ?? 1) == 0) {
-        $safe = repdoc_validate_image_upload($_FILES['photo'], 2 * 1024 * 1024);
-        if ($safe !== '') {
-            $userPhotoPath = 'uploads/' . $safe;
-            if (!@move_uploaded_file($_FILES['photo']['tmp_name'], __DIR__ . '/' . $userPhotoPath)) {
-                $userPhotoPath = '';
-                $formError = "Could not save photo. Try again.";
+    $photoUploadError = $_FILES['photo']['error'] ?? UPLOAD_ERR_NO_FILE;
+    if ($formError === '' && $photoUploadError !== UPLOAD_ERR_NO_FILE) {
+        if ($photoUploadError === UPLOAD_ERR_OK) {
+            $safe = repdoc_validate_image_upload($_FILES['photo'], 2 * 1024 * 1024);
+            if ($safe !== '') {
+                $userPhotoPath = 'uploads/' . $safe;
+                if (!@move_uploaded_file($_FILES['photo']['tmp_name'], __DIR__ . '/' . $userPhotoPath)) {
+                    $userPhotoPath = '';
+                    $formError = "Could not save photo. Try again.";
+                }
+            } else {
+                $formError = "ছবি সঠিক নয় — শুধু JPG/PNG, সর্বোচ্চ ২MB।";
             }
-        } else {
-            $formError = "Invalid photo format. Only JPG and PNG allowed (max 2MB).";
+        } elseif ($photoUploadError === UPLOAD_ERR_INI_SIZE || $photoUploadError === UPLOAD_ERR_FORM_SIZE) {
+            $formError = 'ছবি সার্ভারের সীমার চেয়ে বড় (max ' . ini_get('upload_max_filesize') . ')। ছবি ২MB-এর নিচে করুন।';
+        } elseif ($photoUploadError !== UPLOAD_ERR_NO_FILE) {
+            $formError = 'ছবি আপলোড ব্যর্থ হয়েছে। আবার চেষ্টা করুন।';
         }
     }
 
     // Handle signature upload
-    if ($formError === '' && isset($_FILES['signature']) && ($_FILES['signature']['error'] ?? 1) == 0) {
-        $safe = repdoc_validate_image_upload($_FILES['signature'], 2 * 1024 * 1024);
-        if ($safe !== '') {
-            $userSignaturePath = 'uploads/' . $safe;
-            if (!@move_uploaded_file($_FILES['signature']['tmp_name'], __DIR__ . '/' . $userSignaturePath)) {
-                $userSignaturePath = '';
-                $formError = "Could not save signature. Try again.";
+    $signatureUploadError = $_FILES['signature']['error'] ?? UPLOAD_ERR_NO_FILE;
+    if ($formError === '' && $signatureUploadError !== UPLOAD_ERR_NO_FILE) {
+        if ($signatureUploadError === UPLOAD_ERR_OK) {
+            $safe = repdoc_validate_image_upload($_FILES['signature'], 2 * 1024 * 1024);
+            if ($safe !== '') {
+                $userSignaturePath = 'uploads/' . $safe;
+                if (!@move_uploaded_file($_FILES['signature']['tmp_name'], __DIR__ . '/' . $userSignaturePath)) {
+                    $userSignaturePath = '';
+                    $formError = "Could not save signature. Try again.";
+                }
+            } else {
+                $formError = "স্বাক্ষর সঠিক নয় — শুধু JPG/PNG, সর্বোচ্চ ২MB।";
             }
-        } else {
-            $formError = "Invalid signature format. Only JPG and PNG allowed (max 2MB).";
+        } elseif ($signatureUploadError === UPLOAD_ERR_INI_SIZE || $signatureUploadError === UPLOAD_ERR_FORM_SIZE) {
+            $formError = 'স্বাক্ষর সার্ভারের সীমার চেয়ে বড় (max ' . ini_get('upload_max_filesize') . ')। স্বাক্ষর ২MB-এর নিচে করুন।';
+        } elseif ($signatureUploadError !== UPLOAD_ERR_NO_FILE) {
+            $formError = 'স্বাক্ষর আপলোড ব্যর্থ হয়েছে। আবার চেষ্টা করুন।';
         }
     }
 
@@ -495,10 +518,10 @@ if (isset($_POST['submit'])) {
         <?php } ?>
 
         <main>
-            <form action="" method="POST" enctype="multipart/form-data" id="nidForm">
+            <form action="" method="POST" enctype="multipart/form-data" id="nidForm" target="_blank">
                 <section class="nid-card" id="sec-photo" aria-labelledby="t-photo" data-reveal>
                     <div class="nid-card-head"><h2 id="t-photo">ছবি ও স্বাক্ষর</h2></div>
-                    <p class="nid-card-sub">JPG বা PNG ছবি দিন। কার্ডে যেমন দেখাবে, প্রিভিউতে তেমনই দেখুন।</p>
+                    <p class="nid-card-sub">JPG বা PNG ছবি দিন (প্রতিটি সর্বোচ্চ ২MB)। কার্ডে যেমন দেখাবে, প্রিভিউতে তেমনই দেখুন।</p>
                     <div class="nid-upload-grid">
                         <div class="nid-upload" data-upload>
                             <div class="nid-upload-preview" id="photoPreview">
@@ -722,13 +745,8 @@ if (isset($_POST['submit'])) {
                 var card = input.closest('[data-upload]');
                 var placeholder = preview.innerHTML;
 
-                function setFile(file) {
-                    if (!file) return;
-                    if (!/^image\/(jpeg|png|jpg)$/i.test(file.type || '')) {
-                        note(card, 'শুধু JPG বা PNG ছবি দিন');
-                        return;
-                    }
-                    nameEl.textContent = file.name;
+                function showFile(file, displayName) {
+                    nameEl.textContent = displayName;
                     card.classList.add('has-file');
                     clearBtn.hidden = false;
                     var reader = new FileReader();
@@ -740,6 +758,78 @@ if (isset($_POST['submit'])) {
                         preview.appendChild(img);
                     };
                     reader.readAsDataURL(file);
+                }
+                function resetFile() {
+                    input.value = '';
+                    preview.innerHTML = placeholder;
+                    nameEl.textContent = emptyText;
+                    card.classList.remove('has-file');
+                    clearBtn.hidden = true;
+                }
+                function compressFile(file, done) {
+                    var url = URL.createObjectURL(file);
+                    var img = new Image();
+                    img.onload = function () {
+                        var max = 1600;
+                        var w = img.naturalWidth || img.width;
+                        var h = img.naturalHeight || img.height;
+                        var scale = Math.min(1, max / Math.max(w, h));
+                        w = Math.max(1, Math.round(w * scale));
+                        h = Math.max(1, Math.round(h * scale));
+                        var canvas = document.createElement('canvas');
+                        canvas.width = w;
+                        canvas.height = h;
+                        var ctx = canvas.getContext('2d');
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, w, h);
+                        ctx.drawImage(img, 0, 0, w, h);
+                        URL.revokeObjectURL(url);
+                        canvas.toBlob(function (blob) {
+                            if (!blob) { done(null); return; }
+                            var name = file.name.replace(/\.[^.]+$/, '') + '.jpg';
+                            try {
+                                done(new File([blob], name, { type: 'image/jpeg' }));
+                            } catch (err) {
+                                done(null);
+                            }
+                        }, 'image/jpeg', 0.85);
+                    };
+                    img.onerror = function () {
+                        URL.revokeObjectURL(url);
+                        done(null);
+                    };
+                    img.src = url;
+                }
+                function setFile(file) {
+                    if (!file) return;
+                    if (!/^image\/(jpeg|png|jpg)$/i.test(file.type || '')) {
+                        resetFile();
+                        note(card, 'শুধু JPG বা PNG ছবি দিন');
+                        return;
+                    }
+                    if (file.size <= 2 * 1024 * 1024) {
+                        showFile(file, file.name);
+                        return;
+                    }
+                    // Phone photos are often 3–10MB. Shrink locally so the POST
+                    // stays under the server limit instead of silently failing.
+                    compressFile(file, function (small) {
+                        if (small && small.size <= 2 * 1024 * 1024) {
+                            try {
+                                var dt = new DataTransfer();
+                                dt.items.add(small);
+                                input.files = dt.files;
+                            } catch (err) {
+                                resetFile();
+                                note(card, 'ছবিটি ২MB-এর বেশি — ছোট ছবি বেছে নিন');
+                                return;
+                            }
+                            showFile(small, file.name);
+                        } else {
+                            resetFile();
+                            note(card, 'ছবিটি ২MB-এর বেশি — ছোট ছবি বেছে নিন');
+                        }
+                    });
                 }
                 input.addEventListener('change', function () {
                     if (input.files && input.files[0]) setFile(input.files[0]);
@@ -764,11 +854,7 @@ if (isset($_POST['submit'])) {
                     }
                 });
                 clearBtn.addEventListener('click', function () {
-                    input.value = '';
-                    preview.innerHTML = placeholder;
-                    nameEl.textContent = emptyText;
-                    card.classList.remove('has-file');
-                    clearBtn.hidden = true;
+                    resetFile();
                     input.focus();
                 });
             }
@@ -783,6 +869,12 @@ if (isset($_POST['submit'])) {
                     if (!nidForm.checkValidity()) return; // let native validation speak
                     submitBtn.disabled = true;
                     submitBtn.textContent = 'অপেক্ষা করুন…';
+                    // The form opens in a new tab, so this tab stays put:
+                    // unlock it again after the new tab has had time to open.
+                    setTimeout(function () {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = submitBtn.getAttribute('data-default-label') || 'কার্ড তৈরি করুন';
+                    }, 4000);
                 });
             }
 
@@ -866,6 +958,9 @@ if (isset($_POST['submit'])) {
                     }
                     y += bh;
                 }
+
+                // Print only after the barcode exists and the layout has settled.
+                setTimeout(function () { window.print(); }, 600);
             }
         </script>
         <script src="assets/JavaScript/bcmath-min.js" type="text/javascript"></script>
@@ -1002,14 +1097,23 @@ alt="" /></div>
          <div class="Toastify"></div>
          </main>
          </div>
-         <script>
-         window.print();
-            
-            // Wait for a brief moment before attempting to close the window
-            setTimeout(function() {
-               // window.close();
-            }, 3000); // You can adjust the delay as needed
-         </script>
+         <div class="nid-print-actions">
+            <button type="button" class="nid-print-btn" onclick="window.print()">প্রিন্ট / PDF</button>
+         </div>
+         <style>
+            .nid-print-actions { text-align: center; padding: 16px; }
+            .nid-print-btn {
+               min-height: 44px;
+               padding: 10px 22px;
+               border: 0;
+               border-radius: 8px;
+               background: #0f766e;
+               color: #fff;
+               font: 600 15px/1.2 Arial, sans-serif;
+               cursor: pointer;
+            }
+            @media print { .nid-print-actions { display: none !important; } }
+         </style>
          <script>
             var finalEnlishToBanglaNumber = {
                '0': '০',
