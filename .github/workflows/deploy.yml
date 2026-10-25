@@ -1,0 +1,74 @@
+name: Deploy to InfinityFree
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build hosting config from secrets
+        env:
+          DB_DRIVER: ${{ secrets.DB_DRIVER }}
+          REPDOC_BASE_URL: ${{ secrets.REPDOC_BASE_URL }}
+          MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
+          MYSQL_DB: ${{ secrets.MYSQL_DB }}
+          MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_PASS: ${{ secrets.MYSQL_PASS }}
+          MYSQL_PORT: ${{ secrets.MYSQL_PORT }}
+          OCRSPACE_API_KEY: ${{ secrets.OCRSPACE_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          POLLINATIONS_API_KEY: ${{ secrets.POLLINATIONS_API_KEY }}
+          PASSPORT_IMAGE_PROVIDER: ${{ secrets.PASSPORT_IMAGE_PROVIDER }}
+          PASSPORT_POLLINATIONS_MODEL: ${{ secrets.PASSPORT_POLLINATIONS_MODEL }}
+          PASSPORT_POLLINATIONS_SIZE: ${{ secrets.PASSPORT_POLLINATIONS_SIZE }}
+          PASSPORT_GEMINI_MODEL: ${{ secrets.PASSPORT_GEMINI_MODEL }}
+          LAND_API_BASE: ${{ secrets.LAND_API_BASE }}
+          LAND_SESSION_COOKIE: ${{ secrets.LAND_SESSION_COOKIE }}
+          LAND_JWT_SECRET: ${{ secrets.LAND_JWT_SECRET }}
+          LAND_MAX_RESULTS: ${{ secrets.LAND_MAX_RESULTS }}
+          CAPTCHA_SOLVER_URL: ${{ secrets.CAPTCHA_SOLVER_URL }}
+        run: |
+          php -r '
+          $keys = ["DB_DRIVER","REPDOC_BASE_URL","MYSQL_HOST","MYSQL_DB","MYSQL_USER","MYSQL_PASS","MYSQL_PORT","OCRSPACE_API_KEY","GEMINI_API_KEY","POLLINATIONS_API_KEY","PASSPORT_IMAGE_PROVIDER","PASSPORT_POLLINATIONS_MODEL","PASSPORT_POLLINATIONS_SIZE","PASSPORT_GEMINI_MODEL","LAND_API_BASE","LAND_SESSION_COOKIE","LAND_JWT_SECRET","LAND_MAX_RESULTS","CAPTCHA_SOLVER_URL"];
+          $cfg = "<?php\n// Generated from GitHub Secrets at deploy time. Never commit.\n";
+          foreach ($keys as $k) {
+              $v = getenv($k);
+              if ($v === false || $v === "") continue;
+              $q = var_export($v, true);
+              $cfg .= "putenv(" . var_export($k . "=", true) . " . $q);\n";
+              $cfg .= "\$_SERVER[" . var_export($k, true) . "] = $q;\n";
+              $cfg .= "\$_ENV[" . var_export($k, true) . "] = $q;\n";
+          }
+          file_put_contents("love/hosting-config.php", $cfg);
+          '
+
+      - name: Upload via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: ./htdocs/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/.github/**
+            **/node_modules/**
+            **/.env
+            **/.env.*
+            **/*.zip
+            **/*.backup
+            **/*.bak
+            **/*.old
+            **/uploads/**
+            **/qr_codes/**
+            **/.DS_Store
