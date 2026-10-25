@@ -16,8 +16,8 @@ require_once dirname(__DIR__) . '/src/bootstrap.php';
 require_once dirname(__DIR__) . '/src/seo.php';
 require_once dirname(__DIR__) . '/src/filemeta.php';
 
-$SEO_TITLE = 'MS Office, PSD, AI ও PLP ফাইল শোকেস — Repdoc';
-$SEO_DESC  = 'Repdoc ফাইল শোকেস: Microsoft Word, Excel, PowerPoint, Adobe Photoshop (PSD), Illustrator (AI) ও PixelLab (PLP) টেমপ্লেট — প্রতিটি ফাইলের বিবরণসহ। লগ ইন করে ডাউনলোড করুন।';
+$SEO_TITLE = 'MS Office ফাইল শোকেস — Repdoc';
+$SEO_DESC  = 'Repdoc ফাইল শোকেস: Microsoft Word, Excel ও PowerPoint টেমপ্লেট — প্রতিটি ফাইলের বিবরণসহ। লগ ইন করে ডাউনলোড করুন।';
 $CANON     = repdoc_canonical('officefiles/');
 $HOME      = repdoc_url('/');
 $LOGIN_URL = repdoc_url('public/login/');
@@ -711,7 +711,7 @@ $showAllCount = $counts['all'];
                 <div>
                     <p class="of-kicker"><i aria-hidden="true"></i> ডকুমেন্ট ও ডিজাইন টেমপ্লেট কালেকশন</p>
                     <h1 id="ofHeroTitle">প্রয়োজনীয় সকল ফাইল <span>এক জায়গায়</span></h1>
-                    <p class="of-lead">MS Office টেমপ্লেট, PSD, AI, PLP এবং প্রয়োজনীয় সব ডিজাইন ফাইল ডাউনলোড করুন সহজে, দ্রুত ও নিরাপদে। প্রতিটি ফাইলের বিবরণ দেখে বুঝে নিন, তারপর নিজের কাজে ব্যবহার করুন।</p>
+                    <p class="of-lead">Microsoft Word, Excel ও PowerPoint টেমপ্লেট ডাউনলোড করুন সহজে, দ্রুত ও নিরাপদে। PSD, AI ও PLP ফাইলের জন্য <a href="<?= e($OFFLINE_URL) ?>" style="color:#54E7A5;font-weight:700">অফলাইন ফাইল হাব</a> দেখুন।</p>
 
                     <form class="of-search" id="ofSearchForm" role="search">
                         <svg class="of-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-search"/></svg>
