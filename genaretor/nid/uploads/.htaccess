@@ -1,6 +1,7 @@
-# Uploads: images only — never execute scripts here.
-Options -ExecCGI -Indexes
-RemoveHandler .php .phtml .phar .cgi .pl .py .sh
+<IfModule mod_autoindex.c>
+  Options -Indexes
+</IfModule>
+
 <FilesMatch "\.(php|phtml|phar|cgi|pl|py|sh|htaccess)$">
   Require all denied
 </FilesMatch>

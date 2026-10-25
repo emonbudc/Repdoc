@@ -71,6 +71,5 @@ jobs:
             **/*.backup
             **/*.bak
             **/*.old
-            **/uploads/**
             **/qr_codes/**
             **/.DS_Store
