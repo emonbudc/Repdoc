@@ -745,10 +745,11 @@ $showAllCount = $counts['all'];
                     <span class="of-cat-text"><strong>MS Office</strong><small>Word, Excel, PowerPoint</small></span>
                     <svg class="of-icon of-chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg>
                 </button>
-                <a class="of-cat-promo" href="<?= e($PROTTOYON_URL) ?>">
-                    <span class="of-promo-icon" aria-hidden="true"><svg class="of-icon" viewBox="0 0 24 24"><use href="#of-i-file"/></svg></span>
-                    <span><strong>সকল ধরনের অফলাইন প্রত্যয়ন</strong><small>ডাউনলোড করুন +</small></span>
-                </a>
+                <button type="button" class="of-cat" data-filter="psd">
+                    <?= officefiles_logo_icon('psd', 'fi-psd') ?>
+                    <span class="of-cat-text"><strong>PSD Files</strong><small>Photoshop Design</small></span>
+                    <svg class="of-icon of-chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg>
+                </button>
             </div>
         </section>
 
