@@ -23,6 +23,7 @@ $HOME      = repdoc_url('/');
 $LOGIN_URL = repdoc_url('public/login/');
 $APPLY_URL = repdoc_url('Entrepreneur/apply/');
 $OFFLINE_URL = repdoc_url('offlinefiles/');
+$OFFICE_URL  = repdoc_url('officefiles/');
 $SHOWCASE_URL = repdoc_url('showcase/');
 $PROTTOYON_URL = repdoc_url('genaretor/prottoyon/');
 $HERO_IMG  = repdoc_url('src/assets/image/officefiles-hero.png');
@@ -715,7 +716,7 @@ $showAllCount = $counts['all'];
                 <div>
                     <p class="of-kicker"><i aria-hidden="true"></i> ডকুমেন্ট ও ডিজাইন টেমপ্লেট কালেকশন</p>
                     <h1 id="ofHeroTitle">প্রয়োজনীয় সকল ফাইল <span>এক জায়গায়</span></h1>
-                    <p class="of-lead">MS Office টেমপ্লেট, PSD, AI, PLP এবং প্রয়োজনীয় সব ডিজাইন ফাইল ডাউনলোড করুন সহজে, দ্রুত ও নিরাপদে। প্রতিটি ফাইলের বিবরণ দেখে বুঝে নিন, তারপর নিজের কাজে ব্যবহার করুন।</p>
+                    <p class="of-lead">Adobe Photoshop (PSD), Illustrator (AI) ও PixelLab (PLP) টেমপ্লেট ডাউনলোড করুন সহজে, দ্রুত ও নিরাপদে। MS Office ফাইলের জন্য <a href="<?= e($OFFICE_URL) ?>" style="color:#54E7A5;font-weight:700">MS Office ফাইল হাব</a> দেখুন।</p>
 
                     <form class="of-search" id="ofSearchForm" role="search">
                         <svg class="of-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-search"/></svg>
