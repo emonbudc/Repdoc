@@ -757,8 +757,7 @@ $showAllCount = $counts['all'];
             <div class="of-main">
                 <div class="of-section-head" id="files">
                     <div>
-                        <h2 class="of-section-title"><span class="of-title-icon" aria-hidden="true"><svg class="of-icon" viewBox="0 0 24 24"><use href="#of-i-grid"/></svg></span> জনপ্রিয় ফাইল কালেকশন</h2>
-                        <p class="of-section-sub">প্রদর্শিত <strong id="ofShowCount"><?= e(officefiles_bn_digits((string) $counts['all'])) ?></strong> টি ফাইল · প্রতিটি ফাইলের বিবরণসহ · মোট <?= e(officefiles_bn_digits(officefiles_human_size((int) $totalBytes))) ?></p>
+                        <h2 class="of-section-title"><span class="of-title-icon" aria-hidden="true"><svg class="of-icon" viewBox="0 0 24 24"><use href="#of-i-grid"/></svg></span></h2>
                     </div>
                     <a class="of-show-all" href="#files" id="ofShowAll">সব দেখুন <svg class="of-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg></a>
                 </div>
