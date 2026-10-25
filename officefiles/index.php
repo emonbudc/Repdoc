@@ -42,7 +42,6 @@ $FORMATS = [
         'group' => 'office',
         'brand' => '#2B579A',
         'soft'  => '#EEF3FB',
-        'mark'  => 'W',
         'exts'  => ['doc', 'docx', 'rtf', 'odt', 'zip'],
         'note'  => 'চিঠি, আবেদন, নোটিশ ও অফিসের দৈনন্দিন কাজের জন্য রেডি Microsoft Word টেমপ্লেট — নাম, ঠিকানা ও তারিখ বদলে সরাসরি ব্যবহার করুন।',
     ],
@@ -53,7 +52,6 @@ $FORMATS = [
         'group' => 'office',
         'brand' => '#217346',
         'soft'  => '#EDF6F1',
-        'mark'  => 'X',
         'exts'  => ['xls', 'xlsx', 'csv', 'zip'],
         'note'  => 'হিসাব, তালিকা, বাজেট ও রিপোর্টের জন্য ফর্মুলা-সহ Microsoft Excel স্প্রেডশিট — নিজের ডেটা বসিয়ে সাথে সাথে ব্যবহারযোগ্য।',
     ],
@@ -64,7 +62,6 @@ $FORMATS = [
         'group' => 'office',
         'brand' => '#C43E1C',
         'soft'  => '#FBEEE9',
-        'mark'  => 'P',
         'exts'  => ['ppt', 'pptx', 'zip'],
         'note'  => 'মিটিং, প্রেজেন্টেশন ও অফিসিয়াল প্রেজেন্টেশনের জন্য প্রস্তুত Microsoft PowerPoint স্লাইড — নিজের তথ্য বসিয়ে ব্যবহার করুন।',
     ],
@@ -75,7 +72,6 @@ $FORMATS = [
         'group' => 'psd',
         'brand' => '#1D4ED8',
         'soft'  => '#E9EFFD',
-        'mark'  => 'Ps',
         'exts'  => ['psd', 'psb', 'zip'],
         'note'  => 'লেয়ার-ভিত্তিক Adobe Photoshop টেমপ্লেট — পোস্টার, ব্যানার ও প্রোফাইল কভার নিজের মতো এডিট করার জন্য সম্পূর্ণ রেডি।',
     ],
@@ -86,7 +82,6 @@ $FORMATS = [
         'group' => 'ai',
         'brand' => '#B45309',
         'soft'  => '#FDF3E3',
-        'mark'  => 'Ai',
         'exts'  => ['ai', 'eps', 'zip'],
         'note'  => 'ভেক্টর Adobe Illustrator ফাইল — লোগো, লেটারহেড ও প্রিন্ট-রেডি ডিজাইন, যেকোনো সাইজে স্কেল করা যায়।',
     ],
@@ -97,7 +92,6 @@ $FORMATS = [
         'group' => 'plp',
         'brand' => '#7C3AED',
         'soft'  => '#F2EEFD',
-        'mark'  => 'Pl',
         'exts'  => ['plp', 'zip'],
         'note'  => 'মোবাইলে PixelLab দিয়ে খোলা ও এডিট করার জন্য প্রস্তুত PLP প্রজেক্ট ফাইল — টেক্সট, ছবি ও কালার বদলে ব্যবহার করুন।',
     ],
@@ -109,6 +103,30 @@ $GROUPS = [
     'ai'     => ['label' => 'AI Files',  'sub' => 'Illustrator Vector'],
     'plp'    => ['label' => 'PLP Files', 'sub' => 'Poster / Flex Design'],
 ];
+
+/** Official software logos used by the category tiles and preview art. */
+function officefiles_logo_url(string $type): string
+{
+    static $files = [
+        'office' => 'microsoft-office.svg',
+        'word'   => 'word.svg',
+        'excel'  => 'excel.svg',
+        'ppt'    => 'powerpoint.svg',
+        'psd'    => 'photoshop.svg',
+        'ai'     => 'illustrator.svg',
+        'plp'    => 'pixellab.png',
+    ];
+    $file = $files[$type] ?? $files['office'];
+    return repdoc_url('src/assets/image/file-logos/' . $file);
+}
+
+function officefiles_logo_icon(string $type, string $class = ''): string
+{
+    $class = trim('of-format-icon ' . $class);
+    return '<span class="' . e($class) . '" aria-hidden="true">'
+        . '<img src="' . e(officefiles_logo_url($type)) . '" alt="" width="48" height="48" loading="lazy" decoding="async">'
+        . '</span>';
+}
 
 function officefiles_human_size(int $bytes): string
 {
@@ -160,11 +178,15 @@ function officefiles_search_index(array $f, array $formats, array $groups): stri
 
 function officefiles_preview_art(string $type): string
 {
+    $logo = e(officefiles_logo_url($type));
+    $chip = '<img class="oc-chip oc-chip-logo" src="' . $logo . '" alt="" width="24" height="24" loading="lazy" decoding="async">';
+    $stamp = '<img class="oc-brand-stamp" src="' . $logo . '" alt="" width="38" height="38" loading="lazy" decoding="async">';
+
     switch ($type) {
         case 'word':
             return '<span class="oc-art art-word">'
                 . '<span class="oc-paper paper-word">'
-                . '<span class="oc-chip chip-word">W</span>'
+                . $chip
                 . '<span class="oc-line" style="width:88%"></span>'
                 . '<span class="oc-line" style="width:66%"></span>'
                 . '<span class="oc-line" style="width:78%"></span>'
@@ -174,29 +196,32 @@ function officefiles_preview_art(string $type): string
         case 'excel':
             return '<span class="oc-art art-excel">'
                 . '<span class="oc-paper paper-excel">'
-                . '<span class="oc-chip chip-excel">X</span>'
+                . $chip
                 . '<span class="oc-sheet-grid">'
                 . str_repeat('<i></i>', 15)
                 . '</span></span></span>';
         case 'ppt':
             return '<span class="oc-art art-ppt">'
                 . '<span class="oc-paper paper-ppt">'
-                . '<span class="oc-chip chip-ppt">P</span>'
+                . $chip
                 . '<span class="oc-slide"><span class="oc-slide-title"></span><span class="oc-slide-line"></span><span class="oc-slide-line short"></span></span>'
                 . '<span class="oc-slide-dots"><i></i><i></i><i></i></span>'
                 . '</span></span>';
         case 'psd':
             return '<span class="oc-art art-psd">'
+                . $stamp
                 . '<span class="oc-visit visit-back"></span>'
                 . '<span class="oc-visit visit-front"><strong>BUSINESS<br>CARD</strong><small>YOUR BRAND</small></span>'
                 . '</span>';
         case 'ai':
             return '<span class="oc-art art-ai">'
+                . $stamp
                 . '<span class="oc-brandsheet"><span class="oc-orbit"></span><strong>BRAND<br>LOGO</strong><small>DESIGN AGENCY</small></span>'
                 . '</span>';
         default:
             return '<span class="oc-art art-plp">'
-                . '<span class="oc-poster"><span class="oc-poster-kicker">পোস্টার</span><strong>নবাবর্ষ</strong><span class="oc-poster-badge">PLP</span></span>'
+                . $stamp
+                . '<span class="oc-poster"><span class="oc-poster-kicker">পোস্টার</span><strong>নবাবর্ষ</strong></span>'
                 . '</span>';
     }
 }
@@ -430,16 +455,12 @@ $showAllCount = $counts['all'];
         .of-cat-text strong { display: block; font-size: .93rem; font-weight: 700; }
         .of-cat-text small { display: block; margin-top: 2px; color: var(--of-muted); font-size: .71rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .of-chev { width: 15px; height: 15px; color: #A4B3AB; flex: none; }
-        .of-format-icon { position: relative; display: grid; place-items: center; flex: none; width: 48px; height: 48px; border-radius: 11px; color: #fff; font-size: 1rem; font-weight: 800; letter-spacing: -.04em; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .18), 0 7px 14px rgba(7, 54, 38, .15); }
-        .fi-office { grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 8px; background: linear-gradient(145deg, #129465, #0A5C40); }
-        .fi-office b { display: grid; place-items: center; height: 100%; border-radius: 2px; background: #fff; font-size: .46rem; font-weight: 800; }
-        .fi-office b:nth-child(1) { color: #2B579A; }
-        .fi-office b:nth-child(2) { color: #217346; }
-        .fi-office b:nth-child(3) { color: #C43E1C; }
-        .fi-psd { background: linear-gradient(145deg, #2563EB, #122C86); }
-        .fi-ai { background: linear-gradient(145deg, #F59E0B, #7C3604); }
-        .fi-plp { background: linear-gradient(145deg, #A855F7, #5B21B6); font-size: .72rem; }
-        .fi-file { background: linear-gradient(145deg, #129465, #0A5C40); }
+        .of-format-icon { position: relative; display: grid; place-items: center; flex: none; width: 48px; height: 48px; overflow: hidden; border-radius: 11px; background: #fff; box-shadow: inset 0 0 0 1px rgba(7, 54, 38, .08), 0 7px 14px rgba(7, 54, 38, .15); }
+        .of-format-icon img { display: block; width: 100%; height: 100%; object-fit: contain; }
+        .fi-office { padding: 8px; background: #FFF6EC; }
+        .fi-psd, .fi-ai { background: #fff; }
+        .fi-plp { padding: 5px; background: #EAF6FF; }
+        .fi-file { background: linear-gradient(145deg, #129465, #0A5C40); color: #fff; }
         .of-cat-promo { display: flex; align-items: center; gap: 12px; min-width: 0; padding: 12px 14px; border: 1px solid #B6DFC9; border-radius: 10px; background: linear-gradient(135deg, #E7F8EE, #C9EDD9); color: #084C34; transition: box-shadow .18s ease, transform .18s ease; }
         .of-cat-promo:hover { box-shadow: 0 10px 22px rgba(7, 54, 38, .08); transform: translateY(-1px); }
         .of-promo-icon { display: grid; place-items: center; flex: none; width: 48px; height: 48px; border-radius: 11px; background: var(--of-green); color: #fff; box-shadow: 0 7px 14px rgba(7, 54, 38, .18); }
@@ -502,10 +523,8 @@ $showAllCount = $counts['all'];
         .paper-word { --paper-accent: #2B579A; }
         .paper-excel { --paper-accent: #217346; padding: 13% 8%; }
         .paper-ppt { --paper-accent: #C43E1C; padding: 12% 8%; }
-        .oc-chip { position: absolute; top: -8px; right: -8px; display: grid; place-items: center; width: 23px; height: 23px; border-radius: 5px; color: #fff; font-size: .68rem; font-weight: 800; box-shadow: 0 3px 7px rgba(0, 0, 0, .18); }
-        .chip-word { background: linear-gradient(145deg, #3B6CC4, #1E438C); }
-        .chip-excel { background: linear-gradient(145deg, #2F8F5B, #175A38); }
-        .chip-ppt { background: linear-gradient(145deg, #E2603E, #9B2F13); }
+        .oc-chip { position: absolute; top: -8px; right: -8px; z-index: 2; width: 24px; height: 24px; padding: 1px; border-radius: 5px; background: #fff; object-fit: contain; box-shadow: 0 3px 7px rgba(0, 0, 0, .18); }
+        .oc-brand-stamp { position: absolute; top: 12px; right: 12px; z-index: 2; width: 38px; height: 38px; padding: 3px; border-radius: 9px; background: #fff; object-fit: contain; box-shadow: 0 6px 14px rgba(7, 54, 38, .18); }
         .oc-line { display: block; height: 3px; margin-bottom: 5px; border-radius: 99px; background: #DCE6E1; }
         .oc-line:nth-of-type(even) { background: #E9F0EC; }
         .oc-sheet-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 6px; }
@@ -530,7 +549,6 @@ $showAllCount = $counts['all'];
         .oc-poster { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 58%; aspect-ratio: 3 / 4; padding: 8%; border-radius: 3px; background: linear-gradient(160deg, #0C6F50, #07503C 62%, #E6425E 62%, #B41E39); box-shadow: 0 10px 20px rgba(54, 18, 101, .20); transform: rotate(3deg); }
         .oc-poster-kicker { color: #CFF3DF; font-size: .43rem; font-weight: 700; letter-spacing: .08em; }
         .oc-poster strong { margin-top: 5px; color: #fff; font-size: .74rem; line-height: 1.25; text-align: center; }
-        .oc-poster-badge { position: absolute; right: 7px; bottom: 7px; padding: 3px 5px; border-radius: 3px; background: #fff; color: #6D28D9; font-size: .37rem; font-weight: 800; }
 
         /* Sidebar */
         .of-sidebar { display: flex; flex-direction: column; gap: 14px; }
@@ -551,10 +569,9 @@ $showAllCount = $counts['all'];
         .of-sidecat-item:last-child { border-bottom: 0; padding-bottom: 0; }
         .of-sidecat-item:hover, .of-sidecat-item.is-active { color: var(--of-green); }
         .of-sidecat-item.is-active .of-count { background: var(--of-green); color: #fff; }
-        .of-mini { width: 30px; height: 30px; border-radius: 7px; font-size: .62rem; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .16), 0 3px 7px rgba(7, 54, 38, .12); }
-        .of-mini.fi-office { gap: 1px; padding: 5px; }
-        .of-mini.fi-office b { font-size: .27rem; border-radius: 1px; }
-        .of-mini.fi-plp { font-size: .48rem; }
+        .of-mini { width: 30px; height: 30px; border-radius: 7px; box-shadow: inset 0 0 0 1px rgba(7, 54, 38, .08), 0 3px 7px rgba(7, 54, 38, .12); }
+        .of-mini.fi-office { padding: 5px; }
+        .of-mini.fi-plp { padding: 2px; }
         .of-count { display: inline-grid; place-items: center; min-width: 28px; height: 21px; margin-inline-start: auto; padding: 0 7px; border-radius: 999px; background: #EAF7F0; color: var(--of-green); font-size: .66rem; font-weight: 700; }
         .of-sidecat-link { margin-inline-start: auto; color: #9BAFA3; }
         .of-sidecat-link .of-icon { width: 14px; height: 14px; }
@@ -761,22 +778,22 @@ $showAllCount = $counts['all'];
         <section class="of-categories" aria-label="ফাইল ক্যাটাগরি">
             <div class="of-container of-cat-grid">
                 <button type="button" class="of-cat" data-filter="office">
-                    <span class="of-format-icon fi-office" aria-hidden="true"><b>W</b><b>X</b><b>P</b></span>
+                    <?= officefiles_logo_icon('office', 'fi-office') ?>
                     <span class="of-cat-text"><strong>MS Office</strong><small>Word, Excel, PowerPoint</small></span>
                     <svg class="of-icon of-chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg>
                 </button>
                 <button type="button" class="of-cat" data-filter="psd">
-                    <span class="of-format-icon fi-psd" aria-hidden="true">Ps</span>
+                    <?= officefiles_logo_icon('psd', 'fi-psd') ?>
                     <span class="of-cat-text"><strong>PSD Files</strong><small>Photoshop Design</small></span>
                     <svg class="of-icon of-chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg>
                 </button>
                 <button type="button" class="of-cat" data-filter="ai">
-                    <span class="of-format-icon fi-ai" aria-hidden="true">Ai</span>
+                    <?= officefiles_logo_icon('ai', 'fi-ai') ?>
                     <span class="of-cat-text"><strong>AI Files</strong><small>Illustrator Vector</small></span>
                     <svg class="of-icon of-chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg>
                 </button>
                 <button type="button" class="of-cat" data-filter="plp">
-                    <span class="of-format-icon fi-plp" aria-hidden="true">PLP</span>
+                    <?= officefiles_logo_icon('plp', 'fi-plp') ?>
                     <span class="of-cat-text"><strong>PLP Files</strong><small>Poster / Flex Design</small></span>
                     <svg class="of-icon of-chev" viewBox="0 0 24 24" aria-hidden="true"><use href="#of-i-arrow"/></svg>
                 </button>
@@ -808,10 +825,10 @@ $showAllCount = $counts['all'];
                 <?php if ($files === []): ?>
                     <div class="of-empty" role="status">
                         <div class="of-empty-art" aria-hidden="true">
-                            <span class="of-format-icon fi-office"><b>W</b><b>X</b><b>P</b></span>
-                            <span class="of-format-icon fi-psd">Ps</span>
-                            <span class="of-format-icon fi-ai">Ai</span>
-                            <span class="of-format-icon fi-plp">PLP</span>
+                            <?= officefiles_logo_icon('office', 'fi-office') ?>
+                            <?= officefiles_logo_icon('psd', 'fi-psd') ?>
+                            <?= officefiles_logo_icon('ai', 'fi-ai') ?>
+                            <?= officefiles_logo_icon('plp', 'fi-plp') ?>
                         </div>
                         <h3>ফাইল কালেকশন প্রস্তুত হচ্ছে</h3>
                         <p>খুব শীঘ্রই Word, Excel, PowerPoint, PSD, AI ও PLP ফাইল এখানে যুক্ত হবে।<br>অ্যাকাউন্ট নিলে নতুন ফাইল প্রকাশের সাথে সাথেই ডাউনলোড করতে পারবেন।</p>
@@ -915,19 +932,19 @@ $showAllCount = $counts['all'];
                     <h2 class="of-side-title">ফাইল ক্যাটাগরি</h2>
                     <div class="of-sidecat-list">
                         <button type="button" class="of-sidecat-item" data-filter="office">
-                            <span class="of-format-icon of-mini fi-office" aria-hidden="true"><b>W</b><b>X</b><b>P</b></span>
+                            <?= officefiles_logo_icon('office', 'of-mini fi-office') ?>
                             MS Office <span class="of-count"><?= e(officefiles_bn_digits((string) $counts['office'])) ?></span>
                         </button>
                         <button type="button" class="of-sidecat-item" data-filter="psd">
-                            <span class="of-format-icon of-mini fi-psd" aria-hidden="true">Ps</span>
+                            <?= officefiles_logo_icon('psd', 'of-mini fi-psd') ?>
                             PSD Files <span class="of-count"><?= e(officefiles_bn_digits((string) $counts['psd'])) ?></span>
                         </button>
                         <button type="button" class="of-sidecat-item" data-filter="ai">
-                            <span class="of-format-icon of-mini fi-ai" aria-hidden="true">Ai</span>
+                            <?= officefiles_logo_icon('ai', 'of-mini fi-ai') ?>
                             AI Files <span class="of-count"><?= e(officefiles_bn_digits((string) $counts['ai'])) ?></span>
                         </button>
                         <button type="button" class="of-sidecat-item" data-filter="plp">
-                            <span class="of-format-icon of-mini fi-plp" aria-hidden="true">PLP</span>
+                            <?= officefiles_logo_icon('plp', 'of-mini fi-plp') ?>
                             PLP Files <span class="of-count"><?= e(officefiles_bn_digits((string) $counts['plp'])) ?></span>
                         </button>
                         <a class="of-sidecat-item" href="<?= e($PROTTOYON_URL) ?>">
