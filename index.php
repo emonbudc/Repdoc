@@ -270,7 +270,7 @@ function bn_digits(string $v): string
                 <a class="nav-link" href="#tools">টুলস</a>
                 <a class="nav-link" href="#featured">জনপ্রিয়</a>
                 <a class="nav-link" href="#how">কীভাবে কাজ করে</a>
-                <a class="nav-link" href="#about">সম্পর্কে</a>
+                <a class="nav-link" href="<?= e(repdoc_url('about/')) ?>">সম্পর্কে</a>
             </nav>
 
             <div class="header-actions">
@@ -505,6 +505,12 @@ function bn_digits(string $v): string
                         প্রত্যয়ন, সনদ ও দরকারি ডকুমেন্ট — Word ও PDF আকারে।
                     </p>
                     <p class="about-legal">স্বতন্ত্র টুলস সাইট — সরকারি পোর্টাল নয়।</p>
+                    <p>
+                        <a class="btn btn-secondary" href="<?= e(repdoc_url('about/')) ?>">
+                            <span>আমাদের সম্পর্কে আরও জানুন</span>
+                            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow"/></svg>
+                        </a>
+                    </p>
                 </div>
                 <ul class="about-gallery">
                     <li>
@@ -603,7 +609,7 @@ function bn_digits(string $v): string
                     <li><a href="#tools">সব টুলস</a></li>
                     <li><a href="showcase/">টেমপ্লেট শোকেস</a></li>
                     <li><a href="#how">কীভাবে কাজ করে</a></li>
-                    <li><a href="#about">আমাদের সম্পর্কে</a></li>
+                    <li><a href="<?= e(repdoc_url('about/')) ?>">আমাদের সম্পর্কে</a></li>
                     <li><a href="<?= e($LOGIN_URL) ?>">লগ ইন</a></li>
                 </ul>
             </nav>

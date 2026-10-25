@@ -233,7 +233,10 @@ if (!function_exists('repdoc_catalog_header')) {
         $office    = repdoc_url('officefiles/');
         $offline   = repdoc_url('offlinefiles/');
         $important = repdoc_url('importantlinks/');
+        $about     = repdoc_url('about/');
         $guide     = $active === 'importantlinks' ? 'লিংক গাইড' : 'ডাউনলোড গাইড';
+        $libraryHref = $active === 'about' ? $home . '#tools' : '#library';
+        $guideHref   = $active === 'about' ? $home . '#how' : '#guide';
         $current   = static fn(string $key): string => $active === $key ? ' aria-current="page"' : '';
         ?>
         <header class="site-header" id="top">
@@ -254,10 +257,10 @@ if (!function_exists('repdoc_catalog_header')) {
                             <a class="nav-menu-all" href="<?= e($home) ?>#tools">সব টুল দেখুন</a>
                         </div>
                     </details>
-                    <a class="nav-link" href="#library">ফাইল লাইব্রেরি</a>
+                    <a class="nav-link" href="<?= e($libraryHref) ?>">ফাইল লাইব্রেরি</a>
                     <a class="nav-link" href="<?= e($important) ?>"<?= $current('importantlinks') ?>>গুরুত্বপূর্ণ লিংক</a>
-                    <a class="nav-link" href="#guide"><?= e($guide) ?></a>
-                    <a class="nav-link" href="<?= e($home) ?>#about">সম্পর্কে</a>
+                    <a class="nav-link" href="<?= e($guideHref) ?>"><?= e($guide) ?></a>
+                    <a class="nav-link" href="<?= e($about) ?>"<?= $current('about') ?>>সম্পর্কে</a>
                 </nav>
 
                 <div class="header-actions">
@@ -298,6 +301,7 @@ if (!function_exists('repdoc_catalog_footer')) {
         $home   = (string) ($ctx['home'] ?? repdoc_url('/'));
         $login  = (string) ($ctx['login'] ?? repdoc_url('public/login/'));
         $apply  = (string) ($ctx['apply'] ?? repdoc_url('Entrepreneur/apply/'));
+        $about  = repdoc_url('about/');
         $year   = date('Y');
         ?>
         <footer class="site-footer footer-mint">
@@ -366,7 +370,7 @@ if (!function_exists('repdoc_catalog_footer')) {
                         <li><a href="<?= e(repdoc_url('privacy/')) ?>">গোপনীয়তা নীতি</a></li>
                         <li><a href="<?= e($apply) ?>">অ্যাকাউন্টের জন্য আবেদন</a></li>
                         <li><a href="<?= e($login) ?>">লগ ইন</a></li>
-                        <li><a href="<?= e($home) ?>#about">আমাদের সম্পর্কে</a></li>
+                        <li><a href="<?= e($about) ?>">আমাদের সম্পর্কে</a></li>
                     </ul>
                 </nav>
 
