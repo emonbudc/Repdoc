@@ -518,7 +518,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         <?php } ?>
 
         <main>
-            <form action="" method="POST" enctype="multipart/form-data" id="nidForm" target="_blank">
+            <form action="" method="POST" enctype="multipart/form-data" id="nidForm">
                 <section class="nid-card" id="sec-photo" aria-labelledby="t-photo" data-reveal>
                     <div class="nid-card-head"><h2 id="t-photo">ছবি ও স্বাক্ষর</h2></div>
                     <p class="nid-card-sub">JPG বা PNG ছবি দিন (প্রতিটি সর্বোচ্চ ২MB)। কার্ডে যেমন দেখাবে, প্রিভিউতে তেমনই দেখুন।</p>
@@ -869,8 +869,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                     if (!nidForm.checkValidity()) return; // let native validation speak
                     submitBtn.disabled = true;
                     submitBtn.textContent = 'অপেক্ষা করুন…';
-                    // The form opens in a new tab, so this tab stays put:
-                    // unlock it again after the new tab has had time to open.
+                    // Re-enable if the navigation is aborted (offline / blocked submit).
                     setTimeout(function () {
                         submitBtn.disabled = false;
                         submitBtn.textContent = submitBtn.getAttribute('data-default-label') || 'কার্ড তৈরি করুন';
@@ -907,10 +906,23 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             }
         </style>
         <script>
+            var nidPrintStarted = false;
+            var nidPrintClosed = false;
+
+            function nidPrintOnce() {
+                if (nidPrintStarted) return;
+                nidPrintStarted = true;
+                window.print();
+            }
+
             window.addEventListener('afterprint', function () {
+                if (nidPrintClosed) return;
+                nidPrintClosed = true;
                 if (window.opener) {
                     window.close();
+                    return;
                 }
+                window.location.replace(window.location.pathname);
             });
 
             window.onload = function() {
@@ -966,7 +978,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                 }
 
                 // Print only after the barcode exists and the layout has settled.
-                setTimeout(function () { window.print(); }, 600);
+                setTimeout(nidPrintOnce, 600);
             }
         </script>
         <script src="assets/JavaScript/bcmath-min.js" type="text/javascript"></script>
@@ -1104,7 +1116,7 @@ alt="" /></div>
          </main>
          </div>
          <div class="nid-print-actions">
-            <button type="button" class="nid-print-btn" onclick="window.print()">প্রিন্ট / PDF</button>
+            <button type="button" class="nid-print-btn" onclick="nidPrintOnce()">প্রিন্ট / PDF</button>
          </div>
          <style>
             .nid-print-actions { text-align: center; padding: 16px; }
