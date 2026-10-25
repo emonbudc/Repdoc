@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 // Central auth + wallet — same as genaretor/nid.
 require_once dirname(__DIR__, 2) . '/src/bootstrap.php';
+require_once dirname(__DIR__, 2) . '/src/nav.php';
 require_login();
 
 $repdocUser    = current_user();
@@ -524,10 +525,7 @@ $CV_TEMPLATES = [
                 </span>
             </a>
 
-            <nav class="site-nav" id="siteNav" aria-label="Primary navigation">
-                <a class="nav-link" href="<?= e(repdoc_url('/')) ?>">Home</a>
-                <a class="nav-link" href="<?= e(repdoc_url('/')) ?>#tools">All Tools</a>
-            </nav>
+            <?php repdoc_render_site_nav('cvmaker', 'en'); ?>
 
             <div class="header-actions">
                 <button type="button" class="icon-btn theme-toggle" id="themeToggle" onclick="toggleTheme()"

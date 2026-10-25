@@ -1,6 +1,7 @@
 <?php
 // Central auth + wallet (replaces the old per-tool auth/config.php).
 require_once dirname(__DIR__, 2) . '/src/bootstrap.php';
+require_once dirname(__DIR__, 2) . '/src/nav.php';
 require_login();
 
 // index.php — Repdoc birth certificate form.
@@ -102,11 +103,7 @@ $repdocIsAdmin = $repdocUser['role'] === 'admin';
                 </span>
             </a>
 
-            <nav class="site-nav" id="siteNav" aria-label="প্রধান নেভিগেশন">
-                <a class="nav-link" href="<?= e(repdoc_url('/')) ?>">হোম</a>
-                <a class="nav-link" href="<?= e(repdoc_url('/')) ?>#tools">সব টুল</a>
-                <a class="nav-link" href="../search/index.php">রেকর্ড অনুসন্ধান</a>
-            </nav>
+            <?php repdoc_render_site_nav('birth'); ?>
 
             <div class="header-actions">
                 <button type="button" class="icon-btn theme-toggle" id="themeToggle" onclick="toggleTheme()"

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 // Central auth + wallet — same pattern as other generators.
 require_once dirname(__DIR__, 2) . '/src/bootstrap.php';
+require_once dirname(__DIR__, 2) . '/src/nav.php';
 require_once __DIR__ . '/types.php';
 require_login();
 
@@ -770,10 +771,7 @@ if ($requestedType !== '' && !isset($types[$requestedType])) {
                 </span>
             </a>
 
-            <nav class="site-nav" id="siteNav" aria-label="প্রধান নেভিগেশন">
-                <a class="nav-link" href="<?= e(repdoc_url('/')) ?>">হোম</a>
-                <a class="nav-link" href="<?= e(repdoc_url('/')) ?>#tools">সব টুল</a>
-            </nav>
+            <?php repdoc_render_site_nav('prottoyon'); ?>
 
             <div class="header-actions">
                 <button type="button" class="icon-btn theme-toggle" id="themeToggle" onclick="toggleTheme()"
