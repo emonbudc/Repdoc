@@ -838,6 +838,9 @@ $showAllCount = $counts['all'];
 
                 
             </div>
+                <aside class="of-sidebar" aria-label="বিজ্ঞাপন">
+                    <div class="of-side-card" style="min-height:200px;display:grid;place-items:center;color:#9BAFA3">Ad Space</div>
+                </aside>
 
         </div>
     </main>
