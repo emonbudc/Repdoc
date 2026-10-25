@@ -1,0 +1,290 @@
+[
+    {
+        "title": "জাতীয় তথ্য বাতায়ন",
+        "url": "https://www.bangladesh.gov.bd/",
+        "desc": "সরকারি সব মন্ত্রণালয়, দপ্তর ও সেবার একক প্রবেশদ্বার।",
+        "category": "government"
+    },
+    {
+        "title": "প্রধানমন্ত্রীর কার্যালয়",
+        "url": "https://pmo.gov.bd/",
+        "desc": "প্রধানমন্ত্রীর কার্যালয়ের দাপ্তরিক তথ্য, ঘোষণা ও সেবা।",
+        "category": "government"
+    },
+    {
+        "title": "মন্ত্রিপরিষদ বিভাগ",
+        "url": "https://cabinet.gov.bd/",
+        "desc": "মন্ত্রিপরিষদের সিদ্ধান্ত, প্রজ্ঞাপন ও প্রশাসনিক তথ্য।",
+        "category": "government"
+    },
+    {
+        "title": "নির্বাচন কমিশন সচিবালয়",
+        "url": "https://ecs.gov.bd/",
+        "desc": "ভোটার তথ্য, নির্বাচনী তফসিল ও কমিশনের ঘোষণা।",
+        "category": "government"
+    },
+    {
+        "title": "জাতীয় পরিচয়পত্র সেবা (NID)",
+        "url": "https://services.nidw.gov.bd/",
+        "desc": "NID যাচাই, সংশোধন ও ডিজিটাল পরিচয় সেবা।",
+        "category": "government"
+    },
+    {
+        "title": "জন্ম নিবন্ধন (BDRIS)",
+        "url": "https://bdris.gov.bd/",
+        "desc": "জন্ম নিবন্ধন আবেদন, যাচাই ও সংশোধনের অনলাইন সেবা।",
+        "category": "government"
+    },
+    {
+        "title": "ই-পাসপোর্ট",
+        "url": "https://epassport.gov.bd/",
+        "desc": "অনলাইনে পাসপোর্ট আবেদন, ফি প্রদান ও স্ট্যাটাস।",
+        "category": "government"
+    },
+    {
+        "title": "জাতীয় রাজস্ব বোর্ড (NBR)",
+        "url": "https://nbr.gov.bd/",
+        "desc": "আয়কর, ভ্যাট ও শুল্ক সংক্রান্ত তথ্য ও সেবা।",
+        "category": "government"
+    },
+    {
+        "title": "ই-টিন (e-TIN)",
+        "url": "https://secure.incometax.gov.bd/",
+        "desc": "অনলাইনে করদাতা শনাক্তকরণ নম্বর নিবন্ধন ও যাচাই।",
+        "category": "government"
+    },
+    {
+        "title": "বাংলাদেশ পুলিশ",
+        "url": "https://www.police.gov.bd/",
+        "desc": "পুলিশের সেবা, থানা তথ্য ও অনলাইন অভিযোগ।",
+        "category": "government"
+    },
+    {
+        "title": "ভূমি মন্ত্রণালয়",
+        "url": "https://land.gov.bd/",
+        "desc": "জমি সংক্রান্ত সেবা, আইন ও দপ্তরের তথ্য।",
+        "category": "government"
+    },
+    {
+        "title": "বিআরটিএ (BRTA)",
+        "url": "https://brta.gov.bd/",
+        "desc": "ড্রাইভিং লাইসেন্স, গাড়ির নিবন্ধন ও ফিটনেস সেবা।",
+        "category": "government"
+    },
+    {
+        "title": "বাংলাদেশ ফায়ার সার্ভিস ও সিভিল ডিফেন্স",
+        "url": "https://fireservice.gov.bd/",
+        "desc": "আগুন, দুর্ঘটনা ও উদ্ধার সংক্রান্ত জরুরি সেবা।",
+        "category": "government"
+    },
+    {
+        "title": "শিক্ষা মন্ত্রণালয়",
+        "url": "https://moedu.gov.bd/",
+        "desc": "শিক্ষা নীতি, প্রকল্প ও দপ্তরভিত্তিক তথ্য।",
+        "category": "education"
+    },
+    {
+        "title": "মাধ্যমিক ও উচ্চশিক্ষা অধিদপ্তর (DSHE)",
+        "url": "https://dshe.gov.bd/",
+        "desc": "স্কুল ও কলেজ শিক্ষার প্রশাসনিক তথ্য ও নির্দেশনা।",
+        "category": "education"
+    },
+    {
+        "title": "জাতীয় বিশ্ববিদ্যালয়",
+        "url": "https://nu.ac.bd/",
+        "desc": "অনার্স, ডিগ্রি ও কলেজ ভর্তির তথ্য এবং ফলাফল।",
+        "category": "education"
+    },
+    {
+        "title": "ঢাকা বিশ্ববিদ্যালয়",
+        "url": "https://du.ac.bd/",
+        "desc": "ভর্তি, পরীক্ষা, ফলাফল ও দাপ্তরিক নোটিশ।",
+        "category": "education"
+    },
+    {
+        "title": "বাংলাদেশ প্রকৌশল বিশ্ববিদ্যালয় (BUET)",
+        "url": "https://buet.ac.bd/",
+        "desc": "প্রকৌশল শিক্ষা, ভর্তি ও একাডেমিক তথ্য।",
+        "category": "education"
+    },
+    {
+        "title": "চট্টগ্রাম বিশ্ববিদ্যালয়",
+        "url": "https://cu.ac.bd/",
+        "desc": "ভর্তি, পরীক্ষা ও দাপ্তরিক নোটিশ।",
+        "category": "education"
+    },
+    {
+        "title": "শিক্ষক নিবন্ধন (NTRCA)",
+        "url": "https://ntrca.gov.bd/",
+        "desc": "শিক্ষক নিবন্ধন আবেদন, ফলাফল ও সার্টিফিকেট।",
+        "category": "education"
+    },
+    {
+        "title": "শিক্ষা বোর্ড ফলাফল",
+        "url": "https://eboardresults.com/",
+        "desc": "SSC, HSC ও সমমান পরীক্ষার ফলাফল ও মার্কশিট।",
+        "category": "education"
+    },
+    {
+        "title": "ঢাকা শিক্ষা বোর্ড",
+        "url": "https://dhakaeducationboard.gov.bd/",
+        "desc": "পরীক্ষার নোটিশ, রুটিন ও বোর্ডের দাপ্তরিক তথ্য।",
+        "category": "education"
+    },
+    {
+        "title": "বিশ্ববিদ্যালয় মঞ্জুরি কমিশন (UGC)",
+        "url": "https://ugc.gov.bd/",
+        "desc": "বিশ্ববিদ্যালয়ের অনুমোদন, মান ও শিক্ষা সংক্রান্ত তথ্য।",
+        "category": "education"
+    },
+    {
+        "title": "জাতীয় শিক্ষাক্রম ও পাঠ্যপুস্তক বোর্ড (NCTB)",
+        "url": "https://nctb.gov.bd/",
+        "desc": "শ্রেণিভিত্তিক পাঠ্যপুস্তক ও সিলেবাস ডাউনলোড।",
+        "category": "education"
+    },
+    {
+        "title": "বাংলাদেশ সরকারি কর্ম কমিশন (BPSC)",
+        "url": "https://bpsc.gov.bd/",
+        "desc": "সরকারি চাকরির বিজ্ঞপ্তি ও অনলাইন আবেদন।",
+        "category": "jobs"
+    },
+    {
+        "title": "জনপ্রশাসন মন্ত্রণালয়",
+        "url": "https://mopa.gov.bd/",
+        "desc": "সরকারি চাকরি, বদলি ও প্রশাসনিক নিয়োগের তথ্য।",
+        "category": "jobs"
+    },
+    {
+        "title": "বাংলাদেশ ব্যাংক",
+        "url": "https://www.bb.org.bd/",
+        "desc": "কেন্দ্রীয় ব্যাংকের নিয়োগ, নীতিমালা ও প্রকাশনা।",
+        "category": "jobs"
+    },
+    {
+        "title": "জনশক্তি কর্মসংস্থান ও প্রশিক্ষণ ব্যুরো (BMET)",
+        "url": "https://bmet.gov.bd/",
+        "desc": "বিদেশগামী কর্মীর নিবন্ধন, প্রশিক্ষণ ও অনুমোদন।",
+        "category": "jobs"
+    },
+    {
+        "title": "বাংলাদেশ সেনাবাহিনী",
+        "url": "https://www.army.mil.bd/",
+        "desc": "সেনাবাহিনীতে যোগদান ও নিয়োগ সংক্রান্ত তথ্য।",
+        "category": "jobs"
+    },
+    {
+        "title": "বাংলাদেশ নৌবাহিনী",
+        "url": "https://www.navy.mil.bd/",
+        "desc": "নৌবাহিনীর নিয়োগ, ক্যারিয়ার ও দাপ্তরিক তথ্য।",
+        "category": "jobs"
+    },
+    {
+        "title": "বাংলাদেশ বিদ্যুৎ উন্নয়ন বোর্ড (BPDB)",
+        "url": "https://bpdb.gov.bd/",
+        "desc": "বিদ্যুৎ সেবা, বিল ও গ্রাহক অভিযোগ।",
+        "category": "utility"
+    },
+    {
+        "title": "ডেসকো (DESCO)",
+        "url": "https://desco.org.bd/",
+        "desc": "ঢাকার বিদ্যুৎ বিল, নতুন সংযোগ ও অভিযোগ।",
+        "category": "utility"
+    },
+    {
+        "title": "তিতাস গ্যাস",
+        "url": "https://titasgas.org.bd/",
+        "desc": "গ্যাস বিল, নতুন সংযোগ ও গ্রাহক সেবা।",
+        "category": "utility"
+    },
+    {
+        "title": "ঢাকা ওয়াসা",
+        "url": "https://dwasa.org.bd/",
+        "desc": "পানি বিল, নতুন সংযোগ ও অভিযোগের তথ্য।",
+        "category": "utility"
+    },
+    {
+        "title": "বিটিআরসি (BTRC)",
+        "url": "https://btrc.gov.bd/",
+        "desc": "মোবাইল ও ইন্টারনেট সেবার নিয়ন্ত্রক তথ্য।",
+        "category": "utility"
+    },
+    {
+        "title": "বাংলাদেশ ডাক বিভাগ",
+        "url": "https://www.bdpost.gov.bd/",
+        "desc": "ডাক সেবা, পার্সেল ট্র্যাকিং ও পোস্ট অফিস তথ্য।",
+        "category": "utility"
+    },
+    {
+        "title": "বাংলাদেশ রেলওয়ে",
+        "url": "https://railway.gov.bd/",
+        "desc": "ট্রেনের সময়সূচি, টিকিট ও যাত্রী সেবা।",
+        "category": "utility"
+    },
+    {
+        "title": "স্বাস্থ্য ও পরিবার কল্যাণ মন্ত্রণালয়",
+        "url": "https://mohfw.gov.bd/",
+        "desc": "স্বাস্থ্য নীতি, সেবা ও দপ্তরভিত্তিক তথ্য।",
+        "category": "health"
+    },
+    {
+        "title": "স্বাস্থ্য অধিদপ্তর (DGHS)",
+        "url": "https://dghs.gov.bd/",
+        "desc": "সরকারি হাসপাতাল, স্বাস্থ্যসেবা ও পরিসংখ্যান।",
+        "category": "health"
+    },
+    {
+        "title": "আইইডিসিআর (IEDCR)",
+        "url": "https://iedcr.gov.bd/",
+        "desc": "রোগের প্রাদুর্ভাব, স্বাস্থ্য সতর্কতা ও গবেষণা।",
+        "category": "health"
+    },
+    {
+        "title": "ঔষধ প্রশাসন অধিদপ্তর (DGDA)",
+        "url": "https://dgda.gov.bd/",
+        "desc": "ঔষধের অনুমোদন, মান ও নিরাপত্তা তথ্য।",
+        "category": "health"
+    },
+    {
+        "title": "বাংলাদেশ মেডিকেল ও ডেন্টাল কাউন্সিল (BMDC)",
+        "url": "https://bmdc.org.bd/",
+        "desc": "ডাক্তার নিবন্ধন ও মেডিকেল শিক্ষার তথ্য।",
+        "category": "health"
+    },
+    {
+        "title": "বাংলাদেশ টেলিভিশন (BTV)",
+        "url": "https://btv.gov.bd/",
+        "desc": "সরকারি টেলিভিশনের সংবাদ ও অনুষ্ঠান।",
+        "category": "other"
+    },
+    {
+        "title": "বাংলাদেশ আবহাওয়া অধিদপ্তর",
+        "url": "https://bmd.gov.bd/",
+        "desc": "আজকের আবহাওয়া, সতর্কতা ও পূর্বাভাস।",
+        "category": "other"
+    },
+    {
+        "title": "বাংলাদেশ কম্পিউটার কাউন্সিল (BCC)",
+        "url": "https://bcc.gov.bd/",
+        "desc": "ডিজিটাল সেবা, প্রশিক্ষণ ও আইসিটি তথ্য।",
+        "category": "other"
+    },
+    {
+        "title": "কৃষি তথ্য সার্ভিস (AIS)",
+        "url": "https://ais.gov.bd/",
+        "desc": "ফসল, কৃষি পরামর্শ ও কৃষক সহায়তা।",
+        "category": "other"
+    },
+    {
+        "title": "বাংলাদেশ সুপ্রিম কোর্ট",
+        "url": "https://www.supremecourt.gov.bd/",
+        "desc": "আদালতের মামলা, রায় ও আইনি তথ্য।",
+        "category": "other"
+    },
+    {
+        "title": "জাতীয় সংসদ",
+        "url": "https://www.parliament.gov.bd/",
+        "desc": "সংসদ সদস্য, আইন ও অধিবেশনের তথ্য।",
+        "category": "other"
+    }
+]
