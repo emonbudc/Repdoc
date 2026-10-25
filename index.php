@@ -117,6 +117,18 @@ $tools = [
         'badge' => '',
         'keywords' => 'word excel doc docx xls xlsx office files download ওয়ার্ড এক্সেল টেমপ্লেট ফরম',
     ],
+    [
+        'id' => 'importantlinks',
+        'cat' => 'tools',
+        'icon' => 'i-grid',
+        'name' => 'গুরুত্বপূর্ণ লিংক',
+        'desc' => 'দরকারি ওয়েবসাইট ও সেবার লিংক এক জায়গায়।',
+        'url' => 'importantlinks/',
+        'featured' => false,
+        'status' => 'folder',
+        'badge' => 'নতুন',
+        'keywords' => 'important links urls websites services গুরুত্বপূর্ণ লিংক',
+    ],
 ];
 
 /** Trust strip — formats catalog + one account. */
