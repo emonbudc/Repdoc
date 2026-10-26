@@ -485,7 +485,20 @@ function repdoc_ensure_schema(PDO $db): void
         chairman_name $text NOT NULL DEFAULT '',
         upazila $text DEFAULT '',
         district $text DEFAULT '',
+        union_code VARCHAR(7) NOT NULL DEFAULT '',
+        postcode VARCHAR(16) DEFAULT '',
+        phone VARCHAR(32) DEFAULT '',
+        email VARCHAR(190) DEFAULT '',
+        website VARCHAR(190) DEFAULT '',
+        logo_path $text DEFAULT '',
+        stamp_path $text DEFAULT '',
         updated_at DATETIME NULL
+    )$suffix");
+
+    // Atomic certificate-number allocation (YY + union_code + 8-digit sequence).
+    $db->exec("CREATE TABLE IF NOT EXISTS number_sequences (
+        prefix VARCHAR(16) NOT NULL PRIMARY KEY,
+        last_value INT NOT NULL DEFAULT 0
     )$suffix");
 
     // Bangladesh geo (divisions → districts → upazilas → unions), seeded from
@@ -535,6 +548,13 @@ function repdoc_ensure_schema(PDO $db): void
         ['entrepreneur_apps', 'chairman_name_en', 'ALTER TABLE entrepreneur_apps ADD COLUMN chairman_name_en ' . ($mysql ? 'VARCHAR(255)' : 'TEXT')],
         ['entrepreneur_apps', 'leader_title', 'ALTER TABLE entrepreneur_apps ADD COLUMN leader_title VARCHAR(32)'],
         ['entrepreneur_apps', 'archive_access', 'ALTER TABLE entrepreneur_apps ADD COLUMN archive_access INT NOT NULL DEFAULT 0'],
+        ['office_profiles', 'union_code', 'ALTER TABLE office_profiles ADD COLUMN union_code VARCHAR(7) NOT NULL DEFAULT \'\''],
+        ['office_profiles', 'postcode', 'ALTER TABLE office_profiles ADD COLUMN postcode ' . ($mysql ? 'VARCHAR(16)' : 'TEXT')],
+        ['office_profiles', 'phone', 'ALTER TABLE office_profiles ADD COLUMN phone ' . ($mysql ? 'VARCHAR(32)' : 'TEXT')],
+        ['office_profiles', 'email', 'ALTER TABLE office_profiles ADD COLUMN email ' . ($mysql ? 'VARCHAR(190)' : 'TEXT')],
+        ['office_profiles', 'website', 'ALTER TABLE office_profiles ADD COLUMN website ' . ($mysql ? 'VARCHAR(190)' : 'TEXT')],
+        ['office_profiles', 'logo_path', 'ALTER TABLE office_profiles ADD COLUMN logo_path ' . ($mysql ? 'VARCHAR(255)' : 'TEXT')],
+        ['office_profiles', 'stamp_path', 'ALTER TABLE office_profiles ADD COLUMN stamp_path ' . ($mysql ? 'VARCHAR(255)' : 'TEXT')],
     ];
     foreach ($migrate as [$mtable, $mcol, $msql]) {
         try {
@@ -768,6 +788,26 @@ function repdoc_default_tools(): array
         'prottoyon_voter_info' => 'Prottoyon: Voter info',
         'prottoyon_voter_transfer' => 'Prottoyon: Voter transfer',
         'prottoyon_widow' => 'Prottoyon: Widow',
+        'prottoyon_nagorik' => 'Prottoyon: Citizenship',
+        'prottoyon_new-voter' => 'Prottoyon: New voter',
+        'prottoyon_voter' => 'Prottoyon: Voter information',
+        'prottoyon_vumihin' => 'Prottoyon: Landless',
+        'prottoyon_onapotti' => 'Prottoyon: No objection',
+        'prottoyon_rastakhonon' => 'Prottoyon: Road excavation',
+        'prottoyon_nodibanga' => 'Prottoyon: River erosion',
+        'prottoyon_trade' => 'Prottoyon: Trade licence',
+        'prottoyon_yearlyincome' => 'Prottoyon: Annual income',
+        'prottoyon_onumoti' => 'Prottoyon: Permission',
+        'prottoyon_warish' => 'Prottoyon: Heir',
+        'prottoyon_obibahito' => 'Prottoyon: Unmarried',
+        'prottoyon_bibahito' => 'Prottoyon: Married',
+        'prottoyon_ekoinam' => 'Prottoyon: Same name',
+        'prottoyon_punobibaho' => 'Prottoyon: Remarriage',
+        'prottoyon_protibondi' => 'Prottoyon: Disability',
+        'prottoyon_prottyon' => 'Prottoyon: Attestation',
+        'prottoyon_sonaton' => 'Prottoyon: Sanatan',
+        'prottoyon_anumanik-boyosh-protyon' => 'Prottoyon: Estimated age',
+        'prottoyon_protyonpotro-onnanno' => 'Prottoyon: Other certificate',
     ];
 }
 
@@ -914,7 +954,11 @@ function has_archive_access(): bool
 /** This operator's office profile, or defaults when not set yet. */
 function office_profile(?int $userId = null): array
 {
-    $out = ['office_type' => 'union', 'office_name' => '', 'chairman_name' => '', 'upazila' => '', 'district' => ''];
+    $out = [
+        'office_type' => 'union', 'office_name' => '', 'chairman_name' => '', 'upazila' => '', 'district' => '',
+        'union_code' => '', 'postcode' => '', 'phone' => '', 'email' => '', 'website' => '',
+        'logo_path' => '', 'stamp_path' => '',
+    ];
     if ($userId === null) {
         $user = current_user();
         if ($user === null) return $out;
@@ -923,7 +967,7 @@ function office_profile(?int $userId = null): array
     $db = repdoc_db();
     if (!$db) return $out;
     try {
-        $st = $db->prepare('SELECT office_type, office_name, chairman_name, upazila, district FROM office_profiles WHERE user_id = ?');
+        $st = $db->prepare('SELECT office_type, office_name, chairman_name, upazila, district, union_code, postcode, phone, email, website, logo_path, stamp_path FROM office_profiles WHERE user_id = ?');
         $st->execute([$userId]);
         $row = $st->fetch();
         if ($row) {
@@ -942,22 +986,34 @@ function save_office_profile(int $userId, array $profile): bool
     if (!$db) return false;
     $type = in_array($profile['office_type'] ?? '', ['union', 'municipality', 'city_corporation'], true)
         ? (string) $profile['office_type'] : 'union';
-    $vals = [$userId, $type, (string) ($profile['office_name'] ?? ''), (string) ($profile['chairman_name'] ?? ''),
-             (string) ($profile['upazila'] ?? ''), (string) ($profile['district'] ?? ''), date('Y-m-d H:i:s')];
+    $vals = [
+        $userId, $type,
+        (string) ($profile['office_name'] ?? ''), (string) ($profile['chairman_name'] ?? ''),
+        (string) ($profile['upazila'] ?? ''), (string) ($profile['district'] ?? ''),
+        substr(preg_replace('/\D/', '', (string) ($profile['union_code'] ?? '')) ?? '', 0, 7),
+        (string) ($profile['postcode'] ?? ''), (string) ($profile['phone'] ?? ''),
+        (string) ($profile['email'] ?? ''), (string) ($profile['website'] ?? ''),
+        (string) ($profile['logo_path'] ?? ''), (string) ($profile['stamp_path'] ?? ''),
+        date('Y-m-d H:i:s'),
+    ];
     try {
         $mysql = ($db->getAttribute(PDO::ATTR_DRIVER_NAME) === 'mysql');
         if ($mysql) {
-            $db->prepare('INSERT INTO office_profiles (user_id, office_type, office_name, chairman_name, upazila, district, updated_at)
-                          VALUES (?, ?, ?, ?, ?, ?, ?)
+            $db->prepare('INSERT INTO office_profiles (user_id, office_type, office_name, chairman_name, upazila, district, union_code, postcode, phone, email, website, logo_path, stamp_path, updated_at)
+                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                           ON DUPLICATE KEY UPDATE office_type = VALUES(office_type), office_name = VALUES(office_name),
                           chairman_name = VALUES(chairman_name), upazila = VALUES(upazila), district = VALUES(district),
-                          updated_at = VALUES(updated_at)')->execute($vals);
+                          union_code = VALUES(union_code), postcode = VALUES(postcode), phone = VALUES(phone),
+                          email = VALUES(email), website = VALUES(website), logo_path = VALUES(logo_path),
+                          stamp_path = VALUES(stamp_path), updated_at = VALUES(updated_at)')->execute($vals);
         } else {
-            $db->prepare('INSERT INTO office_profiles (user_id, office_type, office_name, chairman_name, upazila, district, updated_at)
-                          VALUES (?, ?, ?, ?, ?, ?, ?)
+            $db->prepare('INSERT INTO office_profiles (user_id, office_type, office_name, chairman_name, upazila, district, union_code, postcode, phone, email, website, logo_path, stamp_path, updated_at)
+                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                           ON CONFLICT(user_id) DO UPDATE SET office_type = excluded.office_type, office_name = excluded.office_name,
                           chairman_name = excluded.chairman_name, upazila = excluded.upazila, district = excluded.district,
-                          updated_at = excluded.updated_at')->execute($vals);
+                          union_code = excluded.union_code, postcode = excluded.postcode, phone = excluded.phone,
+                          email = excluded.email, website = excluded.website, logo_path = excluded.logo_path,
+                          stamp_path = excluded.stamp_path, updated_at = excluded.updated_at')->execute($vals);
         }
         return true;
     } catch (Throwable $e) {
@@ -1194,3 +1250,6 @@ function ledger(int $limit = 50, ?int $userId = null): array
         return [];
     }
 }
+
+require_once __DIR__ . '/prottoyon.php';
+require_once __DIR__ . '/prottoyon_certificate.php';

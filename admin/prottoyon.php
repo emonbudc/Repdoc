@@ -3,14 +3,16 @@ declare(strict_types=1);
 
 /**
  * Repdoc — admin: prottoyon submissions.
- * All 41 certificate types, newest first — ref, DOB and full submitted info.
+ * All current and historical certificate types, newest first — ref, DOB and full submitted info.
  */
 
 require_once __DIR__ . '/includes/layout.php';
 require_once dirname(__DIR__) . '/genaretor/prottoyon/types.php';
 
 $db = repdoc_db();
-$types = prottoyon_types();
+$types = prottoyon_all_types();
+$q = trim((string) ($_GET['q'] ?? ''));
+$q = mb_substr($q, 0, 120);
 
 // Revoke / restore action.
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $db) {
@@ -29,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $db) {
             }
         }
     }
-    redirect(repdoc_url('admin/prottoyon.php') . '?type=' . rawurlencode((string) ($_GET['type'] ?? 'all')));
+    redirect(repdoc_url('admin/prottoyon.php') . '?type=' . rawurlencode((string) ($_GET['type'] ?? 'all')) . ($q !== '' ? '&q=' . rawurlencode($q) : ''));
 }
 
 $type  = (string) ($_GET['type'] ?? 'all');
@@ -50,28 +52,32 @@ $total = 0;
 
 if ($db) {
     try {
-        $sql = 'SELECT d.*, u.fullname, u.email FROM document_logs d
-                LEFT JOIN users u ON u.id = d.user_id
-                WHERE d.tool_key LIKE \'prottoyon!_%\' ESCAPE \'!\'';
+        $where = 'd.tool_key LIKE \'prottoyon!_%\' ESCAPE \'!\'';
         $params = [];
         if ($type !== 'all') {
-            $sql .= ' AND d.tool_key = ?';
+            $where .= ' AND d.tool_key = ?';
             $params[] = 'prottoyon_' . $type;
         }
-        $sql .= ' ORDER BY d.id DESC LIMIT ' . $limit;
+        if ($q !== '') {
+            $like = '%' . $q . '%';
+            $where .= ' AND (d.cert_no LIKE ? OR d.ref LIKE ? OR u.fullname LIKE ? OR u.email LIKE ? OR d.data LIKE ?)';
+            array_push($params, $like, $like, $like, $like, $like);
+        }
+
+        $sql = 'SELECT d.*, u.fullname, u.email FROM document_logs d
+                LEFT JOIN users u ON u.id = d.user_id
+                WHERE ' . $where . ' ORDER BY d.id DESC LIMIT ' . $limit;
 
         $st = $db->prepare($sql);
         $st->execute($params);
         $rows = $st->fetchAll();
 
-        $csql = 'SELECT COUNT(*) FROM document_logs WHERE tool_key LIKE \'prottoyon!_%\' ESCAPE \'!\'';
-        if ($type !== 'all') {
-            $st = $db->prepare($csql . ' AND tool_key = ?');
-            $st->execute(['prottoyon_' . $type]);
-            $total = (int) $st->fetchColumn();
-        } else {
-            $total = (int) $db->query($csql)->fetchColumn();
-        }
+        $csql = 'SELECT COUNT(*) FROM document_logs d
+                 LEFT JOIN users u ON u.id = d.user_id
+                 WHERE ' . $where;
+        $st = $db->prepare($csql);
+        $st->execute($params);
+        $total = (int) $st->fetchColumn();
     } catch (Throwable $e) {
         $db = null;
     }
@@ -84,7 +90,7 @@ admin_notice();
 <div class="admin-page-head">
     <div>
         <h1 class="admin-title">Prottoyon Logs</h1>
-        <p class="admin-sub">41 certificate types — <?= number_format($total) ?> submissions total. Newest first.</p>
+        <p class="admin-sub">23 current + 41 historical templates (60 unique keys) — <?= number_format($total) ?> submissions total. Newest first.</p>
     </div>
     <a class="btn btn-primary btn-sm" href="pricing.php">প্রাইস সেট</a>
 </div>
@@ -97,11 +103,15 @@ admin_notice();
     <div class="field">
         <label for="type">Certificate</label>
         <select id="type" name="type">
-            <option value="all"<?= $type === 'all' ? ' selected' : '' ?>>All 41 types</option>
+            <option value="all"<?= $type === 'all' ? ' selected' : '' ?>>All certificate types</option>
             <?php foreach ($types as $key => $t): ?>
-                <option value="<?= e($key) ?>"<?= $type === $key ? ' selected' : '' ?>><?= e($t['title']) ?></option>
+                <option value="<?= e($key) ?>"<?= $type === $key ? ' selected' : '' ?>><?= e($t['title']) ?><?= !empty($t['legacy']) ? ' (legacy)' : '' ?></option>
             <?php endforeach; ?>
         </select>
+    </div>
+    <div class="field" style="flex:1 1 240px">
+        <label for="q">Search</label>
+        <input type="search" id="q" name="q" value="<?= e($q) ?>" placeholder="Name, cert no, app ID, email">
     </div>
     <div class="field">
         <label for="limit">Max entries</label>
@@ -136,6 +146,7 @@ admin_notice();
                         $decoded = json_decode((string) $row['data'], true);
                         if (is_array($decoded)) $info = $decoded;
                     }
+                    $isLegacy = (int) ($info['v'] ?? 1) < 2;
                     ?>
                     <tr>
                         <td class="cell-sub"><?= (int) $row['id'] ?></td>
@@ -146,7 +157,10 @@ admin_notice();
                                 <span class="pill pill-approved">UDC</span>
                             <?php endif; ?>
                         </td>
-                        <td><span class="pill pill-approved"><?= e($types[$tkey]['title'] ?? $row['tool_key']) ?></span></td>
+                        <td>
+                            <span class="pill pill-approved"><?= e($types[$tkey]['title'] ?? $row['tool_key']) ?></span>
+                            <?php if ($isLegacy): ?><span class="pill">পুরাতন</span><?php endif; ?>
+                        </td>
                         <td class="cell-sub"><?= e((string) ($row['cert_no'] ?? '')) ?: '—' ?></td>
                         <td>
                             <?php if (($row['status'] ?? 'valid') === 'revoked'): ?>
@@ -172,7 +186,7 @@ admin_notice();
                         <td class="cell-sub"><?= e((string) $row['created_at']) ?></td>
                         <td style="white-space:nowrap">
                             <a class="btn btn-secondary btn-sm" href="prottoyon-view.php?id=<?= (int) $row['id'] ?>" target="_blank" rel="noopener">View</a>
-                            <form method="post" action="prottoyon.php?type=<?= e($type) ?>" style="display:inline">
+                            <form method="post" action="prottoyon.php?type=<?= e($type) ?>&amp;q=<?= e($q) ?>" style="display:inline">
                                 <?= csrf_field() ?>
                                 <input type="hidden" name="id" value="<?= (int) $row['id'] ?>">
                                 <input type="hidden" name="act" value="<?= ($row['status'] ?? 'valid') === 'revoked' ? 'restore' : 'revoke' ?>">

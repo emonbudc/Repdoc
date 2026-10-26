@@ -10,7 +10,7 @@ require_once dirname(__DIR__, 2) . '/genaretor/prottoyon/types.php';
 
 $me = current_user();
 $db = repdoc_db();
-$types = prottoyon_types();
+$types = prottoyon_all_types();
 
 $type  = (string) ($_GET['type'] ?? 'all');
 if ($type !== 'all' && !isset($types[$type])) $type = 'all';
@@ -56,7 +56,7 @@ udc_notice();
 <div class="admin-page-head">
     <div>
         <h1 class="admin-title">আমার প্রত্যয়ন</h1>
-        <p class="admin-sub"><?= number_format($total) ?>টি সনদ — দেখুন ও প্রিন্ট/ডাউনলোড করুন।</p>
+        <p class="admin-sub"><?= number_format($total) ?>টি সনদ — দেখুন ও প্রিন্ট করুন।</p>
     </div>
     <a class="btn btn-primary btn-sm" href="<?= e(repdoc_url('genaretor/prottoyon/')) ?>">+ নতুন প্রত্যয়ন</a>
 </div>
@@ -71,7 +71,7 @@ udc_notice();
         <select id="type" name="type">
             <option value="all"<?= $type === 'all' ? ' selected' : '' ?>>সবগুলো</option>
             <?php foreach ($types as $key => $t): ?>
-                <option value="<?= e($key) ?>"<?= $type === $key ? ' selected' : '' ?>><?= e($t['title']) ?></option>
+                <option value="<?= e($key) ?>"<?= $type === $key ? ' selected' : '' ?>><?= e($t['title']) ?><?= !empty($t['legacy']) ? ' (পুরাতন)' : '' ?></option>
             <?php endforeach; ?>
         </select>
     </div>
@@ -98,10 +98,17 @@ udc_notice();
                 <thead><tr><th>#</th><th>সনদ</th><th>সনদ নম্বর</th><th>স্ট্যাটাস</th><th>সময়</th><th></th></tr></thead>
                 <tbody>
                 <?php foreach ($rows as $row): ?>
-                    <?php $tkey = preg_replace('/^prottoyon_/', '', (string) $row['tool_key']); ?>
+                    <?php
+                    $tkey = preg_replace('/^prottoyon_/', '', (string) $row['tool_key']);
+                    $decoded = prottoyon_decode_row($row);
+                    $isLegacy = (int) ($decoded['v'] ?? 1) < 2;
+                    ?>
                     <tr>
                         <td class="cell-sub"><?= (int) $row['id'] ?></td>
-                        <td><span class="pill pill-approved"><?= e($types[$tkey]['title'] ?? $row['tool_key']) ?></span></td>
+                        <td>
+                            <span class="pill pill-approved"><?= e($types[$tkey]['title'] ?? $row['tool_key']) ?></span>
+                            <?php if ($isLegacy): ?><span class="pill">পুরাতন</span><?php endif; ?>
+                        </td>
                         <td class="balance"><?= e((string) ($row['cert_no'] ?? '')) ?: '—' ?></td>
                         <td><?= ($row['status'] ?? 'valid') === 'revoked' ? '<span class="pill pill-rejected">বাতিল</span>' : '<span class="pill pill-approved">বৈধ</span>' ?></td>
                         <td class="cell-sub"><?= e((string) $row['created_at']) ?></td>
