@@ -23,10 +23,10 @@ Allow: /showcase/
 Allow: /offlinefiles/
 Allow: /officefiles/
 Allow: /software/
+Allow: /about/
 
 # Code, data, and design sources (never content).
 Disallow: /love/
-Disallow: /src/
 Disallow: /design-system/
 
 Sitemap: https://repdoc.freedev.app/sitemap.xml
