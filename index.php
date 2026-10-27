@@ -172,12 +172,12 @@ function bn_digits(string $v): string
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= e($BRAND) ?> — ফ্রি ডকুমেন্ট টেমপ্লেট ও ফরম (Word, Excel, PDF, PSD, AI, PLP)</title>
-    <meta name="description" content="<?= e($BRAND) ?> — বাংলাদেশের কম্পিউটার অপারেটরদের জন্য ফ্রি ডকুমেন্ট টুলকিট। ফ্রি টেমপ্লেট ও ফরম Word, Excel, PDF, PSD, AI, PLP আকারে: সিভি (CV), প্রত্যয়ন, অফলাইন ফাইল।">
+    <meta name="description" content="<?= e($BRAND) ?> — Repdoc — ফ্রি ডকুমেন্ট টেমপ্লেট ও ফরম (Word, Excel, PDF, PSD, AI, PLP)">
     <meta name="theme-color" content="#FFFEFB">
     <meta name="google-site-verification" content="WvNaraAzQXGqMwigxVnsnBnU_gDpyansRX9wSDeM4gU">
     <?php
     $SEO_TITLE = $BRAND . ' — ফ্রি ডকুমেন্ট টেমপ্লেট ও ফরম (Word, Excel, PDF, PSD, AI, PLP)';
-    $SEO_DESC  = $BRAND . ' — বাংলাদেশের কম্পিউটার অপারেটরদের জন্য ফ্রি ডকুমেন্ট টুলকিট। ফ্রি টেমপ্লেট ও ফরম Word, Excel, PDF, PSD, AI, PLP আকারে: সিভি (CV), প্রত্যয়ন, অফলাইন ফাইল।';
+    $SEO_DESC  = $BRAND . ' — Repdoc — ফ্রি ডকুমেন্ট টেমপ্লেট ও ফরম (Word, Excel, PDF, PSD, AI, PLP)';
     repdoc_seo_head([
         'title'       => $SEO_TITLE,
         'description' => $SEO_DESC,
