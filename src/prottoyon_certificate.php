@@ -7,6 +7,9 @@ function prottoyon_render_saved(array $row, array $options = []): string
 {
     $data = prottoyon_decode_row($row);
     $typeKey = (string) ($data['type'] ?? prottoyon_type_from_tool_key((string) ($row['tool_key'] ?? '')));
+    if ($typeKey === 'trade' || $typeKey === 'trade-license') {
+        return prottoyon_render_certificate_legacy($row, $data, $options);
+    }
     if ((int) ($data['v'] ?? 1) >= 2 && prottoyon_type($typeKey) !== null) {
         return prottoyon_render_certificate_v2($row, $data, $options);
     }
@@ -112,6 +115,11 @@ function prottoyon_render_certificate_legacy(array $row, array $data, array $opt
     foreach (($data['personal'] ?? []) as $key => $value) {
         if (is_scalar($value) && !isset($user->$key)) $user->$key = (string) $value;
     }
+    foreach (($data['extra'] ?? []) as $key => $value) {
+        if (is_scalar($value) && !isset($user->$key)) $user->$key = (string) $value;
+    }
+    if (!isset($user->trade_name) && isset($user->business_name)) $user->trade_name = $user->business_name;
+    if (!isset($user->trade_address) && isset($user->business_address)) $user->trade_address = $user->business_address;
 
     $union = new stdClass();
     $union->name_bn = ($office['office_name'] ?? '') !== '' ? (string) $office['office_name'] : 'ইউনিয়ন পরিষদ';
@@ -127,6 +135,7 @@ function prottoyon_render_certificate_legacy(array $row, array $data, array $opt
     $certType = new stdClass();
     $certType->name_bn = prottoyon_type_title($typeKey);
     $chairman = ($office['chairman_name'] ?? '') !== '' ? (string) $office['chairman_name'] : 'চেয়ারম্যানের নাম';
+    $legacyPortrait = $typeKey === 'trade' || $typeKey === 'trade-license';
     $revoked = (($row['status'] ?? 'valid') === 'revoked');
     $baseHref = repdoc_url('genaretor/prottoyon/');
     if (substr($baseHref, -1) !== '/') $baseHref .= '/';
@@ -135,7 +144,8 @@ function prottoyon_render_certificate_legacy(array $row, array $data, array $opt
         . '<a href="' . e($backUrl) . '">ফিরে যান</a>';
     $legacyNotice = (string) ($options['notice'] ?? '');
 
-    $fragFile = __DIR__ . '/../genaretor/prottoyon/template/' . $typeKey . '.php';
+    $fragKey = $typeKey === 'trade' ? 'trade-license' : $typeKey;
+    $fragFile = __DIR__ . '/../genaretor/prottoyon/template/' . $fragKey . '.php';
     if (!is_file($fragFile)) $fragFile = __DIR__ . '/../genaretor/prottoyon/template/default.php';
     $docTitle = $certType->name_bn . ' - ' . $user->name_bn;
 

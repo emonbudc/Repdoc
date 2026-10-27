@@ -286,6 +286,85 @@ html, body {
   text-decoration: none;
 }
 
+.cert-portrait-page {
+  width: 210mm;
+  height: 297mm;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.cert-portrait-page .cv-actions {
+  max-width: 210mm;
+}
+
+.cert.cert-portrait {
+  width: 210mm;
+  height: 297mm;
+  background: #fff;
+}
+
+.cert.cert-portrait::before,
+.cert.cert-portrait::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.cert.cert-portrait::before {
+  inset: 8mm;
+  border: 2px solid #000;
+}
+
+.cert.cert-portrait::after {
+  inset: 10mm;
+  border: 0.75px solid #000;
+}
+
+.cert-portrait .header {
+  padding: 20mm 16mm 0;
+}
+
+.cert-portrait .header-logo img {
+  width: 84px;
+  height: 84px;
+}
+
+.cert-portrait .org-name {
+  font-size: 24px;
+}
+
+.cert-portrait .cert-title-row {
+  padding: 3mm 22mm 0;
+}
+
+.cert-portrait .cert-title-row .cert-type {
+  font-size: 22px;
+}
+
+.cert-portrait .meta {
+  padding: 1.5mm 18mm 0;
+}
+
+.cert-portrait .left-col {
+  padding: 7mm 18mm 0;
+}
+
+.cert-portrait .cert-text {
+  font-size: 18px;
+  line-height: 1.9;
+}
+
+.cert-portrait .wish {
+  margin-top: 10mm;
+}
+
+.cert-portrait .footer-box {
+  bottom: 16mm;
+  left: 14mm;
+  right: 14mm;
+}
+
 @media print {
   html, body { background: #fff; margin: 0; padding: 0; }
   .cert {
@@ -296,5 +375,8 @@ html, body {
   .header, .footer, .cert-title-row, .meta {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
+  .cert.cert-portrait {
+    page-break-after: avoid;
   }
 }

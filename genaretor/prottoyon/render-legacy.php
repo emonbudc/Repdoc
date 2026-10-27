@@ -7,7 +7,7 @@ if (!isset($docTitle, $refNo, $certificate, $certType, $union, $chairman, $fragF
 }
 ?>
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="bn"<?= !empty($legacyPortrait) ? ' class="cert-portrait-page"' : '' ?>>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,6 +16,7 @@ if (!isset($docTitle, $refNo, $certificate, $certType, $union, $chairman, $fragF
 <base href="<?= e($baseHref ?? repdoc_url('genaretor/prottoyon/')) ?>">
 <link href="https://fonts.maateen.me/solaiman-lipi/font.css" rel="stylesheet">
 <link href="<?= e(repdoc_url('genaretor/prottoyon/assets/css/certificate.css?v=1')) ?>" rel="stylesheet">
+<?php if (!empty($legacyPortrait)): ?><style>@page { size: A4 portrait; margin: 0; }</style><?php endif; ?>
 <style>
     .cv-actions { max-width: 297mm; margin: 14px auto; padding: 0 12px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; font-family: system-ui, sans-serif; }
     .cv-actions button, .cv-actions a { font-size: 15px; font-weight: 600; cursor: pointer; padding: 11px 22px; min-height: 44px; border-radius: 8px; border: 1px solid #d1d5db; background: #fff; color: #111827; text-decoration: none; }
@@ -24,12 +25,12 @@ if (!isset($docTitle, $refNo, $certificate, $certType, $union, $chairman, $fragF
     @media print { .cv-actions { display: none !important; } }
 </style>
 </head>
-<body>
-<?php if (!empty($legacyNotice)): ?><div style="max-width:297mm;margin:14px auto;padding:0 12px;font:14px/1.5 system-ui,sans-serif"><?= $legacyNotice ?></div><?php endif; ?>
+<body<?= !empty($legacyPortrait) ? ' class="cert-portrait-page"' : '' ?>>
+<?php if (!empty($legacyNotice)): ?><div style="max-width:<?= !empty($legacyPortrait) ? '210mm' : '297mm' ?>;margin:14px auto;padding:0 12px;font:14px/1.5 system-ui,sans-serif"><?= $legacyNotice ?></div><?php endif; ?>
 <?php if (($actionsHtml ?? '') !== ''): ?>
 <div class="cv-actions"><?= $actionsHtml ?></div>
 <?php endif; ?>
-<div class="cert">
+<div class="cert<?= !empty($legacyPortrait) ? ' cert-portrait' : '' ?>">
     <?php if (!empty($revoked)): ?><div class="revoked-stamp">বাতিল</div><?php endif; ?>
     <div class="watermark"><img src="<?= e(repdoc_url('genaretor/prottoyon/assets/images/gov_logo.png')) ?>" alt="জলছাপ"></div>
     <div class="header">
