@@ -452,26 +452,27 @@
     text-transform: uppercase;
     white-space: nowrap;
 }
+/* Filename is the compact label; the description carries the detail. */
 .cat-file-name {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    display: block;
     overflow: hidden;
-    min-height: 2.7em;
-    color: #10261C;
-    font-size: .93rem;
-    font-weight: 800;
-    line-height: 1.38;
-    overflow-wrap: anywhere;
+    color: #43594D;
+    font-size: .76rem;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: .01em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .cat-file-desc {
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 4;
     overflow: hidden;
-    color: #5A6F64;
-    font-size: .77rem;
-    line-height: 1.58;
+    color: #22402F;
+    font-size: .92rem;
+    font-weight: 500;
+    line-height: 1.62;
     overflow-wrap: anywhere;
 }
 .cat-file-meta {
@@ -930,7 +931,6 @@
     .cat-steps { grid-template-columns: 1fr; }
     .cat-toolbar { align-items: flex-start; flex-direction: column; }
     .cat-toolbar-actions { width: 100%; }
-    .cat-file-name { min-height: 0; }
 }
 @media (max-width: 620px) {
     .cat-hero { background-image: radial-gradient(52% 70% at 100% 0%, rgba(14, 107, 74, .07), transparent 70%); }
@@ -953,7 +953,7 @@
     .cat-search input { flex-basis: calc(100% - 80px); }
     .cat-search-btn { width: 100%; }
     .cat-search-clear { margin-inline-start: auto; }
-    .cat-file-desc { -webkit-line-clamp: 4; }
+    .cat-file-desc { -webkit-line-clamp: 6; font-size: .88rem; }
     .cat-empty, .cat-noresult { padding: 32px 18px; }
 }
 @media (prefers-reduced-motion: reduce) {

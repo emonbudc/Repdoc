@@ -737,7 +737,7 @@ if (!function_exists('repdoc_catalog_render')) {
                                         </div>
                                         <div class="cat-file-body">
                                             <p class="cat-file-eyebrow"><?= e((string) ($meta['full'] ?? $f['type'])) ?> · <?= e($extLabel) ?></p>
-                                            <h3 class="cat-file-name"><?= e($title) ?></h3>
+                                            <h3 class="cat-file-name" title="<?= e($title) ?>"><?= e($title) ?></h3>
                                             <p class="cat-file-desc" title="<?= e((string) $f['description']) ?>"><?= e((string) $f['description']) ?></p>
                                             <div class="cat-file-meta">
                                                 <span class="cat-ext"><?= e($extLabel) ?></span>

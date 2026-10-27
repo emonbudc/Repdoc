@@ -123,7 +123,7 @@ $faqs = [
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tokens.css?v=2')) ?>">
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/shell.css?v=2')) ?>">
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/home.css?v=4')) ?>">
-    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/catalog.css?v=3')) ?>">
+    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/catalog.css?v=4')) ?>">
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/about.css?v=1')) ?>">
 </head>
 <body class="catalog-page cat-about">
