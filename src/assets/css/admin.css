@@ -893,3 +893,114 @@
     .admin-body table.data th,
     .admin-body table.data td { padding-inline: 16px; }
 }
+
+/* ── SEO & health audit ─────────────────────────────────────── */
+.admin-body .audit-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.admin-body .audit-actions form { margin: 0; }
+
+.admin-body .audit-tabs {
+    display: inline-flex;
+    gap: 6px;
+    padding: 5px;
+    margin-bottom: var(--space-3);
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: var(--shadow-sm);
+}
+.admin-body .audit-tab {
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-size: .85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+}
+.admin-body .audit-tab:hover { color: var(--text-primary); }
+.admin-body .audit-tab.is-active { background: var(--a-ink); color: #fff; }
+
+.admin-body .audit-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    margin-bottom: var(--space-5);
+    font-size: .78rem;
+    color: var(--text-muted);
+}
+.admin-body .audit-meta code { font-family: var(--font-mono); font-size: .74rem; }
+
+.admin-body .audit-note {
+    display: flex;
+    gap: 12px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+    border-radius: 14px;
+    background: var(--a-butter);
+    color: var(--a-butter-deep);
+    font-size: .82rem;
+    line-height: 1.55;
+}
+.admin-body .audit-note strong { font-weight: 800; }
+
+.admin-body .pill-pass { background: var(--a-mint);   color: var(--a-mint-deep); }
+.admin-body .pill-warn { background: var(--a-butter); color: var(--a-butter-deep); }
+.admin-body .pill-fail { background: var(--a-rose);   color: var(--danger); }
+.admin-body .pill-info { background: var(--bg-muted); color: var(--text-muted); }
+
+.admin-body .audit-table td,
+.admin-body .audit-table th { white-space: nowrap; }
+.admin-body .audit-table td.audit-page-cell { white-space: normal; min-width: 180px; }
+.admin-body .audit-path {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: .72rem;
+    color: var(--text-muted);
+}
+.admin-body .audit-path a { color: var(--text-muted); }
+.admin-body .audit-path a:hover { color: var(--primary); }
+
+.admin-body .audit-cell {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+    height: 24px;
+    padding: 0 8px;
+    border-radius: 8px;
+    font-size: .7rem;
+    font-weight: 800;
+    cursor: help;
+}
+.admin-body .audit-cell.audit-pass { background: var(--a-mint);   color: var(--a-mint-deep); }
+.admin-body .audit-cell.audit-warn { background: var(--a-butter); color: var(--a-butter-deep); }
+.admin-body .audit-cell.audit-fail { background: var(--a-rose);   color: var(--danger); }
+.admin-body .audit-cell.audit-info { background: var(--bg-muted); color: var(--text-muted); }
+
+.admin-body .audit-score { font-variant-numeric: tabular-nums; font-weight: 800; }
+.admin-body .audit-score.is-pass { color: var(--a-mint-deep); }
+.admin-body .audit-score.is-warn { color: var(--a-butter-deep); }
+.admin-body .audit-score.is-fail { color: var(--danger); }
+
+.admin-body .audit-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-inline-start: auto;
+    font-size: .78rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+.admin-body .audit-toggle input { accent-color: var(--primary); }
+
+.admin-body .audit-legend {
+    margin: 0;
+    padding: 12px 22px 18px;
+    font-size: .74rem;
+    color: var(--text-muted);
+}
+.admin-body .audit-legend code { font-family: var(--font-mono); }
+
+@media (max-width: 640px) {
+    .admin-body .audit-tabs { display: flex; width: 100%; }
+    .admin-body .audit-tab { flex: 1; text-align: center; padding-inline: 10px; }
+    .admin-body .audit-toggle { margin-inline-start: 0; }
+}

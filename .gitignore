@@ -46,3 +46,6 @@ Thumbs.db
 !love/birth_records.db
 !love/birth_register_src.db
 !tools/birthsearch/data/*.docx
+
+# SEO audit cache (regenerated on demand)
+love/seo-audit.json

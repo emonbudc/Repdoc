@@ -20,6 +20,7 @@ function admin_nav_items(): array
 {
     return [
         'index.php'        => ['label' => 'Dashboard',         'icon' => 'a-grid'],
+        'seo-health.php'   => ['label' => 'SEO & Health',      'icon' => 'a-search'],
         'user-management'  => [
             'label'    => 'User Management',
             'icon'     => 'a-users',
@@ -229,7 +230,7 @@ function admin_page_start(string $title, string $active): void
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../src/assets/css/tokens.css?v=2">
     <link rel="stylesheet" href="../src/assets/css/app.css?v=1">
-    <link rel="stylesheet" href="../src/assets/css/admin.css?v=9">
+    <link rel="stylesheet" href="../src/assets/css/admin.css?v=10">
     <script>/* Rail state before paint, so the sidebar never flashes wide. */
     try { if (localStorage.getItem('repdoc-admin-rail') === '1') document.documentElement.classList.add('admin-rail'); } catch (e) {}</script>
 </head>
@@ -258,6 +259,8 @@ function admin_page_start(string $title, string $active): void
             <symbol id="a-log" viewBox="0 0 24 24"><path d="M4 4h11l5 5v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/><polyline points="14 4 14 9 19 9"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></symbol>
             <symbol id="a-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></symbol>
             <symbol id="a-sidebar" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></symbol>
+            <symbol id="a-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+            <symbol id="a-pulse" viewBox="0 0 24 24"><polyline points="3 12 7 12 10 5 14 19 17 12 21 12"/></symbol>
         </defs>
     </svg>
 
