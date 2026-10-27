@@ -20,6 +20,7 @@ function admin_nav_items(): array
         'tools.php'        => ['label' => 'Tools',             'icon' => 'a-layout'],
         '../tools/passport/' => ['label' => 'Passport Photo', 'icon' => 'a-id'],
         'files.php'        => ['label' => 'File Packs',        'icon' => 'a-file'],
+        'maps.php'         => ['label' => 'Mouza Maps',        'icon' => 'a-grid'],
         'software.php'     => ['label' => 'Software Downloads', 'icon' => 'a-download'],
         'important-links.php' => ['label' => 'Important Links', 'icon' => 'a-link'],
         'documents.php'    => ['label' => 'Document Logs',   'icon' => 'a-id'],
