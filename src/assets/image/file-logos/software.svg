@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Software">
+  <defs>
+    <linearGradient id="sw-bg" x1="8" y1="6" x2="56" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1E5A42"/>
+      <stop offset="1" stop-color="#0A2A1D"/>
+    </linearGradient>
+    <linearGradient id="sw-arrow" x1="24" y1="22" x2="41" y2="46" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F3FFF8"/>
+      <stop offset="1" stop-color="#9EE7C3"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="15" fill="url(#sw-bg)"/>
+  <path d="M18 17h28a4 4 0 0 1 4 4v4H14v-4a4 4 0 0 1 4-4Z" fill="#FFFFFF" opacity=".08"/>
+  <circle cx="20" cy="21" r="1.9" fill="#7ED9AC"/>
+  <circle cx="26" cy="21" r="1.9" fill="#E9C46A"/>
+  <circle cx="32" cy="21" r="1.9" fill="#E76F51"/>
+  <path d="M32 27v12" stroke="url(#sw-arrow)" stroke-width="4.5" stroke-linecap="round"/>
+  <path d="m25.5 33.5 6.5 6.7 6.5-6.7" fill="none" stroke="url(#sw-arrow)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M23 47h18" stroke="#7ED9AC" stroke-width="3.5" stroke-linecap="round" opacity=".85"/>
+</svg>

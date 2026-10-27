@@ -676,6 +676,10 @@ body::before, body::after {
     font-weight: 600;
     color: var(--primary);
 }
+/* Drop the decorative numerals once the nav has to compact (see shell.css). */
+@media (max-width: 1600px) {
+    .site-nav .nav-link::before { content: none; }
+}
 .user-chip { font-family: var(--font-mono); border-width: 1.5px; }
 /* Footer styling lives in its own block below. */
 .footer-col h3::before { content: "§ "; color: var(--primary); }

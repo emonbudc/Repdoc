@@ -16,12 +16,13 @@ Disallow: /Entrepreneur/panel/
 Disallow: /tools/
 
 # Login-required generator apps (they 302 to the noindex login page).
-# Landing sections below re-allow the two public browsable directories.
+# Landing sections below re-allow the public browsable directories.
 Disallow: /genaretor/
 Allow: /genaretor/certificate/
 Allow: /showcase/
 Allow: /offlinefiles/
 Allow: /officefiles/
+Allow: /software/
 
 # Code, data, and design sources (never content).
 Disallow: /love/

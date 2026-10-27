@@ -76,7 +76,7 @@ function prottoyon_render_certificate_v2(array $row, array $data, array $options
         . '<title>' . e($title . ' — ' . prottoyon_value($data, 'personal.name_bn', '')) . '</title>'
         . '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
         . '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Serif+Bengali:wght@400;600;700;800&display=swap" rel="stylesheet">'
-        . '<link rel="stylesheet" href="' . e(repdoc_url('src/assets/css/tokens.css?v=1')) . '">'
+        . '<link rel="stylesheet" href="' . e(repdoc_url('src/assets/css/tokens.css?v=2')) . '">'
         . '<link rel="stylesheet" href="' . e(repdoc_url('genaretor/prottoyon/assets/css/certificate-v2.css?v=2')) . '">'
         . '</head><body class="pv2-page">'
         . ($notice !== '' ? '<div class="pv2-notice">' . $notice . '</div>' : '')

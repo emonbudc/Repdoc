@@ -16,13 +16,19 @@ if (!function_exists('repdoc_catalog_logo_url')) {
     function repdoc_catalog_logo_url(string $type): string
     {
         static $files = [
-            'office' => 'microsoft-office.svg',
-            'word'   => 'word.svg',
-            'excel'  => 'excel.svg',
-            'ppt'    => 'powerpoint.svg',
-            'psd'    => 'photoshop.svg',
-            'ai'     => 'illustrator.svg',
-            'plp'    => 'pixellab.png',
+            'office'  => 'microsoft-office.svg',
+            'word'    => 'word.svg',
+            'excel'   => 'excel.svg',
+            'ppt'     => 'powerpoint.svg',
+            'psd'     => 'photoshop.svg',
+            'ai'      => 'illustrator.svg',
+            'plp'     => 'pixellab.png',
+            'software' => 'software.svg',
+            'windows' => 'software.svg',
+            'android' => 'software.svg',
+            'macos'   => 'software.svg',
+            'linux'   => 'software.svg',
+            'other'   => 'software.svg',
         ];
         $file = $files[$type] ?? $files['office'];
         return repdoc_url('src/assets/image/file-logos/' . $file);
@@ -151,6 +157,18 @@ if (!function_exists('repdoc_catalog_preview_art')) {
                     . $stamp
                     . '<span class="oc-brandsheet"><span class="oc-orbit"></span><strong>BRAND<br>LOGO</strong><small>DESIGN AGENCY</small></span>'
                     . '</span>';
+            case 'software':
+            case 'windows':
+            case 'android':
+            case 'macos':
+            case 'linux':
+            case 'other':
+                return '<span aria-hidden="true" class="oc-art art-software">'
+                    . $stamp
+                    . '<span class="oc-software-tile">'
+                    . '<span class="oc-software-dots"><i></i><i></i><i></i></span>'
+                    . '<strong>SOFTWARE</strong><small>DOWNLOAD</small>'
+                    . '</span></span>';
             default:
                 return '<span aria-hidden="true" class="oc-art art-plp">'
                     . $stamp
@@ -232,6 +250,7 @@ if (!function_exists('repdoc_catalog_header')) {
         $showcase  = repdoc_url('showcase/');
         $office    = repdoc_url('officefiles/');
         $offline   = repdoc_url('offlinefiles/');
+        $software  = repdoc_url('software/');
         $important = repdoc_url('importantlinks/');
         $about     = repdoc_url('about/');
         $guide     = $active === 'importantlinks' ? 'লিংক গাইড' : 'ডাউনলোড গাইড';
@@ -257,6 +276,7 @@ if (!function_exists('repdoc_catalog_header')) {
                             <a class="nav-menu-all" href="<?= e($home) ?>#tools">সব টুল দেখুন</a>
                         </div>
                     </details>
+                    <a class="nav-link" href="<?= e($software) ?>"<?= $current('software') ?>>সফটওয়্যার</a>
                     <a class="nav-link" href="<?= e($libraryHref) ?>">ফাইল লাইব্রেরি</a>
                     <a class="nav-link" href="<?= e($important) ?>"<?= $current('importantlinks') ?>>গুরুত্বপূর্ণ লিংক</a>
                     <a class="nav-link" href="<?= e($guideHref) ?>"><?= e($guide) ?></a>
@@ -342,6 +362,7 @@ if (!function_exists('repdoc_catalog_footer')) {
                         <li><a href="<?= e(repdoc_url('showcase/')) ?>">টেমপ্লেট শোকেস</a></li>
                         <li><a href="<?= e(repdoc_url('officefiles/')) ?>">MS Office ফাইল</a></li>
                         <li><a href="<?= e(repdoc_url('offlinefiles/')) ?>">PSD / AI / PLP ফাইল</a></li>
+                        <li><a href="<?= e(repdoc_url('software/')) ?>">সফটওয়্যার ডাউনলোড</a></li>
                         <li><a href="<?= e($home) ?>#how">কীভাবে কাজ করে</a></li>
                     </ul>
                 </nav>
@@ -433,10 +454,28 @@ if (!function_exists('repdoc_catalog_render')) {
         $login      = (string) ($args['login'] ?? repdoc_url('public/login/'));
         $apply      = (string) ($args['apply'] ?? repdoc_url('Entrepreneur/apply/'));
         $dashboard  = (string) ($args['dashboard'] ?? $login);
-        $user       = $args['user'] ?? null;
-        $downloads  = !empty($args['downloads']);
-        $filterMode = (string) ($args['filter_mode'] ?? 'group');
-        $nextPath   = (string) ($args['next'] ?? '/' . trim($active, '/') . '/');
+        $user            = $args['user'] ?? null;
+        $downloads       = !empty($args['downloads']);
+        $publicDownloads = !empty($args['public_downloads']);
+        $joinCard        = !array_key_exists('join_card', $args) || !empty($args['join_card']);
+        $heroStats       = $args['hero_stats'] ?? null;
+        $sidebarStats    = $args['sidebar_stats'] ?? null;
+        $emptyActions    = $args['empty_actions'] ?? null;
+        $emptyLogos      = $args['empty_logos'] ?? ['office', 'psd', 'plp'];
+        $closingActions  = $args['closing_actions'] ?? null;
+        $filterMode      = (string) ($args['filter_mode'] ?? 'group');
+        $nextPath        = (string) ($args['next'] ?? '/' . trim($active, '/') . '/');
+        $filterAllLabel  = (string) ($args['filter_all_label'] ?? 'সব ফাইল');
+        $filterAllSub    = (string) ($args['filter_all_sub'] ?? 'সব ফরম্যাট');
+        $sidebarTitle    = (string) ($args['sidebar_title'] ?? 'লাইব্রেরি এক নজরে');
+        $sidebarHeading  = (string) ($args['sidebar_heading'] ?? 'ফরম্যাট অনুযায়ী');
+        $guideKicker     = (string) ($args['guide_kicker'] ?? 'প্রক্রিয়া');
+        $guideTitle      = (string) ($args['guide_title'] ?? 'ডাউনলোড করবেন যেভাবে');
+        $guideSub        = (string) ($args['guide_sub'] ?? 'তিন ধাপে পছন্দের টেমপ্লেট নিজের কাজে লাগান।');
+        $noResultTitle   = (string) ($args['noresult_title'] ?? 'কোনো ফাইল পাওয়া যায়নি');
+        $noResultText    = (string) ($args['noresult_text'] ?? 'অন্য নাম, বিবরণ বা ফরম্যাট দিয়ে আবার খুঁজুন।');
+        $noResultReset   = (string) ($args['noresult_reset'] ?? 'সব ফাইল দেখুন');
+        $resultNoun      = (string) ($args['result_noun'] ?? 'ফাইল');
 
         $bn          = 'repdoc_catalog_bn_digits';
         $totalFiles  = count($files);
@@ -451,7 +490,7 @@ if (!function_exists('repdoc_catalog_render')) {
                     'key'   => (string) $key,
                     'label' => (string) ($meta['label'] ?? $key),
                     'sub'   => (string) ($meta['full'] ?? ''),
-                    'logo'  => (string) $key,
+                    'logo'  => (string) ($meta['logo'] ?? $key),
                     'soft'  => (string) ($meta['soft'] ?? '#F2FBF5'),
                     'count' => (int) ($typeCounts[$key] ?? 0),
                 ];
@@ -521,12 +560,24 @@ if (!function_exists('repdoc_catalog_render')) {
                         </form>
 
                         <div class="cat-hero-stats" aria-label="লাইব্রেরির সারসংক্ষেপ">
-                            <div class="cat-hero-stat"><strong><?= e($bn((string) $totalFiles)) ?></strong><span>ফাইল</span></div>
-                            <div class="cat-hero-stat"><strong><?= e($bn((string) $formatCount)) ?></strong><span>ফরম্যাট</span></div>
-                            <div class="cat-hero-stat"><strong><?= e($bn($sizeLabel)) ?></strong><span>মোট সাইজ</span></div>
+                            <?php if (is_array($heroStats) && $heroStats !== []): ?>
+                                <?php foreach ($heroStats as $stat): ?>
+                                    <?php if (!is_array($stat)) continue; ?>
+                                    <div class="cat-hero-stat"><strong><?= e((string) ($stat['value'] ?? '')) ?></strong><span><?= e((string) ($stat['label'] ?? '')) ?></span></div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <div class="cat-hero-stat"><strong><?= e($bn((string) $totalFiles)) ?></strong><span>ফাইল</span></div>
+                                <div class="cat-hero-stat"><strong><?= e($bn((string) $formatCount)) ?></strong><span>ফরম্যাট</span></div>
+                                <div class="cat-hero-stat"><strong><?= e($bn($sizeLabel)) ?></strong><span>মোট সাইজ</span></div>
+                            <?php endif; ?>
                         </div>
 
-                        <?php if ($user === null): ?>
+                        <?php if ($publicDownloads): ?>
+                            <p class="cat-hero-note">
+                                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#cat-i-external"/></svg>
+                                লগ ইন ছাড়াই সরাসরি ডাউনলোড — প্রতিটি লিংক নতুন ট্যাবে প্রকাশকের সাইটে খুলবে।
+                            </p>
+                        <?php elseif ($user === null): ?>
                             <p class="cat-hero-note">
                                 <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#cat-i-shield"/></svg>
                                 <?= $downloads ? 'ডাউনলোড করতে' : 'ডাউনলোডের জন্য' ?> <a href="<?= e($login) ?>">লগ ইন</a> করুন — এক অ্যাকাউন্টেই সব টুল।
@@ -550,7 +601,7 @@ if (!function_exists('repdoc_catalog_render')) {
                         <span class="cat-format-logo cat-format-all" aria-hidden="true">
                             <svg class="icon" viewBox="0 0 24 24"><use href="#cat-i-grid"/></svg>
                         </span>
-                        <span class="cat-format-text"><strong>সব ফাইল</strong><small>সব ফরম্যাট</small></span>
+                        <span class="cat-format-text"><strong><?= e($filterAllLabel) ?></strong><small><?= e($filterAllSub) ?></small></span>
                         <span class="cat-format-count"><?= e($bn((string) $totalFiles)) ?></span>
                     </button>
                     <?php foreach ($filterRows as $row): ?>
@@ -571,7 +622,7 @@ if (!function_exists('repdoc_catalog_render')) {
                                 <p class="kicker">ডিজিটাল আর্কাইভ</p>
                                 <h2 id="catLibraryHeading"><?= e((string) ($args['heading'] ?? 'সব ফাইল')) ?></h2>
                                 <p class="cat-result" id="catResult" role="status" aria-live="polite">
-                                    <strong id="catResultCount"><?= e($bn((string) $totalFiles)) ?></strong>টি ফাইল দেখানো হচ্ছে
+                                    <strong id="catResultCount"><?= e($bn((string) $totalFiles)) ?></strong>টি <?= e($resultNoun) ?> দেখানো হচ্ছে
                                 </p>
                             </div>
                             <div class="cat-toolbar-actions">
@@ -594,15 +645,22 @@ if (!function_exists('repdoc_catalog_render')) {
                         <?php if ($files === []): ?>
                             <div class="cat-empty" role="status">
                                 <div class="cat-empty-logos" aria-hidden="true">
-                                    <?= repdoc_catalog_logo_icon('office', '', '#FFF6EC') ?>
-                                    <?= repdoc_catalog_logo_icon('psd', '', '#EEF4FE') ?>
-                                    <?= repdoc_catalog_logo_icon('plp', '', '#F5F0FE') ?>
+                                    <?php foreach ((array) $emptyLogos as $logoType): ?>
+                                        <?= repdoc_catalog_logo_icon((string) $logoType, '', '#FFF6EC') ?>
+                                    <?php endforeach; ?>
                                 </div>
                                 <h3><?= e($emptyTitle) ?></h3>
                                 <p><?= e($emptyText) ?></p>
                                 <div class="cat-empty-actions">
-                                    <a class="btn btn-primary" href="<?= e($apply) ?>">অ্যাকাউন্টের জন্য আবেদন</a>
-                                    <a class="btn btn-secondary" href="<?= e($home) ?>#tools">সব টুল দেখুন</a>
+                                    <?php if (is_array($emptyActions) && $emptyActions !== []): ?>
+                                        <?php foreach ($emptyActions as $emptyAction): ?>
+                                            <?php if (!is_array($emptyAction)) continue; ?>
+                                            <a class="<?= e((string) ($emptyAction['class'] ?? 'btn btn-secondary')) ?>" href="<?= e((string) ($emptyAction['url'] ?? $home)) ?>"><?= e((string) ($emptyAction['label'] ?? '')) ?></a>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <a class="btn btn-primary" href="<?= e($apply) ?>">অ্যাকাউন্টের জন্য আবেদন</a>
+                                        <a class="btn btn-secondary" href="<?= e($home) ?>#tools">সব টুল দেখুন</a>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         <?php else: ?>
@@ -611,14 +669,39 @@ if (!function_exists('repdoc_catalog_render')) {
                                     $meta = $formats[$f['type']] ?? [];
                                     $group = (string) ($meta['group'] ?? $f['type']);
                                     $isNew = (int) $f['mtime'] > 0 && (int) $f['mtime'] > time() - 14 * 86400;
-                                    $title = repdoc_catalog_title((string) $f['name']);
+                                    $title = isset($f['title']) && (string) $f['title'] !== ''
+                                        ? (string) $f['title']
+                                        : repdoc_catalog_title((string) $f['name']);
+                                    $extLabel = isset($f['ext_label']) && (string) $f['ext_label'] !== ''
+                                        ? (string) $f['ext_label']
+                                        : strtoupper((string) $f['ext']);
+                                    $version = isset($f['version']) ? trim((string) $f['version']) : '';
+                                    $sizeText = '';
+                                    if (isset($f['size_label']) && trim((string) $f['size_label']) !== '') {
+                                        $sizeText = (string) $f['size_label'];
+                                    } elseif ((int) ($f['size'] ?? 0) > 0) {
+                                        $sizeText = $bn(repdoc_catalog_human_size((int) $f['size']));
+                                    }
 
-                                    if ($downloads) {
+                                    $actionTarget = '';
+                                    $actionRel = '';
+                                    $actionTitle = '';
+
+                                    if (!empty($f['action_url'])) {
+                                        $actionUrl = (string) $f['action_url'];
+                                        $actionLabel = (string) ($f['action_label'] ?? 'ডাউনলোড করুন');
+                                        $actionIcon = (string) ($f['action_icon'] ?? 'cat-i-download');
+                                        $actionClass = ' is-public';
+                                        $actionTarget = (string) ($f['action_target'] ?? '');
+                                        $actionRel = (string) ($f['action_rel'] ?? '');
+                                        $actionTitle = 'নতুন ট্যাবে প্রকাশকের সাইটে খুলবে';
+                                    } elseif ($downloads) {
                                         if ($user === null) {
                                             $actionUrl = $login . '?next=' . rawurlencode($nextPath);
                                             $actionLabel = 'লগইন করে ডাউনলোড';
                                             $actionIcon = 'cat-i-lock';
                                             $actionClass = ' is-locked';
+                                            $actionTitle = 'ডাউনলোড করতে লগ ইন করুন';
                                         } else {
                                             $actionUrl = repdoc_url($meta['hub'] . '/download.php') . '?type=' . rawurlencode((string) $f['type']) . '&file=' . rawurlencode((string) $f['name']);
                                             $actionLabel = 'ডাউনলোড করুন';
@@ -653,18 +736,24 @@ if (!function_exists('repdoc_catalog_render')) {
                                             <?php if ($isNew): ?><span class="cat-new">নতুন</span><?php endif; ?>
                                         </div>
                                         <div class="cat-file-body">
-                                            <p class="cat-file-eyebrow"><?= e((string) ($meta['full'] ?? $f['type'])) ?> · <?= e(strtoupper((string) $f['ext'])) ?></p>
+                                            <p class="cat-file-eyebrow"><?= e((string) ($meta['full'] ?? $f['type'])) ?> · <?= e($extLabel) ?></p>
                                             <h3 class="cat-file-name"><?= e($title) ?></h3>
                                             <p class="cat-file-desc" title="<?= e((string) $f['description']) ?>"><?= e((string) $f['description']) ?></p>
                                             <div class="cat-file-meta">
-                                                <span class="cat-ext"><?= e(strtoupper((string) $f['ext'])) ?></span>
-                                                <span><?= e($bn(repdoc_catalog_human_size((int) $f['size']))) ?></span>
-                                                <span class="cat-meta-dot" aria-hidden="true">•</span>
+                                                <span class="cat-ext"><?= e($extLabel) ?></span>
+                                                <?php if ($version !== ''): ?>
+                                                    <span><?= e(preg_match('/^v/i', $version) ? $version : 'v' . $version) ?></span>
+                                                    <span class="cat-meta-dot" aria-hidden="true">•</span>
+                                                <?php endif; ?>
+                                                <?php if ($sizeText !== ''): ?>
+                                                    <span><?= e($sizeText) ?></span>
+                                                    <span class="cat-meta-dot" aria-hidden="true">•</span>
+                                                <?php endif; ?>
                                                 <span><?= e(repdoc_catalog_date((int) $f['mtime'])) ?></span>
                                             </div>
                                         </div>
                                         <div class="cat-file-foot">
-                                            <a class="cat-download<?= e($actionClass) ?>" href="<?= e($actionUrl) ?>"<?= $user === null && $downloads ? ' title="ডাউনলোড করতে লগ ইন করুন"' : '' ?>>
+                                            <a class="cat-download<?= e($actionClass) ?>" href="<?= e($actionUrl) ?>"<?php if ($actionTarget !== ''): ?> target="<?= e($actionTarget) ?>"<?php endif; ?><?php if ($actionRel !== ''): ?> rel="<?= e($actionRel) ?>"<?php endif; ?><?php if ($actionTitle !== ''): ?> title="<?= e($actionTitle) ?>"<?php endif; ?>>
                                                 <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#<?= e($actionIcon) ?>"/></svg>
                                                 <?= e($actionLabel) ?>
                                             </a>
@@ -675,9 +764,9 @@ if (!function_exists('repdoc_catalog_render')) {
 
                             <div class="cat-noresult" id="catNoResult" role="status" hidden>
                                 <img class="cat-noresult-art" src="<?= e(repdoc_url('src/assets/image/boyfromwhole.png')) ?>" alt="" width="180" height="180" loading="lazy" decoding="async">
-                                <h3>কোনো ফাইল পাওয়া যায়নি</h3>
-                                <p>অন্য নাম, বিবরণ বা ফরম্যাট দিয়ে আবার খুঁজুন।</p>
-                                <button type="button" class="btn btn-secondary" id="catNoReset">সব ফাইল দেখুন</button>
+                                <h3><?= e($noResultTitle) ?></h3>
+                                <p><?= e($noResultText) ?></p>
+                                <button type="button" class="btn btn-secondary" id="catNoReset"><?= e($noResultReset) ?></button>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -686,24 +775,31 @@ if (!function_exists('repdoc_catalog_render')) {
                         <div class="cat-side-card">
                             <h3 class="cat-side-title">
                                 <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#cat-i-folder"/></svg>
-                                লাইব্রেরি এক নজরে
+                                <?= e($sidebarTitle) ?>
                             </h3>
                             <ul class="cat-stat-list">
-                                <li><span>ফাইল</span><strong><?= e($bn((string) $totalFiles)) ?>টি</strong></li>
-                                <li><span>ফরম্যাট</span><strong><?= e($bn((string) $formatCount)) ?>টি</strong></li>
-                                <li><span>মোট সাইজ</span><strong><?= e($bn($sizeLabel)) ?></strong></li>
-                                <li><span>সর্বশেষ যোগ</span><strong><?= e(repdoc_catalog_date($lastUpdated)) ?></strong></li>
+                                <?php if (is_array($sidebarStats) && $sidebarStats !== []): ?>
+                                    <?php foreach ($sidebarStats as $sideStat): ?>
+                                        <?php if (!is_array($sideStat)) continue; ?>
+                                        <li><span><?= e((string) ($sideStat['label'] ?? '')) ?></span><strong><?= e((string) ($sideStat['value'] ?? '')) ?></strong></li>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <li><span>ফাইল</span><strong><?= e($bn((string) $totalFiles)) ?>টি</strong></li>
+                                    <li><span>ফরম্যাট</span><strong><?= e($bn((string) $formatCount)) ?>টি</strong></li>
+                                    <li><span>মোট সাইজ</span><strong><?= e($bn($sizeLabel)) ?></strong></li>
+                                    <li><span>সর্বশেষ যোগ</span><strong><?= e(repdoc_catalog_date($lastUpdated)) ?></strong></li>
+                                <?php endif; ?>
                             </ul>
                         </div>
 
                         <div class="cat-side-card">
                             <h3 class="cat-side-title">
                                 <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#cat-i-grid"/></svg>
-                                ফরম্যাট অনুযায়ী
+                                <?= e($sidebarHeading) ?>
                             </h3>
                             <div class="cat-side-formats">
                                 <button type="button" class="cat-side-format is-active" data-filter="all" aria-pressed="true"<?= $totalFiles === 0 ? ' disabled' : '' ?>>
-                                    <span class="cat-side-format-name">সব ফাইল</span>
+                                    <span class="cat-side-format-name"><?= e($filterAllLabel) ?></span>
                                     <span class="cat-side-count"><?= e($bn((string) $totalFiles)) ?></span>
                                 </button>
                                 <?php foreach ($filterRows as $row): ?>
@@ -721,19 +817,21 @@ if (!function_exists('repdoc_catalog_render')) {
                             <small>বিজ্ঞাপনের জন্য যোগাযোগ করুন</small>
                         </div>
 
-                        <div class="cat-side-card cat-join">
-                            <span class="cat-join-icon" aria-hidden="true">
-                                <svg class="icon" viewBox="0 0 24 24"><use href="#cat-i-bolt"/></svg>
-                            </span>
-                            <h3>সব ফাইল আনলক করুন</h3>
-                            <p>একটি অপারেটর অ্যাকাউন্টেই সব টেমপ্লেট, সব ফরম্যাট ও সব টুল।</p>
-                            <?php if ($user !== null): ?>
-                                <a class="btn btn-primary" href="<?= e($dashboard) ?>">ড্যাশবোর্ডে যান</a>
-                            <?php else: ?>
-                                <a class="btn btn-primary" href="<?= e($apply) ?>">অ্যাকাউন্টের জন্য আবেদন</a>
-                                <a class="cat-join-link" href="<?= e($login) ?>">আগে থেকে অ্যাকাউন্ট আছে? লগ ইন</a>
-                            <?php endif; ?>
-                        </div>
+                        <?php if ($joinCard): ?>
+                            <div class="cat-side-card cat-join">
+                                <span class="cat-join-icon" aria-hidden="true">
+                                    <svg class="icon" viewBox="0 0 24 24"><use href="#cat-i-bolt"/></svg>
+                                </span>
+                                <h3>সব ফাইল আনলক করুন</h3>
+                                <p>একটি অপারেটর অ্যাকাউন্টেই সব টেমপ্লেট, সব ফরম্যাট ও সব টুল।</p>
+                                <?php if ($user !== null): ?>
+                                    <a class="btn btn-primary" href="<?= e($dashboard) ?>">ড্যাশবোর্ডে যান</a>
+                                <?php else: ?>
+                                    <a class="btn btn-primary" href="<?= e($apply) ?>">অ্যাকাউন্টের জন্য আবেদন</a>
+                                    <a class="cat-join-link" href="<?= e($login) ?>">আগে থেকে অ্যাকাউন্ট আছে? লগ ইন</a>
+                                <?php endif; ?>
+                            </div>
+                        <?php endif; ?>
                     </aside>
                 </div>
             </section>
@@ -742,9 +840,9 @@ if (!function_exists('repdoc_catalog_render')) {
                 <div class="container">
                     <div class="section-head cat-guide-head">
                         <div>
-                            <p class="kicker">প্রক্রিয়া</p>
-                            <h2 id="catGuideHeading">ডাউনলোড করবেন যেভাবে</h2>
-                            <p class="section-sub">তিন ধাপে পছন্দের টেমপ্লেট নিজের কাজে লাগান।</p>
+                            <p class="kicker"><?= e($guideKicker) ?></p>
+                            <h2 id="catGuideHeading"><?= e($guideTitle) ?></h2>
+                            <p class="section-sub"><?= e($guideSub) ?></p>
                         </div>
                     </div>
                     <ol class="cat-steps">
@@ -768,12 +866,17 @@ if (!function_exists('repdoc_catalog_render')) {
                 <div class="container">
                     <div class="cat-closing">
                         <div class="cat-closing-copy">
-                            <p class="kicker">এক অ্যাকাউন্ট, সব ফাইল</p>
+                            <p class="kicker"><?= e((string) ($args['closing_kicker'] ?? 'এক অ্যাকাউন্ট, সব ফাইল')) ?></p>
                             <h2 id="catClosingHeading"><?= e((string) ($args['closing_title'] ?? 'শুরু করতে প্রস্তুত?')) ?></h2>
                             <p><?= e((string) ($args['closing_text'] ?? 'অপারেটর অ্যাকাউন্টের জন্য আবেদন করুন, লগ ইন করে সব টেমপ্লেট ডাউনলোড করুন।')) ?></p>
                         </div>
                         <div class="cat-closing-actions">
-                            <?php if ($user !== null): ?>
+                            <?php if (is_array($closingActions) && $closingActions !== []): ?>
+                                <?php foreach ($closingActions as $closingAction): ?>
+                                    <?php if (!is_array($closingAction)) continue; ?>
+                                    <a class="<?= e((string) ($closingAction['class'] ?? 'btn btn-ledger-outline')) ?>" href="<?= e((string) ($closingAction['url'] ?? $home)) ?>"<?php if (!empty($closingAction['target'])): ?> target="<?= e((string) $closingAction['target']) ?>"<?php endif; ?><?php if (!empty($closingAction['rel'])): ?> rel="<?= e((string) $closingAction['rel']) ?>"<?php endif; ?>><?= e((string) ($closingAction['label'] ?? '')) ?></a>
+                                <?php endforeach; ?>
+                            <?php elseif ($user !== null): ?>
                                 <a class="btn btn-ledger" href="<?= e($dashboard) ?>">ড্যাশবোর্ডে যান</a>
                                 <a class="btn btn-ledger-outline" href="<?= e($home) ?>#tools">সব টুল দেখুন</a>
                             <?php else: ?>

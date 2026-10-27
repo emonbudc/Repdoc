@@ -755,6 +755,40 @@
 .art-psd { background: linear-gradient(145deg, #EDF3FB, #DCE7F6); }
 .art-ai { background: linear-gradient(145deg, #FBF4E8, #F3E4CB); }
 .art-plp { background: linear-gradient(145deg, #F5F0FE, #E9DEFB); }
+.art-software { background: linear-gradient(145deg, #EAF3EE, #D8E9E0); }
+.oc-software-tile {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-end;
+    width: 64%;
+    aspect-ratio: 1.28;
+    padding: 10% 9%;
+    border: 1px solid rgba(255, 255, 255, .14);
+    border-radius: 8px;
+    background:
+        radial-gradient(circle at 76% 22%, rgba(92, 220, 160, .24), transparent 42%),
+        linear-gradient(155deg, #17352A, #0A1B14);
+    box-shadow: 0 12px 24px rgba(7, 36, 25, .24);
+    transform: rotate(-3deg);
+    overflow: hidden;
+}
+.oc-software-tile::after {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 30%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, .08), transparent);
+    pointer-events: none;
+}
+.oc-software-dots { position: absolute; top: 9%; left: 9%; display: flex; gap: 3px; }
+.oc-software-dots i { width: 4px; height: 4px; border-radius: 50%; background: #77D5A9; }
+.oc-software-dots i:nth-child(2) { background: #E9C46A; }
+.oc-software-dots i:nth-child(3) { background: #E76F51; }
+.oc-software-tile strong { color: #F4FFF9; font-size: .62rem; font-weight: 800; letter-spacing: .13em; line-height: 1.2; }
+.oc-software-tile small { margin-top: 4px; color: #8FD9B6; font-size: .32rem; font-weight: 600; letter-spacing: .22em; }
 .oc-paper {
     position: relative;
     z-index: 1;
@@ -872,7 +906,7 @@
 }
 
 /* ── Responsive ──────────────────────────────────────────────── */
-@media (max-width: 900px) {
+@media (max-width: 1140px) {
     .cat-nav-menu { min-width: 0; }
 }
 @media (max-width: 1080px) {

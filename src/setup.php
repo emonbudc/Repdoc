@@ -232,7 +232,7 @@ if (!$db) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Repdoc — সেটআপ</title>
-    <link rel="stylesheet" href="assets/css/tokens.css?v=1">
+    <link rel="stylesheet" href="assets/css/tokens.css?v=2">
     <link rel="stylesheet" href="assets/css/app.css?v=1">
 </head>
 <body class="auth-body">

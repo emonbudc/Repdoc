@@ -151,10 +151,10 @@ foreach ($files as $i => $file) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" as="image" href="<?= e(repdoc_url('src/assets/image/officefiles-hero.png')) ?>" fetchpriority="high">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tokens.css?v=1')) ?>">
-    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/shell.css?v=1')) ?>">
-    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/home.css?v=3')) ?>">
-    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/catalog.css?v=1')) ?>">
+    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tokens.css?v=2')) ?>">
+    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/shell.css?v=2')) ?>">
+    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/home.css?v=4')) ?>">
+    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/catalog.css?v=3')) ?>">
 </head>
 <body class="catalog-page cat-offlinefiles">
     <a class="skip-link" href="#library">ফাইল লাইব্রেরিতে যান</a>

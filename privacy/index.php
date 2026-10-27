@@ -89,7 +89,7 @@ $LOGIN_URL = repdoc_url('public/login/');
 
     <link
         rel="stylesheet"
-        href="<?= e(repdoc_url('src/assets/css/tokens.css?v=1')) ?>"
+        href="<?= e(repdoc_url('src/assets/css/tokens.css?v=2')) ?>"
     >
 
     <link

@@ -6,6 +6,9 @@
    ═══════════════════════════════════════════════════════════════ */
 
 /* ── Header ──────────────────────────────────────────────────── */
+/* The logo PNG already carries the Repdoc wordmark — don't repeat the name
+   next to it; the sub-line keeps the section label. */
+.brand-ledger .brand-word strong { display: none; }
 .site-header {
     position: sticky;
     top: 0;
@@ -162,11 +165,27 @@
 .back-top:hover { color: var(--primary-hover); }
 
 /* ── Responsive ──────────────────────────────────────────────── */
+/* The full ledger nav (numerals, tagline, 7 links) needs ~1360px. Below that
+   it must compact, otherwise the header overflows the viewport, which makes
+   mobile browsers zoom out and paint the page narrower than the screen. */
+@media (max-width: 1600px) {
+    .header-inner { gap: var(--space-4); }
+    .brand-word small { display: none; }
+    .site-nav { gap: 2px; margin-inline-start: var(--space-4); }
+    .nav-link { padding: 10px 12px; font-size: .9rem; }
+    .header-actions { gap: 6px; }
+}
+
+@media (max-width: 1200px) {
+    /* Keep the logged-in header (balance chip + dashboard) inside the shell. */
+    .user-chip { display: none; }
+}
+
 @media (max-width: 1024px) {
     .footer-grid { grid-template-columns: 1fr 1fr; gap: var(--space-5); }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1140px) {
     .nav-toggle { display: inline-flex; }
     .site-nav {
         position: absolute;

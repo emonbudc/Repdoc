@@ -220,6 +220,7 @@ admin_notice();
         <a class="quick-link" href="tools.php"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#a-layout"/></svg>Tools</a>
         <a class="quick-link" href="../tools/passport/"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#a-id"/></svg>Passport Photo</a>
         <a class="quick-link" href="files.php"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#a-file"/></svg>File Packs</a>
+        <a class="quick-link" href="software.php"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#a-download"/></svg>Software Downloads</a>
         <a class="quick-link" href="important-links.php"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#a-link"/></svg>Important Links</a>
         <a class="quick-link" href="pricing.php"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#a-tag"/></svg>Pricing</a>
     </div>

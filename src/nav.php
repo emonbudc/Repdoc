@@ -43,6 +43,7 @@ if (!function_exists('repdoc_nav_tool_groups')) {
                     ['key' => 'showcase',     'label_bn' => 'টেমপ্লেট শোকেস', 'label_en' => 'Template Showcase', 'url' => 'showcase/'],
                     ['key' => 'officefiles',  'label_bn' => 'Word / Excel',    'label_en' => 'Word / Excel',      'url' => 'officefiles/'],
                     ['key' => 'offlinefiles', 'label_bn' => 'PSD / AI',        'label_en' => 'PSD / AI',          'url' => 'offlinefiles/'],
+                    ['key' => 'software',     'label_bn' => 'সফটওয়্যার',        'label_en' => 'Software',          'url' => 'software/'],
                 ],
             ],
         ];

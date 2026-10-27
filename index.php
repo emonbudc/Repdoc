@@ -32,6 +32,7 @@ $categories = [
     'documents'    => ['label' => 'ডকুমেন্টস',      'icon' => 'i-grid'],
     'templates'    => ['label' => 'টেমপ্লেট',       'icon' => 'i-layout'],
     'certificates' => ['label' => 'সার্টিফিকেট',    'icon' => 'i-award'],
+    'software'     => ['label' => 'সফটওয়্যার',     'icon' => 'i-download'],
 ];
 
 /**
@@ -118,6 +119,18 @@ $tools = [
         'keywords' => 'word excel doc docx xls xlsx office files download ওয়ার্ড এক্সেল টেমপ্লেট ফরম',
     ],
     [
+        'id' => 'software',
+        'cat' => 'software',
+        'icon' => 'i-download',
+        'name' => 'সফটওয়্যার ডাউনলোড',
+        'desc' => 'Windows, Android, macOS ও Linux-এর সফটওয়্যার — লগ ইন ছাড়াই।',
+        'url' => 'software/',
+        'featured' => false,
+        'status' => 'folder',
+        'badge' => 'নতুন',
+        'keywords' => 'software download windows android apk macos linux installer সফটওয়্যার ডাউনলোড',
+    ],
+    [
         'id' => 'importantlinks',
         'cat' => 'tools',
         'icon' => 'i-grid',
@@ -183,9 +196,9 @@ function bn_digits(string $v): string
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" as="image" href="src/assets/image/hero.webp" fetchpriority="high">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="src/assets/css/tokens.css?v=1">
-    <link rel="stylesheet" href="src/assets/css/shell.css?v=1">
-    <link rel="stylesheet" href="src/assets/css/home.css?v=3">
+    <link rel="stylesheet" href="src/assets/css/tokens.css?v=2">
+    <link rel="stylesheet" href="src/assets/css/shell.css?v=2">
+    <link rel="stylesheet" href="src/assets/css/home.css?v=4">
 
     <!-- Homepage renders one look only (no theme switching here). -->
     <?php
@@ -242,6 +255,7 @@ function bn_digits(string $v): string
             <g id="i-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></g>
             <g id="i-grid"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></g>
             <g id="i-layout"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></g>
+            <g id="i-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></g>
             <g id="i-arrow"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></g>
             <g id="i-check"><polyline points="20 6 9 17 4 12"/></g>
             <g id="i-sun"><circle cx="12" cy="12" r="4"/><line x1="12" y1="1.5" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22.5"/><line x1="3.5" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="20.5" y2="12"/><line x1="5.6" y1="5.6" x2="7.4" y2="7.4"/><line x1="16.6" y1="16.6" x2="18.4" y2="18.4"/><line x1="5.6" y1="18.4" x2="7.4" y2="16.6"/><line x1="16.6" y1="7.4" x2="18.4" y2="5.6"/></g>
@@ -608,6 +622,7 @@ function bn_digits(string $v): string
                     <li><a href="#top">হোম পেজ</a></li>
                     <li><a href="#tools">সব টুলস</a></li>
                     <li><a href="showcase/">টেমপ্লেট শোকেস</a></li>
+                    <li><a href="software/">সফটওয়্যার ডাউনলোড</a></li>
                     <li><a href="#how">কীভাবে কাজ করে</a></li>
                     <li><a href="<?= e(repdoc_url('about/')) ?>">আমাদের সম্পর্কে</a></li>
                     <li><a href="<?= e($LOGIN_URL) ?>">লগ ইন</a></li>

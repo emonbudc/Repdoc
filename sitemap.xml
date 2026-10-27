@@ -29,6 +29,12 @@
         <priority>0.8</priority>
     </url>
     <url>
+        <loc>https://repdoc.freedev.app/software/</loc>
+        <lastmod>2026-10-26</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
         <loc>https://repdoc.freedev.app/genaretor/certificate/</loc>
         <lastmod>2026-10-16</lastmod>
         <changefreq>monthly</changefreq>

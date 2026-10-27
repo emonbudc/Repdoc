@@ -92,7 +92,14 @@
 /* ── Reset / base ────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header-h) + 16px); }
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: calc(var(--header-h) + 16px);
+    /* Never let a stray wide element cause horizontal scroll. Mobile browsers
+       zoom out to fit such overflow, which shrinks the painted page and leaves
+       a blank strip beside it. */
+    overflow-x: clip;
+}
 
 body {
     margin: 0;
