@@ -1121,6 +1121,21 @@ function charge_tool(string $toolKey, string $ref = ''): array
     $userId  = $user['id'];
     $balance = user_balance($userId);
 
+    // A tool switched Off in the admin panel (admin/tool-*.php, the Active
+    // switch) refuses to run — admins included, because that switch is the
+    // maintenance/close switch for the tool.
+    $toolRow = tool_prices()[$toolKey] ?? null;
+    if ($toolRow !== null && (int) $toolRow['active'] !== 1) {
+        log_usage($userId, $toolKey, 'denied_inactive', 'tool-off');
+        return [
+            'ok'      => false,
+            'charged' => 0,
+            'balance' => $balance,
+            'reason'  => 'inactive',
+            'message' => 'এই টুলটি বর্তমানে বন্ধ আছে। Admin → Tools থেকে আবার চালু করা যাবে।',
+        ];
+    }
+
     // Admins are never charged.
     if (is_admin()) {
         log_usage($userId, $toolKey, 'ok', 'admin-free');

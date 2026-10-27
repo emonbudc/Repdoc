@@ -11,6 +11,7 @@ declare(strict_types=1);
  */
 
 require_once dirname(__DIR__, 2) . '/src/bootstrap.php';
+require_once dirname(__DIR__, 2) . '/src/archive.php';
 
 require_login();
 if (!is_udc() && !is_admin()) {
@@ -23,30 +24,6 @@ if (!has_archive_access()) {
 repdoc_security_headers();
 
 $panelUrl       = repdoc_panel_home();
-$downloadUrl    = repdoc_url('Entrepreneur/panel/download.php');
-$generatorUrl   = repdoc_url('genaretor/prottoyon/');
-$certificateUrl = repdoc_url('genaretor/certificate/');
-
-/** Human-readable size for a file in Entrepreneur/data/. */
-function archive_file_meta(string $file): array
-{
-    $path = REPDOC_ROOT . '/Entrepreneur/data/' . $file;
-    if (!is_file($path)) {
-        return ['ok' => false, 'label' => 'ফাইল নেই'];
-    }
-
-    $bytes = (int) @filesize($path);
-    if ($bytes < 1024) {
-        $size = $bytes . ' B';
-    } elseif ($bytes < 1024 * 1024) {
-        $size = number_format($bytes / 1024, 1) . ' KB';
-    } else {
-        $size = number_format($bytes / (1024 * 1024), 1) . ' MB';
-    }
-
-    $ext = strtoupper((string) pathinfo($file, PATHINFO_EXTENSION));
-    return ['ok' => true, 'label' => $ext . ' · ' . $size];
-}
 
 /** Bengali digits for counters. */
 function archive_bn(int|string $value): string
@@ -57,199 +34,20 @@ function archive_bn(int|string $value): string
     ]);
 }
 
-$cards = [
-    [
-        'title'  => 'High School Old',
-        'desc'   => 'OLD High School Certificate blank template',
-        'cat'    => 'certificate',
-        'tag'    => 'Certificate',
-        'icon'   => 'i-graduation',
-        'tint'   => 'tint-blue',
-        'kind'   => 'download',
-        'file'   => 'oldblank.PNG',
-        'action' => 'ডাউনলোড',
-    ],
-    [
-        'title'  => 'Girls Old',
-        'desc'   => 'Certificate template for grade 8 girls',
-        'cat'    => 'certificate',
-        'tag'    => 'Certificate',
-        'icon'   => 'i-certificate',
-        'tint'   => 'tint-green',
-        'kind'   => 'download',
-        'file'   => '8mgirls.jpg',
-        'action' => 'ডাউনলোড',
-    ],
-    [
-        'title'  => 'OLD Birth Certificate',
-        'desc'   => 'Old Birth Certificate blank template',
-        'cat'    => 'certificate',
-        'tag'    => 'Birth Cert',
-        'icon'   => 'i-birth',
-        'tint'   => 'tint-amber',
-        'kind'   => 'download',
-        'file'   => 'oldbc.jpg',
-        'action' => 'ডাউনলোড',
-    ],
-    [
-        'title'  => 'PSC Certificate',
-        'desc'   => 'PSC Certificate blank form',
-        'cat'    => 'certificate',
-        'tag'    => 'Certificate',
-        'icon'   => 'i-file',
-        'tint'   => 'tint-red',
-        'kind'   => 'download',
-        'file'   => 'PSC.jpg',
-        'action' => 'ডাউনলোড',
-    ],
-    [
-        'title'  => 'Oxford KG Prottoyon',
-        'desc'   => 'Prottoyon blank for birth proof (Oxford Kindergarten)',
-        'cat'    => 'prottoyon',
-        'tag'    => 'Prottoyon',
-        'icon'   => 'i-file',
-        'tint'   => 'tint-violet',
-        'kind'   => 'download',
-        'file'   => 'Oxford_Prottoyon.JPG',
-        'action' => 'ডাউনলোড',
-    ],
-    [
-        'title'  => 'Gobarpara Primary Prottoyon',
-        'desc'   => 'Gobarpara Primary School prottoyon blank for birth proof',
-        'cat'    => 'prottoyon',
-        'tag'    => 'Prottoyon',
-        'icon'   => 'i-file',
-        'tint'   => 'tint-violet',
-        'kind'   => 'download',
-        'file'   => 'Gobarpara_Primary.jpg',
-        'action' => 'ডাউনলোড',
-    ],
-    [
-        'title'  => 'Tika Card (EPI)',
-        'desc'   => 'EPI Vaccination Card blank — Black & White',
-        'cat'    => 'certificate',
-        'tag'    => 'Health Card',
-        'icon'   => 'i-syringe',
-        'tint'   => 'tint-green',
-        'kind'   => 'external',
-        'url'    => 'https://docs.google.com/document/d/1v9rU5lP_wjHwexDzvcwfhhBAyNRzfYoN/edit?usp=sharing&ouid=108834765163028255543&rtpof=true&sd=true',
-        'meta'   => 'Google Docs',
-        'action' => 'খুলুন',
-    ],
-    [
-        'title'  => 'Kabin Nama / Nikahnama',
-        'desc'   => 'Marriage Certificate (Kabin/Nikahnama) PSD template',
-        'cat'    => 'certificate',
-        'tag'    => 'PSD File',
-        'icon'   => 'i-marriage',
-        'tint'   => 'tint-amber',
-        'kind'   => 'external',
-        'url'    => 'https://drive.google.com/file/d/1NWN_NM5OAmeSymwHGOQl5AMv5U4vyNgW/view?usp=sharing',
-        'meta'   => 'PSD · Google Drive',
-        'action' => 'খুলুন',
-    ],
-    [
-        'title'  => 'Birth Registration Prottoyon',
-        'desc'   => 'Official Birth Registration Certificate (Prottoyon Form)',
-        'cat'    => 'prottoyon',
-        'tag'    => 'প্রত্যয়ন',
-        'icon'   => 'i-passport',
-        'tint'   => 'tint-blue',
-        'kind'   => 'generator',
-        'type'   => 'birth',
-        'meta'   => 'Word · PDF · লাইভ জেনারেটর',
-        'action' => 'তৈরি করুন',
-    ],
-    [
-        'title'  => 'Character Certificate',
-        'desc'   => 'School Character Certificate / Prottoyon for students',
-        'cat'    => 'prottoyon',
-        'tag'    => 'Prottoyon',
-        'icon'   => 'i-user-check',
-        'tint'   => 'tint-green',
-        'kind'   => 'generator',
-        'type'   => 'character',
-        'meta'   => 'Word · PDF · লাইভ জেনারেটর',
-        'action' => 'তৈরি করুন',
-    ],
-    [
-        'title'  => 'Income Certificate',
-        'desc'   => 'Union Parishad Income Certificate / Prottoyon format',
-        'cat'    => 'prottoyon',
-        'tag'    => 'প্রত্যয়নপত্র',
-        'icon'   => 'i-income',
-        'tint'   => 'tint-amber',
-        'kind'   => 'generator',
-        'type'   => 'annual-income',
-        'meta'   => 'Word · PDF · লাইভ জেনারেটর',
-        'action' => 'তৈরি করুন',
-    ],
-    [
-        'title'  => 'Nationality Certificate',
-        'desc'   => 'Bangladesh Nationality Certificate template (প্রত্যয়নপত্র)',
-        'cat'    => 'certificate',
-        'tag'    => 'Certificate',
-        'icon'   => 'i-flag',
-        'tint'   => 'tint-red',
-        'kind'   => 'generator',
-        'type'   => 'nationality',
-        'meta'   => 'Word · PDF · লাইভ জেনারেটর',
-        'action' => 'তৈরি করুন',
-    ],
-    [
-        'title'  => 'JSC Certificate',
-        'desc'   => 'Junior School Certificate (JSC) blank template',
-        'cat'    => 'certificate',
-        'tag'    => 'Certificate',
-        'icon'   => 'i-scroll',
-        'tint'   => 'tint-blue',
-        'kind'   => 'page',
-        'url'    => $certificateUrl,
-        'meta'   => 'সনদ তালিকা',
-        'action' => 'খুলুন',
-    ],
-    [
-        'title'  => 'SSC Certificate',
-        'desc'   => 'Secondary School Certificate (SSC) blank template',
-        'cat'    => 'certificate',
-        'tag'    => 'Certificate',
-        'icon'   => 'i-cap',
-        'tint'   => 'tint-green',
-        'kind'   => 'page',
-        'url'    => $certificateUrl,
-        'meta'   => 'সনদ তালিকা',
-        'action' => 'খুলুন',
-    ],
-];
+// The card list lives in love/archive_items.json — edited from the admin panel
+// (Admin → Document Archive). Built-in defaults are used until it is saved.
+$cards = repdoc_archive_items();
 
 $counts = ['all' => count($cards), 'prottoyon' => 0, 'certificate' => 0];
 
-// Extra Bangla search terms: the card titles stay close to the source files.
-$bnKeywords = [
-    'High School Old'              => 'মাধ্যমিক সনদ স্কুল সার্টিফিকেট',
-    'Girls Old'                    => 'বালিকা সনদ অষ্টম শ্রেণি',
-    'OLD Birth Certificate'        => 'জন্ম সনদ জন্মনিবন্ধন',
-    'PSC Certificate'              => 'পিএসসি প্রাথমিক সমাপনী সনদ',
-    'Oxford KG Prottoyon'          => 'অক্সফোর্ড কেজি প্রত্যয়ন জন্ম',
-    'Gobarpara Primary Prottoyon'  => 'গোবরপাড়া প্রাথমিক প্রত্যয়ন জন্ম',
-    'Tika Card (EPI)'              => 'টিকা কার্ড ইপিআই স্বাস্থ্য',
-    'Kabin Nama / Nikahnama'       => 'কবিন নামা নিকাহনামা বিবাহ',
-    'Birth Registration Prottoyon' => 'জন্ম নিবন্ধন প্রত্যয়ন',
-    'Character Certificate'        => 'চারিত্রিক সনদ',
-    'Income Certificate'           => 'আয় সনদ প্রত্যয়ন',
-    'Nationality Certificate'      => 'জাতীয়তা সনদ',
-    'JSC Certificate'              => 'জেএসসি সনদ',
-    'SSC Certificate'              => 'এসএসসি সনদ',
-];
-
 foreach ($cards as &$card) {
-    $card['meta'] = $card['meta'] ?? '';
-    $card['available'] = true;
-
+    // Download cards read the real file; everything else is always available.
     if ($card['kind'] === 'download') {
-        $file = archive_file_meta((string) $card['file']);
-        $card['available'] = $file['ok'];
-        $card['meta'] = $file['label'];
+        $card['available'] = repdoc_archive_file_ok((string) $card['file']);
+        $card['meta'] = repdoc_archive_file_label((string) $card['file']);
+    } else {
+        $card['available'] = true;
+        $card['meta'] = (string) ($card['meta'] ?? '');
     }
 
     $card['search'] = mb_strtolower(implode(' ', [
@@ -258,10 +56,12 @@ foreach ($cards as &$card) {
         (string) $card['tag'],
         (string) $card['meta'],
         (string) $card['cat'],
-        (string) ($bnKeywords[(string) $card['title']] ?? ''),
+        (string) ($card['bn'] ?? ''),
     ]), 'UTF-8');
 
-    $counts[$card['cat']]++;
+    $cat = (string) $card['cat'];
+    if (!isset($counts[$cat])) $counts[$cat] = 0;
+    $counts[$cat]++;
 }
 unset($card);
 ?>
@@ -579,16 +379,10 @@ unset($card);
                     <?php foreach ($cards as $card): ?>
                         <?php
                         $href = '#';
-                        $external = false;
-                        if ($card['kind'] === 'download' && $card['available']) {
-                            $href = $downloadUrl . '?file=' . rawurlencode((string) $card['file']);
-                        } elseif ($card['kind'] === 'external') {
-                            $href = (string) $card['url'];
-                            $external = true;
-                        } elseif ($card['kind'] === 'generator') {
-                            $href = $generatorUrl . '?type=' . rawurlencode((string) $card['type']);
-                        } elseif ($card['kind'] === 'page') {
-                            $href = (string) $card['url'];
+                        $external = $card['kind'] === 'external';
+                        // Download cards stay disabled when the blank file is missing.
+                        if ($card['kind'] !== 'download' || $card['available']) {
+                            $href = repdoc_archive_href($card);
                         }
                         $actionIcon = $card['kind'] === 'download' ? 'i-download' : ($external ? 'i-external' : 'i-arrow');
                         ?>

@@ -29,25 +29,24 @@ if (!defined('REPDOC_ROOT')) {
     define('REPDOC_ROOT', dirname(__DIR__, 2));
 }
 require_once REPDOC_ROOT . '/src/bootstrap.php';
+require_once REPDOC_ROOT . '/src/passport.php';
 
 const PASSPORT_MAX_BYTES     = 8388608; // 8 MB upload limit
 const PASSPORT_MAX_DIMENSION = 6000;    // reject absurd camera dumps
-const PASSPORT_RETENTION     = 86400;   // private copies are deleted after 24h
+// Retention (default 24h) is stored in love/passport_settings.json — see
+// Admin → Passport Photo; repdoc_passport_retention_seconds() reads it.
 
-/** The fixed identity-preserving prompt used by default. */
+/** Default prompt — editable from Admin → Passport Photo (src/passport.php). */
 function passport_default_prompt(): string
 {
-    return 'Edit this photo into a clean professional passport-size photo. '
-        . 'Preserve my exact facial identity, face structure, skin tone, eyes, nose, lips, beard, and natural expression without any alteration. '
-        . 'Keep the head position straight and realistic. '
-        . 'Use a clean white background, formal clothing, even studio lighting, natural skin texture, sharp details, and realistic proportions. '
-        . 'Do not beautify or reshape my face.';
+    return repdoc_passport_prompt();
 }
 
-/** Only approved UDC operators and administrators may use this tool. */
+/** Access follows the admin setting: UDC + admins, or admins only. */
 function passport_access_allowed(): bool
 {
-    return is_udc() || is_admin();
+    if (is_admin()) return true;
+    return repdoc_passport_settings()['access'] === 'udc' && is_udc();
 }
 
 /** Absolute private directory for one user's passport files. */
@@ -61,8 +60,11 @@ function passport_user_dir(int $userId): string
 }
 
 /** Drop old private copies so shared hosting stays small. */
-function passport_cleanup(int $userId, int $maxAge = PASSPORT_RETENTION): void
+function passport_cleanup(int $userId, int $maxAge = 0): void
 {
+    // Retention is adjustable from the admin panel; 0 = use the stored setting.
+    if ($maxAge <= 0) $maxAge = repdoc_passport_retention_seconds();
+
     $dir = passport_user_dir($userId);
     $cutoff = time() - max(60, $maxAge);
 

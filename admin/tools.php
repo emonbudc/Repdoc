@@ -11,27 +11,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/includes/layout.php';
 
-/** Full internal registry: name, category, url, and on-disk entry to verify. */
-$allTools = [
-    ['name' => 'Birth Certificate Generator', 'cat' => 'Birth', 'url' => '../genaretor/birth/index.php', 'check' => '../genaretor/birth/index.php'],
-    ['name' => 'Record Search (alt copy)', 'cat' => 'Birth', 'url' => '../tools/birthsearch/index.php', 'check' => '../tools/birthsearch/index.php'],
-    ['name' => 'National ID Card (NID)', 'cat' => 'Identity', 'url' => '../genaretor/nid/', 'check' => '../genaretor/nid/index.php'],
-    ['name' => 'Smart NID', 'cat' => 'Identity', 'url' => '../genaretor/smartnid/', 'check' => '../genaretor/smartnid/index.php'],
-    ['name' => 'Passport Size Photo', 'cat' => 'Identity', 'url' => '../tools/passport/', 'check' => '../tools/passport/index.php'],
-    ['name' => 'Education Certificates', 'cat' => 'Education', 'url' => '../genaretor/certificate/', 'check' => '../genaretor/certificate/index.php'],
-    ['name' => 'Prottoyon (Attestation)', 'cat' => 'Education', 'url' => '../genaretor/prottoyon/', 'check' => '../genaretor/prottoyon/index.php'],
-    ['name' => 'CV Maker', 'cat' => 'Documents', 'url' => '../genaretor/cvmaker/', 'check' => '../genaretor/cvmaker/index.php'],
-    ['name' => 'Land Record Search (Khatiyan)', 'cat' => 'Land', 'url' => '../tools/land/', 'check' => '../tools/land/index.php'],
-    ['name' => 'DWAMCBP', 'cat' => 'Documents', 'url' => '../tools/dwamcbp/', 'check' => '../tools/dwamcbp/index.php'],
-    ['name' => 'Template Showcase', 'cat' => 'Templates', 'url' => '../showcase/', 'check' => '../showcase/index.php'],
-    ['name' => 'PSD / AI / PLP Files', 'cat' => 'Templates', 'url' => '../offlinefiles/', 'check' => '../offlinefiles/index.php'],
-    ['name' => 'Word / Excel Files', 'cat' => 'Templates', 'url' => '../officefiles/', 'check' => '../officefiles/index.php'],
-    ['name' => 'Mouza Map Browser (admin)', 'cat' => 'Land', 'url' => 'maps.php', 'check' => 'maps.php'],
-    ['name' => 'Important Links Directory', 'cat' => 'Public pages', 'url' => '../importantlinks/', 'check' => '../importantlinks/index.php'],
-    ['name' => 'File Packs (admin upload)', 'cat' => 'Admin', 'url' => 'files.php', 'check' => 'files.php'],
-    ['name' => 'Important Links (admin editor)', 'cat' => 'Admin', 'url' => 'important-links.php', 'check' => 'important-links.php'],
-    ['name' => 'Entrepreneur Application Form', 'cat' => 'Applications', 'url' => '../Entrepreneur/apply/', 'check' => '../Entrepreneur/apply/index.php'],
-];
+/** Full internal registry: name, category, url, and on-disk entry to verify.
+ *  Shared with the sidebar Tools dropdown (admin_tool_registry()). */
+$allTools = admin_tool_registry();
 
 /** A tool is 'live' only when its entry file really exists on disk. */
 foreach ($allTools as &$t) {
