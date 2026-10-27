@@ -77,9 +77,21 @@ $counts       = ['all' => count($files), 'office' => 0];
 $typeCounts   = array_fill_keys(array_keys($FORMATS), 0);
 $descriptions = repdoc_file_descriptions_all();
 
+// Packaged Bengali copy (descriptions.json, keyed "type:filename") so a fresh
+// deploy is described before an admin edits anything. DB rows always win.
+$bundledDescriptions = [];
+$bundlePath = __DIR__ . DIRECTORY_SEPARATOR . 'descriptions.json';
+if (is_file($bundlePath)) {
+    $rawBundle = @file_get_contents($bundlePath);
+    $decoded   = is_string($rawBundle) ? json_decode($rawBundle, true) : null;
+    if (is_array($decoded)) $bundledDescriptions = $decoded;
+}
+
 foreach ($files as $i => $file) {
     $meta = $FORMATS[$file['type']];
-    $custom = $descriptions[repdoc_file_description_key($file['type'], $file['name'])] ?? '';
+    $key  = repdoc_file_description_key($file['type'], $file['name']);
+    $custom = (string) ($descriptions[$key] ?? '');
+    if ($custom === '') $custom = (string) ($bundledDescriptions[$key] ?? '');
     $files[$i]['description'] = $custom !== '' ? $custom : $meta['note'];
     $files[$i]['thumb'] = repdoc_file_thumb_url($file['type'], $file['name']);
     $files[$i]['search'] = repdoc_catalog_search_index($files[$i], $FORMATS, $GROUPS);

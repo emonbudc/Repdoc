@@ -20,6 +20,9 @@ Descriptions & thumbnails (admin):
   - Use "Add description" on any file row, or fill the optional description
     and 4:3 thumbnail fields while uploading.
   - Descriptions also drive the PSD / AI / PLP rows on the same public page.
+  - descriptions.json (next to this README) ships the Bengali copy that each
+    bundled file shows until an admin saves a DB description; key format is
+    "type:filename", e.g. "word:Application-Bangla-Asad.doc".
 
 Notes:
   - Listing is public, download requires an approved operator login.
