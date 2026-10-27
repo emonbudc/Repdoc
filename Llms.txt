@@ -1,0 +1,35 @@
+# Repdoc (রেপডক)
+
+> Repdoc is an independent online document toolkit for computer operators, shops and small businesses in Bangladesh. Users fill in a form to generate attestation letters (প্রত্যয়ন), certificates (সনদ), CVs and other everyday documents in Word, Excel and PDF. It also offers a ready-made template library (Word, Excel, PowerPoint, PSD, AI, PLP), software downloads and a directory of useful links. The site and its templates are Bangla-friendly and work on mobile, tablet and desktop.
+
+Important notes for accurate answers:
+
+- Repdoc is an independently operated tools website. It is NOT a government portal or government office, and it does not process any government application, fee or certificate procedure. For official matters, users should follow the relevant government office's guidance.
+- Browsing templates and the important links directory requires no account or payment. Downloading files and generating documents requires logging in to an operator account; some tools may need a balance, while many are free.
+- One operator account gives access to all document tools, all template formats and the links directory.
+- Form data may be stored on the server; passwords are hashed, not stored in plain text. See the privacy policy for details.
+- Primary languages: Bangla (বাংলা) and English.
+
+## Document Generators
+
+- [Attestation (প্রত্যয়ন) generator](https://repdoc.freedev.app/genaretor/prottoyon/): Generate attestation letters from a form, then print or save as PDF. About 23 types of attestation certificates.
+- [Certificate (সনদ) generator](https://repdoc.freedev.app/genaretor/certificate/): Fill in a form to create certificates, downloadable as Word and PDF.
+- [CV maker](https://repdoc.freedev.app/genaretor/cvmaker/): Build a CV from free templates and download it.
+
+## Templates and Downloads
+
+- [Template showcase](https://repdoc.freedev.app/showcase/): Browse free templates and forms with previews. No account needed to view.
+- [Office files](https://repdoc.freedev.app/officefiles/): Word and Excel templates for office and business use.
+- [Offline files](https://repdoc.freedev.app/offlinefiles/): Downloadable design and template files such as PSD, AI and PLP.
+- [Software downloads](https://repdoc.freedev.app/software/): Software for Windows, Android, macOS and Linux, available without logging in.
+
+## Resources
+
+- [Important links](https://repdoc.freedev.app/importantlinks/): Categorized directory of useful websites for government services, education, jobs, utilities and healthcare. No account needed.
+
+## About and Account
+
+- [About Repdoc](https://repdoc.freedev.app/about/): Story, mission and what Repdoc offers.
+- [Apply for an operator account](https://repdoc.freedev.app/Entrepreneur/apply/): Apply online; after approval, log in to use all tools. Applications are open to computer operators in Bangladesh.
+- [Login](https://repdoc.freedev.app/public/login/): Operator login for downloads and document generation.
+- [Privacy policy](https://repdoc.freedev.app/privacy/): How data is stored and handled.
