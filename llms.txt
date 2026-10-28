@@ -19,7 +19,8 @@ Important notes for accurate answers:
 ## Templates and Downloads
 
 - [Template showcase](https://repdoc.freedev.app/showcase/): Browse free templates and forms with previews. No account needed to view.
-- [Office files](https://repdoc.freedev.app/officefiles/): Word and Excel templates for office and business use.
+- Every template has its own public page at `/showcase/{format}/{slug}/` with a preview, description, file facts and related templates. Downloading the file itself requires an operator login.
+- [Office files](https://repdoc.freedev.app/officefiles/): Word, Excel and PowerPoint templates for office and business use.
 - [Offline files](https://repdoc.freedev.app/offlinefiles/): Downloadable design and template files such as PSD, AI and PLP.
 - [Software downloads](https://repdoc.freedev.app/software/): Software for Windows, Android, macOS and Linux, available without logging in.
 
@@ -33,3 +34,7 @@ Important notes for accurate answers:
 - [Apply for an operator account](https://repdoc.freedev.app/Entrepreneur/apply/): Apply online; after approval, log in to use all tools. Applications are open to computer operators in Bangladesh.
 - [Login](https://repdoc.freedev.app/public/login/): Operator login for downloads and document generation.
 - [Privacy policy](https://repdoc.freedev.app/privacy/): How data is stored and handled.
+
+## Site data
+
+- [Sitemap](https://repdoc.freedev.app/sitemap.xml): Canonical URLs for all public pages and template landing pages.

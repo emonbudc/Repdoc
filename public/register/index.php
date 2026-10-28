@@ -83,10 +83,7 @@ if ($signupOpen && $_SERVER['REQUEST_METHOD'] === 'POST') {
         'description' => $SEO_DESC,
         'canonical'   => $CANON,
         'type'        => 'website',
-        'image'       => repdoc_canonical('src/assets/image/logo.png'),
-        'imageWidth'  => 480,
-        'imageHeight' => 160,
-        'imageAlt'    => 'Repdoc logo',
+        'imageAlt'    => 'Repdoc — ফ্রি ডকুমেন্ট টেমপ্লেট ও ফরম',
         'locale'      => 'bn_BD',
     ]);
     repdoc_jsonld([

@@ -5,9 +5,9 @@ declare(strict_types=1);
  * Repdoc — offline design file library (PSD / AI / PLP).
  *
  * Public, indexable landing page. Files auto-list from
- * offlinefiles/{psd,ai,plp}/; admin-written descriptions
- * (admin/files.php) fall back to the format note when none is set.
- * Listing is public; the bytes stay login-gated via download.php.
+ * offlinefiles/{psd,ai,plp}/ through src/templates.php. Cards link to
+ * their own /showcase/{format}/{slug}/ pages; the bytes stay
+ * login-gated via download.php.
  */
 
 require_once dirname(__DIR__) . '/src/bootstrap.php';
@@ -26,64 +26,16 @@ $currentUser = current_user();
 $dashUrl     = $currentUser !== null ? repdoc_panel_home() : $LOGIN_URL;
 $userBalance = $currentUser !== null ? (int) user_balance((int) $currentUser['id']) : 0;
 
-$FORMATS = [
-    'psd' => [
-        'label' => 'PSD Files',
-        'full'  => 'Adobe Photoshop',
-        'hub'   => 'offlinefiles',
-        'group' => 'psd',
-        'brand' => '#1D4ED8',
-        'soft'  => '#E9EFFD',
-        'exts'  => ['psd', 'psb', 'zip'],
-        'note'  => 'লেয়ার-ভিত্তিক Adobe Photoshop টেমপ্লেট — পোস্টার, ব্যানার ও প্রোফাইল কভার নিজের মতো এডিট করার জন্য সম্পূর্ণ রেডি।',
-    ],
-    'ai' => [
-        'label' => 'AI Files',
-        'full'  => 'Adobe Illustrator',
-        'hub'   => 'offlinefiles',
-        'group' => 'ai',
-        'brand' => '#B45309',
-        'soft'  => '#FDF3E3',
-        'exts'  => ['ai', 'eps', 'zip'],
-        'note'  => 'ভেক্টর Adobe Illustrator ফাইল — লোগো, লেটারহেড ও প্রিন্ট-রেডি ডিজাইন, যেকোনো সাইজে স্কেল করা যায়।',
-    ],
-    'plp' => [
-        'label' => 'PLP Files',
-        'full'  => 'PixelLab',
-        'hub'   => 'offlinefiles',
-        'group' => 'plp',
-        'brand' => '#7C3AED',
-        'soft'  => '#F2EEFD',
-        'exts'  => ['plp', 'zip'],
-        'note'  => 'মোবাইলে PixelLab দিয়ে খোলা ও এডিট করার জন্য প্রস্তুত PLP প্রজেক্ট ফাইল — টেক্সট, ছবি ও কালার বদলে ব্যবহার করুন।',
-    ],
-];
+$FORMATS = array_intersect_key(repdoc_template_formats(), array_flip(['psd', 'ai', 'plp']));
+$GROUPS  = array_intersect_key(repdoc_template_groups(), array_flip(['psd', 'ai', 'plp']));
 
-$GROUPS = [
-    'psd' => ['label' => 'PSD Files', 'sub' => 'Photoshop Design'],
-    'ai'  => ['label' => 'AI Files',  'sub' => 'Illustrator Vector'],
-    'plp' => ['label' => 'PLP Files', 'sub' => 'Poster / Flex Design'],
-];
+$files = repdoc_template_files(['psd', 'ai', 'plp']);
 
-$root  = dirname(__DIR__);
-$files = [];
-foreach ($FORMATS as $type => $meta) {
-    $dir = $root . DIRECTORY_SEPARATOR . $meta['hub'] . DIRECTORY_SEPARATOR . $type;
-    foreach (repdoc_catalog_scan($dir, $type, $meta['exts']) as $row) {
-        $files[] = $row;
-    }
-}
-usort($files, static fn(array $a, array $b): int => $b['mtime'] <=> $a['mtime']);
-
-$counts       = ['all' => count($files), 'psd' => 0, 'ai' => 0, 'plp' => 0];
-$typeCounts   = array_fill_keys(array_keys($FORMATS), 0);
-$descriptions = repdoc_file_descriptions_all();
+$counts     = ['all' => count($files), 'psd' => 0, 'ai' => 0, 'plp' => 0];
+$typeCounts = array_fill_keys(array_keys($FORMATS), 0);
 
 foreach ($files as $i => $file) {
     $meta = $FORMATS[$file['type']];
-    $custom = $descriptions[repdoc_file_description_key($file['type'], $file['name'])] ?? '';
-    $files[$i]['description'] = $custom !== '' ? $custom : $meta['note'];
-    $files[$i]['thumb'] = repdoc_file_thumb_url($file['type'], $file['name']);
     $files[$i]['search'] = repdoc_catalog_search_index($files[$i], $FORMATS, $GROUPS);
     $counts[$meta['group']] = ($counts[$meta['group']] ?? 0) + 1;
     $typeCounts[$file['type']] = ($typeCounts[$file['type']] ?? 0) + 1;
@@ -133,8 +85,9 @@ foreach ($files as $i => $file) {
             $items[] = [
                 '@type'       => 'ListItem',
                 'position'    => $i + 1,
-                'name'        => $FORMATS[$file['type']]['full'] . ' — ' . $file['name'],
+                'name'        => $FORMATS[$file['type']]['full'] . ' — ' . ($file['title'] ?? $file['name']),
                 'description' => $file['description'],
+                'url'         => $file['canonical'] ?? repdoc_template_canonical($file['type'], $file['name']),
             ];
         }
         repdoc_jsonld([

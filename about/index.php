@@ -70,10 +70,7 @@ $faqs = [
         'description' => $SEO_DESC,
         'canonical'   => $CANON,
         'type'        => 'website',
-        'image'       => repdoc_canonical('src/assets/image/hero.webp'),
-        'imageWidth'  => 900,
-        'imageHeight' => 600,
-        'imageAlt'    => 'Repdoc ডকুমেন্ট টুলকিট',
+        'imageAlt'    => 'Repdoc — ডকুমেন্ট টুলকিট',
         'locale'      => 'bn_BD',
     ]);
     repdoc_jsonld([
@@ -84,14 +81,7 @@ $faqs = [
         'description' => $SEO_DESC,
         'inLanguage'  => 'bn',
         'isPartOf'    => ['@id' => repdoc_canonical() . '#website'],
-        'about'       => [
-            '@type'       => 'Organization',
-            'name'        => 'Repdoc',
-            'url'         => repdoc_canonical(),
-            'logo'        => repdoc_canonical('src/assets/image/logo.png'),
-            'description' => 'বাংলাদেশের কম্পিউটার অপারেটরদের জন্য স্বতন্ত্র ডকুমেন্ট-টেমপ্লেট টুলকিট।',
-            'areaServed'  => ['@type' => 'Country', 'name' => 'Bangladesh'],
-        ],
+        'about'       => ['@id' => repdoc_canonical() . '#org'],
         'breadcrumb'  => ['@id' => $CANON . '#breadcrumb'],
     ]);
     repdoc_jsonld([

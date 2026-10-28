@@ -11,6 +11,8 @@ declare(strict_types=1);
  * Include after src/bootstrap.php and src/filemeta.php.
  */
 
+require_once __DIR__ . '/templates.php';
+
 if (!function_exists('repdoc_catalog_logo_url')) {
     /** Official software logo for a format (or the Office group). */
     function repdoc_catalog_logo_url(string $type): string
@@ -83,19 +85,7 @@ if (!function_exists('repdoc_catalog_date')) {
 if (!function_exists('repdoc_catalog_title')) {
     function repdoc_catalog_title(string $name): string
     {
-        $stem = (string) pathinfo($name, PATHINFO_FILENAME);
-        $stem = str_replace(['-', '_'], ' ', $stem);
-        $stem = (string) preg_replace('/\s+/u', ' ', trim($stem));
-        if ($stem !== '' && preg_match('/^[\x20-\x7E]+$/', $stem)) {
-            $words = explode(' ', $stem);
-            foreach ($words as $i => $word) {
-                if ($word !== '' && !preg_match('/^[A-Z0-9]{2,}$/', $word)) {
-                    $words[$i] = mb_convert_case($word, MB_CASE_TITLE, 'UTF-8');
-                }
-            }
-            $stem = implode(' ', $words);
-        }
-        return $stem !== '' ? $stem : $name;
+        return repdoc_template_title($name);
     }
 }
 
@@ -714,6 +704,10 @@ if (!function_exists('repdoc_catalog_render')) {
                                         $actionIcon = 'cat-i-arrow';
                                         $actionClass = ' is-hub';
                                     }
+
+                                    $detailUrl = function_exists('repdoc_template_href')
+                                        ? repdoc_template_href((string) $f['type'], (string) $f['name'])
+                                        : '';
                                 ?>
                                     <article class="cat-file-card"
                                              data-type="<?= e((string) $f['type']) ?>"
@@ -724,11 +718,13 @@ if (!function_exists('repdoc_catalog_render')) {
                                              data-mtime="<?= (int) $f['mtime'] ?>"
                                              style="--i:<?= (int) ($i % 12) ?>">
                                         <div class="cat-file-thumb">
+                                            <?php if ($detailUrl !== ''): ?><a class="cat-thumb-link" href="<?= e($detailUrl) ?>" aria-label="<?= e($title) ?> — বিস্তারিত দেখুন"><?php endif; ?>
                                             <?php if (!empty($f['thumb'])): ?>
                                                 <img class="cat-thumb-img" src="<?= e($f['thumb']) ?>" alt="<?= e($title) ?> — প্রিভিউ" width="480" height="360" loading="lazy" decoding="async">
                                             <?php else: ?>
                                                 <?= repdoc_catalog_preview_art((string) $f['type']) ?>
                                             <?php endif; ?>
+                                            <?php if ($detailUrl !== ''): ?></a><?php endif; ?>
                                             <span class="cat-file-badge">
                                                 <?= repdoc_catalog_logo_img((string) $f['type'], 15) ?>
                                                 <?= e((string) ($meta['label'] ?? $f['type'])) ?>
@@ -737,7 +733,7 @@ if (!function_exists('repdoc_catalog_render')) {
                                         </div>
                                         <div class="cat-file-body">
                                             <p class="cat-file-eyebrow"><?= e((string) ($meta['full'] ?? $f['type'])) ?> · <?= e($extLabel) ?></p>
-                                            <h3 class="cat-file-name" title="<?= e($title) ?>"><?= e($title) ?></h3>
+                                            <h3 class="cat-file-name" title="<?= e($title) ?>"><?php if ($detailUrl !== ''): ?><a class="cat-file-link" href="<?= e($detailUrl) ?>"><?= e($title) ?></a><?php else: ?><?= e($title) ?><?php endif; ?></h3>
                                             <p class="cat-file-desc" title="<?= e((string) $f['description']) ?>"><?= e((string) $f['description']) ?></p>
                                             <div class="cat-file-meta">
                                                 <span class="cat-ext"><?= e($extLabel) ?></span>

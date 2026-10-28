@@ -41,7 +41,6 @@ $LOGIN_URL = repdoc_url('public/login/');
     >
 
     <meta name="theme-color" content="#F8FAFC">
-    <meta name="robots" content="index, follow">
 
     <?php
     repdoc_seo_head([
@@ -49,10 +48,7 @@ $LOGIN_URL = repdoc_url('public/login/');
         'description' => $SEO_DESC,
         'canonical'   => $CANON,
         'type'        => 'website',
-        'image'       => repdoc_canonical('src/assets/image/logo.png'),
-        'imageWidth'  => 480,
-        'imageHeight' => 160,
-        'imageAlt'    => 'Repdoc logo',
+        'imageAlt'    => 'Repdoc — প্রাইভেসি পলিসি',
         'locale'      => 'bn_BD',
     ]);
 

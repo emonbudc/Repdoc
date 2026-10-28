@@ -6,11 +6,9 @@ declare(strict_types=1);
  *
  * Public, indexable landing page for downloadable template packs.
  * Files are auto-listed from officefiles/{word,excel,ppt}/ and
- * offlinefiles/{psd,ai,plp}/; each card shows the admin-written
- * description (admin/files.php) and falls back to a format note when
- * none is set. Listing is public; the bytes stay gated behind an
- * approved login via each hub's download.php — this page links to the
- * hubs instead of exposing download links.
+ * offlinefiles/{psd,ai,plp}/ through src/templates.php. Each card links
+ * to its own /showcase/{format}/{slug}/ landing page; the download bytes
+ * stay gated behind an approved login via each hub's download.php.
  */
 
 require_once dirname(__DIR__) . '/src/bootstrap.php';
@@ -18,8 +16,8 @@ require_once dirname(__DIR__) . '/src/seo.php';
 require_once dirname(__DIR__) . '/src/filemeta.php';
 require_once dirname(__DIR__) . '/src/catalog.php';
 
-$SEO_TITLE = 'টেমপ্লেট শোকেস — Repdoc';
-$SEO_DESC  = 'Repdoc টেমপ্লেট শোকেস: Word, PDF, Excel, PSD, AI ও PLP ফরম্যাটের রেডি-টু-ইউজ টেমপ্লেট ও ফরম — এক অ্যাকাউন্টে সব আনলক।';
+$SEO_TITLE = 'টেমপ্লেট শোকেস — ফ্রি Word, Excel, PDF টেমপ্লেট | Repdoc';
+$SEO_DESC  = 'Repdoc টেমপ্লেট শোকেস: Word, PDF, Excel, PSD, AI ও PLP ফরম্যাটের রেডি-টু-ইউজ টেমপ্লেট ও ফরম — প্রতিটির প্রিভিউ ও বিবরণসহ, এক অ্যাকাউন্টে সব আনলক।';
 $CANON     = repdoc_canonical('showcase/');
 $HOME      = repdoc_url('/');
 $LOGIN_URL = repdoc_url('public/login/');
@@ -30,95 +28,16 @@ $dashUrl     = $currentUser !== null ? repdoc_panel_home() : $LOGIN_URL;
 $userBalance = $currentUser !== null ? (int) user_balance((int) $currentUser['id']) : 0;
 
 /** One entry per format folder. `hub` owns the download endpoint. */
-$FORMATS = [
-    'word' => [
-        'label' => 'MS Word',
-        'full'  => 'Microsoft Word',
-        'hub'   => 'officefiles',
-        'group' => 'office',
-        'brand' => '#2B579A',
-        'soft'  => '#EEF3FB',
-        'exts'  => ['doc', 'docx', 'rtf', 'odt', 'zip'],
-        'note'  => 'চিঠি, আবেদন, নোটিশ ও অফিসের দৈনন্দিন কাজের জন্য রেডি Microsoft Word টেমপ্লেট — নাম, ঠিকানা ও তারিখ বদলে সরাসরি ব্যবহার করুন।',
-    ],
-    'excel' => [
-        'label' => 'MS Excel',
-        'full'  => 'Microsoft Excel',
-        'hub'   => 'officefiles',
-        'group' => 'office',
-        'brand' => '#217346',
-        'soft'  => '#EDF6F1',
-        'exts'  => ['xls', 'xlsx', 'csv', 'zip'],
-        'note'  => 'হিসাব, তালিকা, বাজেট ও রিপোর্টের জন্য ফর্মুলা-সহ Microsoft Excel স্প্রেডশিট — নিজের ডেটা বসিয়ে সাথে সাথে ব্যবহারযোগ্য।',
-    ],
-    'ppt' => [
-        'label' => 'PowerPoint',
-        'full'  => 'Microsoft PowerPoint',
-        'hub'   => 'officefiles',
-        'group' => 'office',
-        'brand' => '#C43E1C',
-        'soft'  => '#FBEEE9',
-        'exts'  => ['ppt', 'pptx', 'zip'],
-        'note'  => 'মিটিং, প্রেজেন্টেশন ও অফিসিয়াল প্রেজেন্টেশনের জন্য প্রস্তুত Microsoft PowerPoint স্লাইড — নিজের তথ্য বসিয়ে ব্যবহার করুন।',
-    ],
-    'psd' => [
-        'label' => 'PSD Files',
-        'full'  => 'Adobe Photoshop',
-        'hub'   => 'offlinefiles',
-        'group' => 'psd',
-        'brand' => '#1D4ED8',
-        'soft'  => '#E9EFFD',
-        'exts'  => ['psd', 'psb', 'zip'],
-        'note'  => 'লেয়ার-ভিত্তিক Adobe Photoshop টেমপ্লেট — পোস্টার, ব্যানার ও প্রোফাইল কভার নিজের মতো এডিট করার জন্য সম্পূর্ণ রেডি।',
-    ],
-    'ai' => [
-        'label' => 'AI Files',
-        'full'  => 'Adobe Illustrator',
-        'hub'   => 'offlinefiles',
-        'group' => 'ai',
-        'brand' => '#B45309',
-        'soft'  => '#FDF3E3',
-        'exts'  => ['ai', 'eps', 'zip'],
-        'note'  => 'ভেক্টর Adobe Illustrator ফাইল — লোগো, লেটারহেড ও প্রিন্ট-রেডি ডিজাইন, যেকোনো সাইজে স্কেল করা যায়।',
-    ],
-    'plp' => [
-        'label' => 'PLP Files',
-        'full'  => 'PixelLab',
-        'hub'   => 'offlinefiles',
-        'group' => 'plp',
-        'brand' => '#7C3AED',
-        'soft'  => '#F2EEFD',
-        'exts'  => ['plp', 'zip'],
-        'note'  => 'মোবাইলে PixelLab দিয়ে খোলা ও এডিট করার জন্য প্রস্তুত PLP প্রজেক্ট ফাইল — টেক্সট, ছবি ও কালার বদলে ব্যবহার করুন।',
-    ],
-];
+$FORMATS = repdoc_template_formats();
+$GROUPS  = repdoc_template_groups();
 
-$GROUPS = [
-    'office' => ['label' => 'MS Office', 'sub' => 'Word, Excel, PowerPoint'],
-    'psd'    => ['label' => 'PSD Files', 'sub' => 'Photoshop Design'],
-    'ai'     => ['label' => 'AI Files',  'sub' => 'Illustrator Vector'],
-    'plp'    => ['label' => 'PLP Files', 'sub' => 'Poster / Flex Design'],
-];
-
-$root  = dirname(__DIR__);
-$files = [];
-foreach ($FORMATS as $type => $meta) {
-    $dir = $root . DIRECTORY_SEPARATOR . $meta['hub'] . DIRECTORY_SEPARATOR . $type;
-    foreach (repdoc_catalog_scan($dir, $type, $meta['exts']) as $row) {
-        $files[] = $row;
-    }
-}
-usort($files, static fn(array $a, array $b): int => $b['mtime'] <=> $a['mtime']);
+$files = repdoc_template_files();
 
 $counts     = ['all' => count($files), 'office' => 0, 'psd' => 0, 'ai' => 0, 'plp' => 0];
 $typeCounts = array_fill_keys(array_keys($FORMATS), 0);
-$descriptions = repdoc_file_descriptions_all();
 
 foreach ($files as $i => $file) {
     $meta = $FORMATS[$file['type']];
-    $custom = $descriptions[repdoc_file_description_key($file['type'], $file['name'])] ?? '';
-    $files[$i]['description'] = $custom !== '' ? $custom : $meta['note'];
-    $files[$i]['thumb'] = repdoc_file_thumb_url($file['type'], $file['name']);
     $files[$i]['search'] = repdoc_catalog_search_index($files[$i], $FORMATS, $GROUPS);
     $counts[$meta['group']] = ($counts[$meta['group']] ?? 0) + 1;
     $typeCounts[$file['type']] = ($typeCounts[$file['type']] ?? 0) + 1;
@@ -168,8 +87,9 @@ foreach ($files as $i => $file) {
             $items[] = [
                 '@type'       => 'ListItem',
                 'position'    => $i + 1,
-                'name'        => $FORMATS[$file['type']]['full'] . ' — ' . $file['name'],
+                'name'        => $FORMATS[$file['type']]['full'] . ' — ' . ($file['title'] ?? $file['name']),
                 'description' => $file['description'],
+                'url'         => $file['canonical'] ?? repdoc_template_canonical($file['type'], $file['name']),
             ];
         }
         repdoc_jsonld([

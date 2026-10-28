@@ -177,16 +177,13 @@ function bn_digits(string $v): string
     <meta name="google-site-verification" content="WvNaraAzQXGqMwigxVnsnBnU_gDpyansRX9wSDeM4gU">
     <?php
     $SEO_TITLE = $BRAND . ' — ফ্রি ডকুমেন্ট টেমপ্লেট ও ফরম (Word, Excel, PDF)';
-    $SEO_DESC  = $BRAND . ' — ফ্রি ডকুমেন্ট টেমপ্লেট ও ফরম (Word, Excel, PDF, PSD, AI, PLP)';
+    $SEO_DESC  = $BRAND . ' — কম্পিউটার অপারেটরদের জন্য ফ্রি ডকুমেন্ট টেমপ্লেট, প্রত্যয়ন, সনদ, CV, চুক্তিপত্র ও অফিস ফরম। Word, Excel, PDF, PSD, AI, PLP।';
     repdoc_seo_head([
         'title'       => $SEO_TITLE,
         'description' => $SEO_DESC,
         'canonical'   => repdoc_canonical(),
         'type'        => 'website',
-        'image'       => repdoc_canonical('src/assets/image/logo.png'),
-        'imageWidth'  => 480,
-        'imageHeight' => 160,
-        'imageAlt'    => 'Repdoc logo',
+        'imageAlt'    => 'Repdoc — ফ্রি ডকুমেন্ট টেমপ্লেট ও ফরম',
         'locale'      => 'bn_BD',
     ]);
     ?>
@@ -203,42 +200,51 @@ function bn_digits(string $v): string
     <!-- Homepage renders one look only (no theme switching here). -->
     <?php
     repdoc_jsonld([
-        '@type'        => 'Organization',
-        '@id'          => repdoc_canonical() . '#org',
-        'name'         => 'Repdoc',
-        'url'          => repdoc_canonical(),
-        'logo'         => repdoc_canonical('src/assets/image/logo.png'),
-        'description'  => 'যেকোনো কম্পিউটার অপারেটরের জন্য ফ্রি ডকুমেন্ট-টেমপ্লেট টুলকিট।',
-        'areaServed'   => ['@type' => 'Country', 'name' => 'Bangladesh'],
-        'audience'     => ['@type' => 'Audience', 'audienceType' => 'Computer operators with a business or job, Bangladesh'],
-        'sameAs'       => [
-            'https://github.com/Repdoc-BD',
-            'https://t.me/Repdocbdofficial',
-            'https://www.youtube.com/@Repdocbdofficial',
-            'https://x.com/Repdocbdofficial',
-            'https://www.facebook.com/Repdocbdofficial',
-        ],
-    ]);
-    repdoc_jsonld([
-        '@type'        => 'WebSite',
-        '@id'          => repdoc_canonical() . '#website',
-        'name'         => 'Repdoc',
-        'url'          => repdoc_canonical(),
-        'publisher'    => ['@id' => repdoc_canonical() . '#org'],
-        'inLanguage'   => ['bn'],
-        'description'  => $SEO_DESC,
-    ]);
-    repdoc_jsonld([
-        '@type'              => 'WebApplication',
-        '@id'                => repdoc_canonical() . '#app',
-        'name'               => 'Repdoc',
-        'url'                => repdoc_canonical(),
+        '@type'               => 'WebApplication',
+        '@id'                 => repdoc_canonical() . '#app',
+        'name'                => 'Repdoc',
+        'url'                 => repdoc_canonical(),
         'applicationCategory' => 'BusinessApplication',
-        'operatingSystem'    => 'Web',
+        'operatingSystem'     => 'Web',
         'browserRequirements' => 'Requires a web browser',
-        'inLanguage'         => 'bn',
-        'description'        => $SEO_DESC,
-        'publisher'          => ['@id' => repdoc_canonical() . '#org'],
+        'inLanguage'          => 'bn',
+        'description'         => $SEO_DESC,
+        'publisher'           => ['@id' => repdoc_canonical() . '#org'],
+    ]);
+    repdoc_jsonld([
+        '@type'       => 'HowTo',
+        '@id'         => repdoc_canonical() . '#howto',
+        'name'        => 'কীভাবে Repdoc থেকে ডকুমেন্ট তৈরি করবেন',
+        'description' => 'Repdoc-এ টুল বেছে নিন, ফরমে তথ্য দিন এবং Word বা PDF ফাইল ডাউনলোড করুন।',
+        'inLanguage'  => 'bn',
+        'totalTime'   => 'PT2M',
+        'mainEntityOfPage' => repdoc_canonical(),
+        'step'        => [
+            [
+                '@type'    => 'HowToStep',
+                'position' => 1,
+                'name'     => 'টুল বেছে নিন',
+                'text'     => 'দরকারি ডকুমেন্টস টুল খুলুন।',
+                'url'      => repdoc_canonical() . '#tools',
+                'image'    => repdoc_canonical('src/assets/image/step1.webp'),
+            ],
+            [
+                '@type'    => 'HowToStep',
+                'position' => 2,
+                'name'     => 'তথ্য দিন',
+                'text'     => 'ফরমে আপনার তথ্য পূরণ করুন।',
+                'url'      => repdoc_canonical() . '#how',
+                'image'    => repdoc_canonical('src/assets/image/step2.webp'),
+            ],
+            [
+                '@type'    => 'HowToStep',
+                'position' => 3,
+                'name'     => 'ডাউনলোড করুন',
+                'text'     => 'Word ও PDF আকারে ফাইল নিন — প্রিন্ট বা ডাউনলোড করুন।',
+                'url'      => repdoc_canonical() . '#how',
+                'image'    => repdoc_canonical('src/assets/image/step3.webp'),
+            ],
+        ],
     ]);
     ?>
 </head>

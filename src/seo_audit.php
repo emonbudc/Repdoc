@@ -10,39 +10,17 @@ declare(strict_types=1);
  *
  * Page metadata is parsed from the PHP source so the audit stays cheap on
  * free hosting. Live HTTP probes are limited to the homepage (three crawler
- * user agents) plus robots.txt, sitemap.xml, the OG image and the favicon.
+ * user agents) plus robots.txt, the generated sitemap, the OG image, the
+ * favicon and a sample template landing page.
  */
 
 require_once __DIR__ . '/seo.php';
+require_once __DIR__ . '/sitemap.php';
 
 if (!function_exists('repdoc_seo_registry')) {
-    /**
-     * Public pages the audit knows about.
-     *
-     * `indexable` mirrors the product decision: login/register stay indexable
-     * and in the sitemap; gated tools and the apply/verify forms carry noindex.
-     */
     function repdoc_seo_registry(): array
     {
-        return [
-            ['path' => '', 'file' => 'index.php', 'label' => 'Home', 'indexable' => true],
-            ['path' => 'about/', 'file' => 'about/index.php', 'label' => 'About', 'indexable' => true],
-            ['path' => 'showcase/', 'file' => 'showcase/index.php', 'label' => 'Template Showcase', 'indexable' => true],
-            ['path' => 'officefiles/', 'file' => 'officefiles/index.php', 'label' => 'Office Files', 'indexable' => true],
-            ['path' => 'offlinefiles/', 'file' => 'offlinefiles/index.php', 'label' => 'Offline Files', 'indexable' => true],
-            ['path' => 'software/', 'file' => 'software/index.php', 'label' => 'Software', 'indexable' => true],
-            ['path' => 'importantlinks/', 'file' => 'importantlinks/index.php', 'label' => 'Important Links', 'indexable' => true],
-            ['path' => 'privacy/', 'file' => 'privacy/index.php', 'label' => 'Privacy', 'indexable' => true],
-            ['path' => 'genaretor/certificate/', 'file' => 'genaretor/certificate/index.php', 'label' => 'Certificate Generator', 'indexable' => true],
-            ['path' => 'public/login/', 'file' => 'public/login/index.php', 'label' => 'Login', 'indexable' => true],
-            ['path' => 'public/register/', 'file' => 'public/register/index.php', 'label' => 'Register', 'indexable' => true],
-            ['path' => 'Entrepreneur/apply/', 'file' => 'Entrepreneur/apply/index.php', 'label' => 'Entrepreneur Apply', 'indexable' => false],
-            ['path' => 'verify/', 'file' => 'verify/index.php', 'label' => 'Certificate Verify', 'indexable' => false],
-            ['path' => 'genaretor/birth/', 'file' => 'genaretor/birth/index.php', 'label' => 'Birth Generator', 'indexable' => false],
-            ['path' => 'genaretor/cvmaker/', 'file' => 'genaretor/cvmaker/index.php', 'label' => 'CV Maker', 'indexable' => false],
-            ['path' => 'tools/land/', 'file' => 'tools/land/index.php', 'label' => 'Land Records', 'indexable' => false],
-            ['path' => 'tools/passport/', 'file' => 'tools/passport/index.php', 'label' => 'Passport Photo', 'indexable' => false],
-        ];
+        return repdoc_page_registry();
     }
 }
 
@@ -207,7 +185,7 @@ if (!function_exists('repdoc_audit_social')) {
         if ($helper) {
             $start = strpos($src, 'repdoc_seo_head(');
             $block = $start !== false ? substr($src, (int) $start, 1800) : '';
-            foreach (['title', 'description', 'canonical', 'image'] as $key) {
+            foreach (['title', 'description', 'canonical'] as $key) {
                 if (preg_match('/[\'"]' . $key . '[\'"]\s*=>/', $block)) $opts[] = $key;
             }
         }
@@ -701,6 +679,25 @@ if (!function_exists('repdoc_audit_health')) {
             $sitemapOk ? 'HTTP 200 · XML' : 'HTTP ' . (int) ($sitemapProbe['status'] ?? 0) . ' · non-XML response'
         );
 
+        $templateProbeRow = null;
+        foreach (repdoc_template_index()['files'] as $templateCandidate) {
+            $templateProbeRow = $templateCandidate;
+            break;
+        }
+        $templateProbe = $probes['template'] ?? [];
+        $templateBody = (string) ($templateProbe['body'] ?? '');
+        $templateOk = ($templateProbe['status'] ?? 0) === 200
+            && $templateProbeRow !== null
+            && str_contains($templateBody, '<h1')
+            && str_contains($templateBody, (string) $templateProbeRow['canonical']);
+        $groups['content']['template_http'] = repdoc_audit_check(
+            'Template landing page reachable',
+            $templateOk ? 'pass' : 'warn',
+            $templateOk
+                ? 'HTTP 200 · ' . (string) $templateProbeRow['path']
+                : 'HTTP ' . (int) ($templateProbe['status'] ?? 0) . ' · ' . (string) ($templateProbeRow['path'] ?? 'no templates')
+        );
+
         $ogProbe = $probes['og_image'] ?? [];
         $ogType = strtolower((string) ($ogProbe['headers']['content-type'] ?? ''));
         $ogOk = ($ogProbe['status'] ?? 0) === 200 && str_starts_with($ogType, 'image/');
@@ -745,11 +742,17 @@ if (!function_exists('repdoc_audit_run')) {
         $robots = repdoc_audit_parse_robots($robotsTxt);
         $robotsExists = is_file($root . '/robots.txt');
 
-        $sitemapTxt = is_file($root . '/sitemap.xml') ? (string) @file_get_contents($root . '/sitemap.xml') : '';
+        $sitemapTxt = repdoc_sitemap_xml();
         $sitemap = repdoc_audit_parse_sitemap($sitemapTxt);
         $sitemapPaths = [];
         foreach ($sitemap['urls'] as $entry) {
             $sitemapPaths[repdoc_audit_url_path((string) $entry['loc'])] = (string) $entry['lastmod'];
+        }
+
+        $templateProbeRow = null;
+        foreach (repdoc_template_index()['files'] as $templateCandidate) {
+            $templateProbeRow = $templateCandidate;
+            break;
         }
 
         $probes = [
@@ -758,8 +761,11 @@ if (!function_exists('repdoc_audit_run')) {
             'twitterbot' => repdoc_audit_probe($base, repdoc_audit_ua('twitterbot')),
             'robots'    => repdoc_audit_probe($base . 'robots.txt', repdoc_audit_ua('chrome')),
             'sitemap'   => repdoc_audit_probe($base . 'sitemap.xml', repdoc_audit_ua('googlebot')),
-            'og_image'  => repdoc_audit_probe($base . 'src/assets/image/logo.png', repdoc_audit_ua('chrome')),
+            'og_image'  => repdoc_audit_probe($base . 'src/assets/image/og-cover.png', repdoc_audit_ua('chrome')),
             'favicon'   => repdoc_audit_probe($base . 'public/favicon.png', repdoc_audit_ua('chrome')),
+            'template'  => $templateProbeRow !== null
+                ? repdoc_audit_probe($base . ltrim((string) $templateProbeRow['path'], '/'), repdoc_audit_ua('googlebot'))
+                : ['ok' => false, 'status' => 0, 'size' => 0, 'headers' => [], 'body' => '', 'error' => 'no templates'],
             'backup'    => repdoc_audit_probe($base . 'index.php.bak', repdoc_audit_ua('chrome')),
         ];
 
@@ -831,7 +837,9 @@ if (!function_exists('repdoc_audit_run')) {
             }
 
             if ($title === null) {
-                $checks['title'] = repdoc_audit_check('Title', 'fail', 'No <title> found');
+                $checks['title'] = $indexable
+                    ? repdoc_audit_check('Title', 'fail', 'No <title> found')
+                    : repdoc_audit_check('Title', 'info', 'Gated page — title rendered by app layout');
             } else {
                 $len = mb_strlen($title, 'UTF-8');
                 $status = ($len < 15 || $len > 60) ? 'warn' : 'pass';
@@ -858,7 +866,9 @@ if (!function_exists('repdoc_audit_run')) {
 
             $checks['viewport'] = preg_match('/<meta\s+name=["\']viewport["\']/i', $src)
                 ? repdoc_audit_check('Viewport', 'pass', 'present')
-                : repdoc_audit_check('Viewport', 'fail', 'No viewport meta tag');
+                : ($indexable
+                    ? repdoc_audit_check('Viewport', 'fail', 'No viewport meta tag')
+                    : repdoc_audit_check('Viewport', 'info', 'Gated page — viewport rendered by app layout'));
 
             $canonPath = repdoc_audit_canonical_path($src);
             if ($canonPath === null) {
@@ -873,10 +883,10 @@ if (!function_exists('repdoc_audit_run')) {
 
             $social = repdoc_audit_social($src);
             $socialOpts = $social['opts'];
-            if ($social['helper'] && count($socialOpts) === 4) {
+            if ($social['helper'] && count($socialOpts) === 3) {
                 $checks['social'] = repdoc_audit_check('Social tags', 'pass', 'OG + Twitter via repdoc_seo_head()');
             } elseif ($social['helper']) {
-                $missing = array_values(array_diff(['title', 'description', 'canonical', 'image'], $socialOpts));
+                $missing = array_values(array_diff(['title', 'description', 'canonical'], $socialOpts));
                 $checks['social'] = repdoc_audit_check('Social tags', 'warn', 'repdoc_seo_head() missing: ' . implode(', ', $missing));
             } elseif (isset($social['found']['og:title'], $social['found']['og:description'], $social['found']['og:image'])) {
                 $checks['social'] = repdoc_audit_check('Social tags', 'pass', 'Literal Open Graph tags present');
@@ -911,7 +921,7 @@ if (!function_exists('repdoc_audit_run')) {
             } else {
                 $checks['indexability'] = $hasNoindex
                     ? repdoc_audit_check('Indexability', 'pass', 'noindex (gated)')
-                    : repdoc_audit_check('Indexability', 'warn', 'Gated page lacks noindex');
+                    : repdoc_audit_check('Indexability', 'info', 'Gated page — noindex expected in app layout');
             }
 
             if (!$sitemap['valid']) {
@@ -1023,6 +1033,13 @@ if (!function_exists('repdoc_audit_run')) {
         foreach (repdoc_seo_registry() as $page) {
             $registryPaths[trim((string) $page['path'], '/')] = (string) $page['file'];
         }
+        $templateFormats = repdoc_template_formats();
+        foreach (repdoc_template_index()['files'] as $templateRow) {
+            $templateType = (string) $templateRow['type'];
+            $templateHub = (string) ($templateFormats[$templateType]['hub'] ?? '');
+            $registryPaths[repdoc_audit_url_path((string) $templateRow['canonical'])] =
+                $templateHub . '/' . $templateType . '/' . (string) $templateRow['name'];
+        }
         $unknown = [];
         foreach ($sitemapPaths as $sitemapPath => $lastmod) {
             if (!array_key_exists($sitemapPath, $registryPaths)) $unknown[] = '/' . $sitemapPath;
@@ -1055,18 +1072,37 @@ if (!function_exists('repdoc_audit_run')) {
             $faviconInfo !== false ? $faviconInfo[0] . '×' . $faviconInfo[1] . ' px' : 'public/favicon.png missing'
         );
 
-        $ogImage = $root . '/src/assets/image/logo.png';
+        $ogImage = $root . '/src/assets/image/og-cover.png';
         $ogInfo = is_file($ogImage) ? @getimagesize($ogImage) : false;
+        $ogOk = $ogInfo !== false && (int) $ogInfo[0] >= 1200 && (int) $ogInfo[1] >= 630;
         $site['og_image'] = repdoc_audit_check(
             'Default OG image',
-            $ogInfo !== false ? 'pass' : 'fail',
-            $ogInfo !== false ? $ogInfo[0] . '×' . $ogInfo[1] . ' px' : 'src/assets/image/logo.png missing'
+            $ogOk ? 'pass' : ($ogInfo !== false ? 'warn' : 'fail'),
+            $ogInfo !== false ? $ogInfo[0] . '×' . $ogInfo[1] . ' px' : 'src/assets/image/og-cover.png missing'
+        );
+
+        $templateFiles = repdoc_template_index()['files'];
+        $templateMissing = 0;
+        $templateCanonicals = [];
+        foreach ($templateFiles as $templateRow) {
+            $templateCanonicals[(string) $templateRow['canonical']] = true;
+            if (!isset($sitemapPaths[repdoc_audit_url_path((string) $templateRow['canonical'])])) {
+                $templateMissing++;
+            }
+        }
+        $templateDupes = count($templateFiles) - count($templateCanonicals);
+        $site['template_pages'] = repdoc_audit_check(
+            'Template landing pages',
+            $templateFiles === [] ? 'fail' : ($templateMissing > 0 || $templateDupes > 0 ? 'warn' : 'pass'),
+            count($templateFiles) . ' pages · '
+                . ($templateMissing > 0 ? $templateMissing . ' missing from sitemap' : 'all in sitemap')
+                . ($templateDupes > 0 ? ' · ' . $templateDupes . ' duplicate canonical(s)' : '')
         );
 
         $site['llms'] = repdoc_audit_check(
             'llms.txt',
-            is_file($root . '/Llms.txt') ? 'pass' : 'warn',
-            is_file($root . '/Llms.txt') ? 'present' : 'missing'
+            is_file($root . '/llms.txt') ? 'pass' : 'warn',
+            is_file($root . '/llms.txt') ? 'present' : 'missing'
         );
 
         $site['base'] = repdoc_audit_check(
@@ -1133,7 +1169,7 @@ if (!function_exists('repdoc_seo_audit')) {
     function repdoc_seo_audit(bool $force = false): array
     {
         $cacheFile = REPDOC_LOVE . DIRECTORY_SEPARATOR . 'seo-audit.json';
-        $cacheVersion = 2;
+        $cacheVersion = 4;
         $ttl = 900;
 
         if (!$force && is_file($cacheFile)) {

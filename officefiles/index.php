@@ -5,9 +5,9 @@ declare(strict_types=1);
  * Repdoc — Microsoft Office file library (Word / Excel / PowerPoint).
  *
  * Public, indexable landing page. Files auto-list from
- * officefiles/{word,excel,ppt}/; admin-written descriptions
- * (admin/files.php) fall back to the format note when none is set.
- * Listing is public; the bytes stay login-gated via download.php.
+ * officefiles/{word,excel,ppt}/ through src/templates.php. Cards link
+ * to their own /showcase/{format}/{slug}/ pages; the bytes stay
+ * login-gated via download.php.
  */
 
 require_once dirname(__DIR__) . '/src/bootstrap.php';
@@ -26,74 +26,16 @@ $currentUser = current_user();
 $dashUrl     = $currentUser !== null ? repdoc_panel_home() : $LOGIN_URL;
 $userBalance = $currentUser !== null ? (int) user_balance((int) $currentUser['id']) : 0;
 
-$FORMATS = [
-    'word' => [
-        'label' => 'MS Word',
-        'full'  => 'Microsoft Word',
-        'hub'   => 'officefiles',
-        'group' => 'office',
-        'brand' => '#2B579A',
-        'soft'  => '#EEF3FB',
-        'exts'  => ['doc', 'docx', 'rtf', 'odt', 'zip'],
-        'note'  => 'চিঠি, আবেদন, নোটিশ ও অফিসের দৈনন্দিন কাজের জন্য রেডি Microsoft Word টেমপ্লেট — নাম, ঠিকানা ও তারিখ বদলে সরাসরি ব্যবহার করুন।',
-    ],
-    'excel' => [
-        'label' => 'MS Excel',
-        'full'  => 'Microsoft Excel',
-        'hub'   => 'officefiles',
-        'group' => 'office',
-        'brand' => '#217346',
-        'soft'  => '#EDF6F1',
-        'exts'  => ['xls', 'xlsx', 'csv', 'zip'],
-        'note'  => 'হিসাব, তালিকা, বাজেট ও রিপোর্টের জন্য ফর্মুলা-সহ Microsoft Excel স্প্রেডশিট — নিজের ডেটা বসিয়ে সাথে সাথে ব্যবহারযোগ্য।',
-    ],
-    'ppt' => [
-        'label' => 'PowerPoint',
-        'full'  => 'Microsoft PowerPoint',
-        'hub'   => 'officefiles',
-        'group' => 'office',
-        'brand' => '#C43E1C',
-        'soft'  => '#FBEEE9',
-        'exts'  => ['ppt', 'pptx', 'zip'],
-        'note'  => 'মিটিং, প্রেজেন্টেশন ও অফিসিয়াল প্রেজেন্টেশনের জন্য প্রস্তুত Microsoft PowerPoint স্লাইড — নিজের তথ্য বসিয়ে ব্যবহার করুন।',
-    ],
-];
+$FORMATS = array_intersect_key(repdoc_template_formats(), array_flip(['word', 'excel', 'ppt']));
+$GROUPS  = ['office' => repdoc_template_groups()['office']];
 
-$GROUPS = [
-    'office' => ['label' => 'MS Office', 'sub' => 'Word, Excel, PowerPoint'],
-];
+$files = repdoc_template_files(['word', 'excel', 'ppt']);
 
-$root  = dirname(__DIR__);
-$files = [];
-foreach ($FORMATS as $type => $meta) {
-    $dir = $root . DIRECTORY_SEPARATOR . $meta['hub'] . DIRECTORY_SEPARATOR . $type;
-    foreach (repdoc_catalog_scan($dir, $type, $meta['exts']) as $row) {
-        $files[] = $row;
-    }
-}
-usort($files, static fn(array $a, array $b): int => $b['mtime'] <=> $a['mtime']);
-
-$counts       = ['all' => count($files), 'office' => 0];
-$typeCounts   = array_fill_keys(array_keys($FORMATS), 0);
-$descriptions = repdoc_file_descriptions_all();
-
-// Packaged Bengali copy (descriptions.json, keyed "type:filename") so a fresh
-// deploy is described before an admin edits anything. DB rows always win.
-$bundledDescriptions = [];
-$bundlePath = __DIR__ . DIRECTORY_SEPARATOR . 'descriptions.json';
-if (is_file($bundlePath)) {
-    $rawBundle = @file_get_contents($bundlePath);
-    $decoded   = is_string($rawBundle) ? json_decode($rawBundle, true) : null;
-    if (is_array($decoded)) $bundledDescriptions = $decoded;
-}
+$counts     = ['all' => count($files), 'office' => 0];
+$typeCounts = array_fill_keys(array_keys($FORMATS), 0);
 
 foreach ($files as $i => $file) {
     $meta = $FORMATS[$file['type']];
-    $key  = repdoc_file_description_key($file['type'], $file['name']);
-    $custom = (string) ($descriptions[$key] ?? '');
-    if ($custom === '') $custom = (string) ($bundledDescriptions[$key] ?? '');
-    $files[$i]['description'] = $custom !== '' ? $custom : $meta['note'];
-    $files[$i]['thumb'] = repdoc_file_thumb_url($file['type'], $file['name']);
     $files[$i]['search'] = repdoc_catalog_search_index($files[$i], $FORMATS, $GROUPS);
     $counts[$meta['group']] = ($counts[$meta['group']] ?? 0) + 1;
     $typeCounts[$file['type']] = ($typeCounts[$file['type']] ?? 0) + 1;
@@ -143,8 +85,9 @@ foreach ($files as $i => $file) {
             $items[] = [
                 '@type'       => 'ListItem',
                 'position'    => $i + 1,
-                'name'        => $FORMATS[$file['type']]['full'] . ' — ' . $file['name'],
+                'name'        => $FORMATS[$file['type']]['full'] . ' — ' . ($file['title'] ?? $file['name']),
                 'description' => $file['description'],
+                'url'         => $file['canonical'] ?? repdoc_template_canonical($file['type'], $file['name']),
             ];
         }
         repdoc_jsonld([
