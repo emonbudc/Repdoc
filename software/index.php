@@ -15,6 +15,8 @@ require_once dirname(__DIR__) . '/src/filemeta.php';
 require_once dirname(__DIR__) . '/src/catalog.php';
 require_once dirname(__DIR__) . '/src/software.php';
 
+header('X-Robots-Tag: noindex, follow');
+
 $SEO_TITLE = 'সফটওয়্যার ডাউনলোড — Repdoc';
 $SEO_DESC  = 'Windows, Android, macOS ও Linux-এর নির্বাচিত সফটওয়্যার — লগ ইন ছাড়াই সরাসরি ডাউনলোড লিংকসহ এক জায়গায়।';
 $CANON     = repdoc_canonical('software/');
@@ -143,6 +145,7 @@ $closingActions = [
         'imageHeight' => 600,
         'imageAlt'    => 'Repdoc software downloads library',
         'locale'      => 'bn_BD',
+        'noindex'     => true,
     ]);
     repdoc_jsonld([
         '@type'       => 'CollectionPage',
