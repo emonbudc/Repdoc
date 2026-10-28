@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Repdoc — public homepage (repdoc.freedev.app)
+ * Repdoc — public homepage (repdoc.rf.gd)
  *
  * Why a PHP registry instead of hard-coded HTML: every card maps to a real
  * folder in this repo, so adding a tool later is a one-line array entry and
@@ -18,7 +18,7 @@ require_once __DIR__ . '/src/seo.php';
 
 $BRAND      = 'Repdoc';
 $BRAND_FULL = 'Repdoc — Free Document Templates';
-$DOMAIN     = 'repdoc.freedev.app';
+$DOMAIN     = 'repdoc.rf.gd';
 $LOGIN_URL  = repdoc_url('public/login/');
 $APPLY_URL  = repdoc_url('Entrepreneur/apply/');
 $LOGO       = 'src/assets/image/logo.png';

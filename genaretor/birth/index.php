@@ -369,7 +369,7 @@ $repdocIsAdmin = $repdocUser['role'] === 'admin';
             <div class="footer-brand">
                 <a class="brand" href="<?= e(repdoc_url('/')) ?>">
                     <img class="brand-logo" src="<?= e(repdoc_url('src/assets/image/logo.png')) ?>" alt="" width="32" height="32" loading="lazy">
-                    <span class="brand-text"><strong>Repdoc</strong><small>repdoc.freedev.app</small></span>
+                    <span class="brand-text"><strong>Repdoc</strong><small>repdoc.rf.gd</small></span>
                 </a>
                 <p>ডকুমেন্ট তৈরি, রেকর্ড অনুসন্ধান ও ডাউনলোডের অনলাইন টুলস।</p>
             </div>

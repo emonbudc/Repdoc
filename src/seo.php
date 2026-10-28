@@ -12,7 +12,7 @@ declare(strict_types=1);
  *
  * Canonical base URL: override with the REPDOC_PUBLIC_BASE environment
  * variable on the host when the production domain ever changes. The default
- * is the production domain (repdoc.freedev.app). Local/dev
+ * is the production domain (repdoc.rf.gd). Local/dev
  * hosts are never used as canonicals.
  */
 
@@ -22,14 +22,14 @@ if (!defined('REPDOC_PUBLIC_BASE')) {
         'REPDOC_PUBLIC_BASE',
         $seoEnvBase !== false && trim((string) $seoEnvBase) !== ''
             ? rtrim(trim((string) $seoEnvBase), '/')
-            : 'https://repdoc.freedev.app'
+            : 'https://repdoc.rf.gd'
     );
 }
 
 if (!function_exists('repdoc_canonical')) {
     /**
      * Absolute canonical URL for a project-relative path.
-     * Example: repdoc_canonical('showcase/') → https://repdoc.freedev.app/showcase/
+     * Example: repdoc_canonical('showcase/') → https://repdoc.rf.gd/showcase/
      */
     function repdoc_canonical(string $path = ''): string
     {

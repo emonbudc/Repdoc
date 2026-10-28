@@ -81,7 +81,7 @@ $PROT_URL  = repdoc_url('genaretor/prottoyon/');
         <div class="landing-card">
             <a class="auth-brand" href="<?= e($HOME) ?>">
                 <img src="<?= e(repdoc_url('src/assets/image/logo.png')) ?>" alt="" width="96" height="32" loading="lazy" decoding="async">
-                <span><strong>Repdoc</strong><small>repdoc.freedev.app · union toolkit</small></span>
+                <span><strong>Repdoc</strong><small>repdoc.rf.gd · union toolkit</small></span>
             </a>
 
             <h1>সনদ (Sonod)</h1>

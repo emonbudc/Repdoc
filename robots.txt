@@ -1,4 +1,4 @@
-# Repdoc — crawler permissions (production: https://repdoc.freedev.app/robots.txt)
+# Repdoc — crawler permissions (production: https://repdoc.rf.gd/robots.txt)
 #
 # Gated application pages (login-required tools, panels, admin) redirect
 # unauthenticated crawlers to the noindex login page, but they are also
@@ -29,4 +29,4 @@ Allow: /about/
 Disallow: /love/
 Disallow: /design-system/
 
-Sitemap: https://repdoc.freedev.app/sitemap.xml
+Sitemap: https://repdoc.rf.gd/sitemap.xml

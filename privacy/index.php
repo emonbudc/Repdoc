@@ -248,7 +248,7 @@ $LOGIN_URL = repdoc_url('public/login/');
 
             <span>
                 <strong>Repdoc</strong>
-                <small>repdoc.freedev.app · union toolkit</small>
+                <small>repdoc.rf.gd · union toolkit</small>
             </span>
         </a>
 

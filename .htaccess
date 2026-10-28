@@ -10,12 +10,12 @@ DirectoryIndex index.php index.html
 
     RewriteCond %{HTTPS} !=on
     RewriteCond %{HTTP:X-Forwarded-Proto} !https
-    RewriteRule ^ https://repdoc.freedev.app%{REQUEST_URI} [L,R=301]
+    RewriteRule ^ https://repdoc.rf.gd%{REQUEST_URI} [L,R=301]
 
     RewriteCond %{HTTP_HOST} ^www\.repdoc\.freedev\.app$ [NC]
-    RewriteRule ^ https://repdoc.freedev.app%{REQUEST_URI} [L,R=301]
+    RewriteRule ^ https://repdoc.rf.gd%{REQUEST_URI} [L,R=301]
 
-    RewriteRule ^index\.php$ https://repdoc.freedev.app/ [R=301,L]
+    RewriteRule ^index\.php$ https://repdoc.rf.gd/ [R=301,L]
 
     RewriteCond %{REQUEST_URI} !/$
     RewriteRule ^showcase/(word|excel|ppt|psd|ai|plp)/([a-z0-9-]+)$ showcase/$1/$2/ [R=301,L]

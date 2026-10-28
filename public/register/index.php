@@ -107,7 +107,7 @@ if ($signupOpen && $_SERVER['REQUEST_METHOD'] === 'POST') {
     <div style="max-width: 720px; margin: 0 auto; padding: var(--space-7) var(--gutter);">
         <a class="auth-brand" href="<?= e(repdoc_url('/')) ?>">
             <img src="<?= e(repdoc_url('src/assets/image/logo.png')) ?>" alt="" width="96" height="32">
-            <span><strong>Repdoc</strong><small>repdoc.freedev.app</small></span>
+            <span><strong>Repdoc</strong><small>repdoc.rf.gd</small></span>
         </a>
 
         <?php if ($success): ?>

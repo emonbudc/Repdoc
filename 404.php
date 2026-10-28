@@ -34,7 +34,7 @@ $dashLabel = is_logged_in() ? 'ড্যাশবোর্ড' : 'লগইন';
     <main class="auth-card" style="text-align:center">
         <a class="auth-brand" href="<?= e($home) ?>" style="justify-content:center">
             <img src="<?= e(repdoc_url('src/assets/image/logo.png')) ?>" alt="" width="96" height="32">
-            <span><strong>Repdoc</strong><small>repdoc.freedev.app · union toolkit</small></span>
+            <span><strong>Repdoc</strong><small>repdoc.rf.gd · union toolkit</small></span>
         </a>
         <p class="auth-kicker" style="font-family:var(--font-mono)">REG / 404</p>
         <h1>পাতাটি পাওয়া যায়নি</h1>

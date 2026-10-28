@@ -137,7 +137,7 @@ if (!function_exists('repdoc_link_host')) {
             return (string) preg_replace('/^www\./i', '', $host);
         }
         $path = parse_url($url, PHP_URL_PATH);
-        return is_string($path) && $path !== '' ? $path : 'repdoc.freedev.app';
+        return is_string($path) && $path !== '' ? $path : 'repdoc.rf.gd';
     }
 }
 

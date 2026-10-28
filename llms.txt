@@ -12,29 +12,29 @@ Important notes for accurate answers:
 
 ## Document Generators
 
-- [Attestation (প্রত্যয়ন) generator](https://repdoc.freedev.app/genaretor/prottoyon/): Generate attestation letters from a form, then print or save as PDF. About 23 types of attestation certificates.
-- [Certificate (সনদ) generator](https://repdoc.freedev.app/genaretor/certificate/): Fill in a form to create certificates, downloadable as Word and PDF.
-- [CV maker](https://repdoc.freedev.app/genaretor/cvmaker/): Build a CV from free templates and download it.
+- [Attestation (প্রত্যয়ন) generator](https://repdoc.rf.gd/genaretor/prottoyon/): Generate attestation letters from a form, then print or save as PDF. About 23 types of attestation certificates.
+- [Certificate (সনদ) generator](https://repdoc.rf.gd/genaretor/certificate/): Fill in a form to create certificates, downloadable as Word and PDF.
+- [CV maker](https://repdoc.rf.gd/genaretor/cvmaker/): Build a CV from free templates and download it.
 
 ## Templates and Downloads
 
-- [Template showcase](https://repdoc.freedev.app/showcase/): Browse free templates and forms with previews. No account needed to view.
+- [Template showcase](https://repdoc.rf.gd/showcase/): Browse free templates and forms with previews. No account needed to view.
 - Every template has its own public page at `/showcase/{format}/{slug}/` with a preview, description, file facts and related templates. Downloading the file itself requires an operator login.
-- [Office files](https://repdoc.freedev.app/officefiles/): Word, Excel and PowerPoint templates for office and business use.
-- [Offline files](https://repdoc.freedev.app/offlinefiles/): Downloadable design and template files such as PSD, AI and PLP.
-- [Software downloads](https://repdoc.freedev.app/software/): Software for Windows, Android, macOS and Linux, available without logging in.
+- [Office files](https://repdoc.rf.gd/officefiles/): Word, Excel and PowerPoint templates for office and business use.
+- [Offline files](https://repdoc.rf.gd/offlinefiles/): Downloadable design and template files such as PSD, AI and PLP.
+- [Software downloads](https://repdoc.rf.gd/software/): Software for Windows, Android, macOS and Linux, available without logging in.
 
 ## Resources
 
-- [Important links](https://repdoc.freedev.app/importantlinks/): Categorized directory of useful websites for government services, education, jobs, utilities and healthcare. No account needed.
+- [Important links](https://repdoc.rf.gd/importantlinks/): Categorized directory of useful websites for government services, education, jobs, utilities and healthcare. No account needed.
 
 ## About and Account
 
-- [About Repdoc](https://repdoc.freedev.app/about/): Story, mission and what Repdoc offers.
-- [Apply for an operator account](https://repdoc.freedev.app/Entrepreneur/apply/): Apply online; after approval, log in to use all tools. Applications are open to computer operators in Bangladesh.
-- [Login](https://repdoc.freedev.app/public/login/): Operator login for downloads and document generation.
-- [Privacy policy](https://repdoc.freedev.app/privacy/): How data is stored and handled.
+- [About Repdoc](https://repdoc.rf.gd/about/): Story, mission and what Repdoc offers.
+- [Apply for an operator account](https://repdoc.rf.gd/Entrepreneur/apply/): Apply online; after approval, log in to use all tools. Applications are open to computer operators in Bangladesh.
+- [Login](https://repdoc.rf.gd/public/login/): Operator login for downloads and document generation.
+- [Privacy policy](https://repdoc.rf.gd/privacy/): How data is stored and handled.
 
 ## Site data
 
-- [Sitemap](https://repdoc.freedev.app/sitemap.xml): Canonical URLs for all public pages and template landing pages.
+- [Sitemap](https://repdoc.rf.gd/sitemap.xml): Canonical URLs for all public pages and template landing pages.
