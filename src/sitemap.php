@@ -24,6 +24,7 @@ if (!function_exists('repdoc_sitemap_entries')) {
 
         foreach (repdoc_page_registry() as $page) {
             if (empty($page['sitemap'])) continue;
+            if (!repdoc_seo_page_indexable((string) $page['path'])) continue;
 
             $file = REPDOC_ROOT . '/' . ltrim((string) $page['file'], '/');
             $lastmod = is_file($file) ? date('Y-m-d', (int) filemtime($file)) : date('Y-m-d');

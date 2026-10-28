@@ -72,4 +72,7 @@ jobs:
             **/*.bak
             **/*.old
             **/qr_codes/**
+            **/love/seo-controls.json
+            **/love/gsc-oauth.json
+            **/love/gsc-cache.json
             **/.DS_Store

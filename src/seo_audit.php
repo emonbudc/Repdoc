@@ -820,7 +820,11 @@ if (!function_exists('repdoc_audit_run')) {
             $desc = repdoc_audit_description($src, $vars);
             $path = trim((string) $page['path'], '/');
             $robotsPath = '/' . $path . (str_ends_with((string) $page['path'], '/') ? '/' : '');
-            $indexable = (bool) $page['indexable'];
+            $control = repdoc_seo_page_state($path);
+            $indexable = (bool) $control['indexable'];
+            $locked = (bool) $control['locked'];
+            $override = $control['override'];
+            $noindexWhy = $locked ? 'Gated page' : 'Noindex page';
             $checks = [];
 
             if ($src === '') {
@@ -829,7 +833,7 @@ if (!function_exists('repdoc_audit_run')) {
                 }
                 $pages[] = [
                     'path' => $path, 'label' => $page['label'], 'file' => $page['file'],
-                    'indexable' => $indexable, 'checks' => $checks,
+                    'indexable' => $indexable, 'locked' => $locked, 'override' => $override, 'checks' => $checks,
                     'status' => 'fail', 'score' => 0,
                     'title_value' => null, 'desc_value' => null,
                 ];
@@ -839,7 +843,7 @@ if (!function_exists('repdoc_audit_run')) {
             if ($title === null) {
                 $checks['title'] = $indexable
                     ? repdoc_audit_check('Title', 'fail', 'No <title> found')
-                    : repdoc_audit_check('Title', 'info', 'Gated page — title rendered by app layout');
+                    : repdoc_audit_check('Title', 'info', $noindexWhy . ' — title rendered by app layout');
             } else {
                 $len = mb_strlen($title, 'UTF-8');
                 $status = ($len < 15 || $len > 60) ? 'warn' : 'pass';
@@ -850,7 +854,7 @@ if (!function_exists('repdoc_audit_run')) {
             if ($desc === null || trim($desc) === '') {
                 $checks['description'] = $indexable
                     ? repdoc_audit_check('Description', 'fail', 'No meta description found')
-                    : repdoc_audit_check('Description', 'info', 'Gated page — description optional');
+                    : repdoc_audit_check('Description', 'info', $noindexWhy . ' — description optional');
                 $desc = null;
             } else {
                 $len = mb_strlen($desc, 'UTF-8');
@@ -868,13 +872,13 @@ if (!function_exists('repdoc_audit_run')) {
                 ? repdoc_audit_check('Viewport', 'pass', 'present')
                 : ($indexable
                     ? repdoc_audit_check('Viewport', 'fail', 'No viewport meta tag')
-                    : repdoc_audit_check('Viewport', 'info', 'Gated page — viewport rendered by app layout'));
+                    : repdoc_audit_check('Viewport', 'info', $noindexWhy . ' — viewport rendered by app layout'));
 
             $canonPath = repdoc_audit_canonical_path($src);
             if ($canonPath === null) {
                 $checks['canonical'] = $indexable
                     ? repdoc_audit_check('Canonical', 'fail', 'No canonical URL')
-                    : repdoc_audit_check('Canonical', 'info', 'Gated page — canonical optional');
+                    : repdoc_audit_check('Canonical', 'info', $noindexWhy . ' — canonical optional');
             } elseif ($canonPath === '' || $canonPath === $path) {
                 $checks['canonical'] = repdoc_audit_check('Canonical', 'pass', repdoc_canonical($path));
             } else {
@@ -893,7 +897,7 @@ if (!function_exists('repdoc_audit_run')) {
             } else {
                 $checks['social'] = $indexable
                     ? repdoc_audit_check('Social tags', 'fail', 'No Open Graph tags')
-                    : repdoc_audit_check('Social tags', 'info', 'Gated page — social tags optional');
+                    : repdoc_audit_check('Social tags', 'info', $noindexWhy . ' — social tags optional');
             }
 
             $h1Src = $src;
@@ -909,7 +913,7 @@ if (!function_exists('repdoc_audit_run')) {
             [$ldStatus, $ldDetail] = repdoc_audit_jsonld($src);
             if (!$indexable && $ldStatus === 'warn') {
                 $ldStatus = 'info';
-                $ldDetail = 'Gated page — JSON-LD optional';
+                $ldDetail = $noindexWhy . ' — JSON-LD optional';
             }
             $checks['jsonld'] = repdoc_audit_check('JSON-LD', $ldStatus, $ldDetail);
 
@@ -917,11 +921,17 @@ if (!function_exists('repdoc_audit_run')) {
             if ($indexable) {
                 $checks['indexability'] = $hasNoindex
                     ? repdoc_audit_check('Indexability', 'fail', 'noindex on an indexable page')
-                    : repdoc_audit_check('Indexability', 'pass', 'indexable');
+                    : repdoc_audit_check('Indexability', 'pass', 'indexable' . ($override !== null ? ' (admin override)' : ''));
+            } elseif ($hasNoindex) {
+                $checks['indexability'] = repdoc_audit_check(
+                    'Indexability',
+                    'pass',
+                    'noindex (' . ($locked ? 'gated' : ($override !== null ? 'admin control' : 'default')) . ')'
+                );
+            } elseif ($locked) {
+                $checks['indexability'] = repdoc_audit_check('Indexability', 'info', 'Gated page — noindex expected in app layout');
             } else {
-                $checks['indexability'] = $hasNoindex
-                    ? repdoc_audit_check('Indexability', 'pass', 'noindex (gated)')
-                    : repdoc_audit_check('Indexability', 'info', 'Gated page — noindex expected in app layout');
+                $checks['indexability'] = repdoc_audit_check('Indexability', 'info', 'Admin noindex — applied by repdoc_seo_head()');
             }
 
             if (!$sitemap['valid']) {
@@ -934,7 +944,7 @@ if (!function_exists('repdoc_audit_run')) {
                         : repdoc_audit_check('Sitemap', 'fail', 'Indexable page missing from sitemap.xml');
                 } else {
                     $checks['sitemap'] = $inSitemap
-                        ? repdoc_audit_check('Sitemap', 'warn', 'Gated page is listed in sitemap.xml')
+                        ? repdoc_audit_check('Sitemap', 'warn', $noindexWhy . ' is listed in sitemap.xml')
                         : repdoc_audit_check('Sitemap', 'pass', 'not in sitemap');
                 }
             }
@@ -949,7 +959,7 @@ if (!function_exists('repdoc_audit_run')) {
                         : repdoc_audit_check('Robots', 'fail', 'blocked by robots.txt');
                 } else {
                     $checks['robots'] = $allowed
-                        ? repdoc_audit_check('Robots', 'info', 'robots allows; noindex is required')
+                        ? repdoc_audit_check('Robots', 'info', $locked ? 'robots allows; noindex is required' : 'robots allows; admin noindex is applied at runtime')
                         : repdoc_audit_check('Robots', 'pass', 'blocked by robots.txt');
                 }
             }
@@ -959,6 +969,8 @@ if (!function_exists('repdoc_audit_run')) {
                 'label' => (string) $page['label'],
                 'file' => (string) $page['file'],
                 'indexable' => $indexable,
+                'locked' => $locked,
+                'override' => $override,
                 'checks' => $checks,
                 'status' => repdoc_audit_worst($checks),
                 'score' => repdoc_audit_score($checks),
@@ -1176,7 +1188,7 @@ if (!function_exists('repdoc_seo_audit')) {
     function repdoc_seo_audit(bool $force = false): array
     {
         $cacheFile = REPDOC_LOVE . DIRECTORY_SEPARATOR . 'seo-audit.json';
-        $cacheVersion = 5;
+        $cacheVersion = 6;
         $ttl = 900;
 
         if (!$force && is_file($cacheFile)) {

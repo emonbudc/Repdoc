@@ -49,3 +49,8 @@ Thumbs.db
 
 # SEO audit cache (regenerated on demand)
 love/seo-audit.json
+love/seo-controls.json
+love/gsc-cache.json
+
+# Google Search Console OAuth credentials — never commit
+love/gsc-oauth.json

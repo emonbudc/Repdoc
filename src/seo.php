@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/seo_controls.php';
+
 /**
  * Repdoc — central SEO helpers.
  *
@@ -56,19 +58,19 @@ if (!function_exists('repdoc_page_registry')) {
             ['path' => 'showcase/', 'file' => 'showcase/index.php', 'label' => 'Template Showcase', 'indexable' => true, 'sitemap' => true, 'changefreq' => 'weekly', 'priority' => '0.8', 'image' => 'src/assets/image/officefiles-hero.png'],
             ['path' => 'officefiles/', 'file' => 'officefiles/index.php', 'label' => 'Office Files', 'indexable' => true, 'sitemap' => true, 'changefreq' => 'weekly', 'priority' => '0.8', 'image' => 'src/assets/image/officefiles-hero.png'],
             ['path' => 'offlinefiles/', 'file' => 'offlinefiles/index.php', 'label' => 'Offline Files', 'indexable' => true, 'sitemap' => true, 'changefreq' => 'weekly', 'priority' => '0.8', 'image' => 'src/assets/image/officefiles-hero.png'],
-            ['path' => 'software/', 'file' => 'software/index.php', 'label' => 'Software', 'indexable' => false, 'sitemap' => false, 'changefreq' => 'weekly', 'priority' => '0.8', 'image' => 'src/assets/image/hero.webp'],
+            ['path' => 'software/', 'file' => 'software/index.php', 'label' => 'Software', 'indexable' => false, 'sitemap' => true, 'changefreq' => 'weekly', 'priority' => '0.8', 'image' => 'src/assets/image/hero.webp'],
             ['path' => 'importantlinks/', 'file' => 'importantlinks/index.php', 'label' => 'Important Links', 'indexable' => true, 'sitemap' => true, 'changefreq' => 'monthly', 'priority' => '0.6', 'image' => 'src/assets/image/hero.webp'],
             ['path' => 'privacy/', 'file' => 'privacy/index.php', 'label' => 'Privacy', 'indexable' => true, 'sitemap' => true, 'changefreq' => 'yearly', 'priority' => '0.3', 'image' => 'src/assets/image/hero.webp'],
             ['path' => 'genaretor/certificate/', 'file' => 'genaretor/certificate/index.php', 'label' => 'Certificate Generator', 'indexable' => true, 'sitemap' => true, 'changefreq' => 'monthly', 'priority' => '0.8', 'image' => 'src/assets/image/hero.webp'],
             ['path' => 'public/login/', 'file' => 'public/login/index.php', 'label' => 'Login', 'indexable' => true, 'sitemap' => true, 'changefreq' => 'monthly', 'priority' => '0.5', 'image' => 'src/assets/image/hero.webp'],
             ['path' => 'public/register/', 'file' => 'public/register/index.php', 'label' => 'Register', 'indexable' => true, 'sitemap' => true, 'changefreq' => 'monthly', 'priority' => '0.5', 'image' => 'src/assets/image/hero.webp'],
-            ['path' => 'Entrepreneur/apply/', 'file' => 'Entrepreneur/apply/index.php', 'label' => 'Entrepreneur Apply', 'indexable' => false, 'sitemap' => false, 'changefreq' => 'monthly', 'priority' => '0.3', 'image' => ''],
-            ['path' => 'verify/', 'file' => 'verify/index.php', 'label' => 'Certificate Verify', 'indexable' => false, 'sitemap' => false, 'changefreq' => 'monthly', 'priority' => '0.3', 'image' => ''],
-            ['path' => 'genaretor/birth/', 'file' => 'genaretor/birth/index.php', 'label' => 'Birth Generator', 'indexable' => false, 'sitemap' => false, 'changefreq' => 'monthly', 'priority' => '0.3', 'image' => ''],
-            ['path' => 'genaretor/cvmaker/', 'file' => 'genaretor/cvmaker/index.php', 'label' => 'CV Maker', 'indexable' => false, 'sitemap' => false, 'changefreq' => 'monthly', 'priority' => '0.3', 'image' => ''],
-            ['path' => 'genaretor/prottoyon/', 'file' => 'genaretor/prottoyon/index.php', 'label' => 'Attestation Generator', 'indexable' => false, 'sitemap' => false, 'changefreq' => 'monthly', 'priority' => '0.3', 'image' => ''],
-            ['path' => 'tools/land/', 'file' => 'tools/land/index.php', 'label' => 'Land Records', 'indexable' => false, 'sitemap' => false, 'changefreq' => 'monthly', 'priority' => '0.3', 'image' => ''],
-            ['path' => 'tools/passport/', 'file' => 'tools/passport/index.php', 'label' => 'Passport Photo', 'indexable' => false, 'sitemap' => false, 'changefreq' => 'monthly', 'priority' => '0.3', 'image' => ''],
+            ['path' => 'Entrepreneur/apply/', 'locked' => true, 'file' => 'Entrepreneur/apply/index.php', 'label' => 'Entrepreneur Apply', 'indexable' => false, 'sitemap' => false, 'changefreq' => 'monthly', 'priority' => '0.3', 'image' => ''],
+            ['path' => 'verify/', 'locked' => true, 'file' => 'verify/index.php', 'label' => 'Certificate Verify', 'indexable' => false, 'sitemap' => false, 'changefreq' => 'monthly', 'priority' => '0.3', 'image' => ''],
+            ['path' => 'genaretor/birth/', 'locked' => true, 'file' => 'genaretor/birth/index.php', 'label' => 'Birth Generator', 'indexable' => false, 'sitemap' => false, 'changefreq' => 'monthly', 'priority' => '0.3', 'image' => ''],
+            ['path' => 'genaretor/cvmaker/', 'locked' => true, 'file' => 'genaretor/cvmaker/index.php', 'label' => 'CV Maker', 'indexable' => false, 'sitemap' => false, 'changefreq' => 'monthly', 'priority' => '0.3', 'image' => ''],
+            ['path' => 'genaretor/prottoyon/', 'locked' => true, 'file' => 'genaretor/prottoyon/index.php', 'label' => 'Attestation Generator', 'indexable' => false, 'sitemap' => false, 'changefreq' => 'monthly', 'priority' => '0.3', 'image' => ''],
+            ['path' => 'tools/land/', 'locked' => true, 'file' => 'tools/land/index.php', 'label' => 'Land Records', 'indexable' => false, 'sitemap' => false, 'changefreq' => 'monthly', 'priority' => '0.3', 'image' => ''],
+            ['path' => 'tools/passport/', 'locked' => true, 'file' => 'tools/passport/index.php', 'label' => 'Passport Photo', 'indexable' => false, 'sitemap' => false, 'changefreq' => 'monthly', 'priority' => '0.3', 'image' => ''],
         ];
     }
 }
@@ -146,6 +148,9 @@ if (!function_exists('repdoc_seo_head')) {
         $twitterCard = (string) ($opts['twitterCard'] ?? (($imageWidth !== null && (int) $imageWidth >= 600) ? 'summary_large_image' : 'summary'));
         $locale      = (string) ($opts['locale'] ?? 'bn_BD');
         $noindex     = !empty($opts['noindex']);
+        if (!$noindex && function_exists('repdoc_current_path') && function_exists('repdoc_seo_page_indexable')) {
+            $noindex = !repdoc_seo_page_indexable(repdoc_current_path());
+        }
 
         echo '    <link rel="canonical" href="' . e($canonical) . '">' . "\n";
         echo '    <meta name="robots" content="' . ($noindex
