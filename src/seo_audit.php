@@ -1084,19 +1084,26 @@ if (!function_exists('repdoc_audit_run')) {
         $templateFiles = repdoc_template_index()['files'];
         $templateMissing = 0;
         $templateCanonicals = [];
+        $templateDupeCanonicals = [];
         foreach ($templateFiles as $templateRow) {
-            $templateCanonicals[(string) $templateRow['canonical']] = true;
-            if (!isset($sitemapPaths[repdoc_audit_url_path((string) $templateRow['canonical'])])) {
+            $templateCanonical = (string) $templateRow['canonical'];
+            if (isset($templateCanonicals[$templateCanonical])) {
+                $templateDupeCanonicals[$templateCanonical] = true;
+            }
+            $templateCanonicals[$templateCanonical] = true;
+            if (!isset($sitemapPaths[repdoc_audit_url_path($templateCanonical)])) {
                 $templateMissing++;
             }
         }
-        $templateDupes = count($templateFiles) - count($templateCanonicals);
+        $templateDupes = count($templateDupeCanonicals);
         $site['template_pages'] = repdoc_audit_check(
             'Template landing pages',
             $templateFiles === [] ? 'fail' : ($templateMissing > 0 || $templateDupes > 0 ? 'warn' : 'pass'),
             count($templateFiles) . ' pages · '
                 . ($templateMissing > 0 ? $templateMissing . ' missing from sitemap' : 'all in sitemap')
-                . ($templateDupes > 0 ? ' · ' . $templateDupes . ' duplicate canonical(s)' : '')
+                . ($templateDupes > 0
+                    ? ' · ' . $templateDupes . ' duplicate canonical(s): ' . implode(', ', array_slice(array_keys($templateDupeCanonicals), 0, 3))
+                    : '')
         );
 
         $site['llms'] = repdoc_audit_check(
@@ -1169,7 +1176,7 @@ if (!function_exists('repdoc_seo_audit')) {
     function repdoc_seo_audit(bool $force = false): array
     {
         $cacheFile = REPDOC_LOVE . DIRECTORY_SEPARATOR . 'seo-audit.json';
-        $cacheVersion = 4;
+        $cacheVersion = 5;
         $ttl = 900;
 
         if (!$force && is_file($cacheFile)) {

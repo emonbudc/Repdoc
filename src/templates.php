@@ -280,10 +280,34 @@ if (!function_exists('repdoc_template_index')) {
             $groups[$row['type']][$row['slug']][] = $i;
         }
         foreach ($groups as $type => $slugs) {
+            $used = [];
+            $dupes = [];
             foreach ($slugs as $base => $idxs) {
-                if (count($idxs) === 1) continue;
+                if (count($idxs) === 1) {
+                    $used[$base] = true;
+                } else {
+                    $dupes[$base] = $idxs;
+                }
+            }
+            foreach ($dupes as $base => $idxs) {
+                usort($idxs, static fn(int $a, int $b): int => strnatcasecmp(
+                    (string) $rows[$a]['name'],
+                    (string) $rows[$b]['name']
+                ));
                 foreach ($idxs as $idx) {
-                    $rows[$idx]['slug'] = $base . '-' . $rows[$idx]['ext'];
+                    $ext = (string) $rows[$idx]['ext'];
+                    $candidate = $base . '-' . $ext;
+                    if (isset($used[$candidate])) {
+                        $candidate = $base . '-' . $ext . '-' . substr(sha1(strtolower((string) $rows[$idx]['name'])), 0, 6);
+                    }
+                    $unique = $candidate;
+                    $suffix = 2;
+                    while (isset($used[$unique])) {
+                        $unique = $candidate . '-' . $suffix;
+                        $suffix++;
+                    }
+                    $rows[$idx]['slug'] = $unique;
+                    $used[$unique] = true;
                 }
             }
         }
