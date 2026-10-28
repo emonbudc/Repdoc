@@ -12,7 +12,7 @@ DirectoryIndex index.php index.html
     RewriteCond %{HTTP:X-Forwarded-Proto} !https
     RewriteRule ^ https://repdoc.rf.gd%{REQUEST_URI} [L,R=301]
 
-    RewriteCond %{HTTP_HOST} ^www\.repdoc\.freedev\.app$ [NC]
+    RewriteCond %{HTTP_HOST} ^www\.repdoc\.rf\.gd$ [NC]
     RewriteRule ^ https://repdoc.rf.gd%{REQUEST_URI} [L,R=301]
 
     RewriteRule ^index\.php$ https://repdoc.rf.gd/ [R=301,L]
