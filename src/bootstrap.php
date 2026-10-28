@@ -215,8 +215,13 @@ function repdoc_base_url(): string
         $override = defined('REPDOC_BASE_URL') ? (string) REPDOC_BASE_URL : '';
     }
     if ($override !== '') {
-        $base = '/' . trim($override, '/');
-        if ($base === '/') $base = '';
+        $override = trim($override);
+        if (preg_match('#^https?://#i', $override)) {
+            $urlPath  = parse_url($override, PHP_URL_PATH);
+            $override = is_string($urlPath) ? $urlPath : '';
+        }
+        $override = trim($override, '/');
+        $base     = $override === '' ? '' : '/' . $override;
         return $base;
     }
 
