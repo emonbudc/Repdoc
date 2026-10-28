@@ -131,6 +131,7 @@ if (!function_exists('repdoc_security_headers')) {
         header('Content-Security-Policy-Report-Only: ' . $cspRo);
     }
 }
+repdoc_security_headers();
 
 /**
  * Validate an image upload without trusting client-supplied MIME/filename.
@@ -273,9 +274,12 @@ if (!function_exists('repdoc_session')) {
     function repdoc_session(): void
     {
         if (session_status() === PHP_SESSION_ACTIVE) return;
+        $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+            || ((string) ($_SERVER['SERVER_PORT'] ?? '') === '443');
+        @ini_set('session.cookie_httponly', '1');
+        @ini_set('session.cookie_samesite', 'Lax');
+        @ini_set('session.cookie_secure', $https ? '1' : '0');
         if (PHP_SAPI !== 'cli' && !headers_sent()) {
-            $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-                || ((string) ($_SERVER['SERVER_PORT'] ?? '') === '443');
             session_set_cookie_params([
                 'lifetime' => 0,
                 'path'     => '/',

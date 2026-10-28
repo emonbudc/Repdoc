@@ -140,6 +140,7 @@ $repdocIsAdmin = $repdocUser['role'] === 'admin';
     </header>
 
     <main class="tool-main" id="mainContent">
+        <h1 class="sr-only">জন্ম নিবন্ধন সনদ যাচাই ও ডাউনলোড</h1>
         <div class="container">
                 <div class="tool-workspace">
 

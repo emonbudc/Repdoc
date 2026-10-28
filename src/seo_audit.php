@@ -597,6 +597,19 @@ if (!function_exists('repdoc_audit_health')) {
         ];
         foreach ($exposed as $relative => [$status, $detail]) {
             $present = is_file(REPDOC_ROOT . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $relative));
+            if ($relative === 'index.php.bak' && $present) {
+                $backupProbe = $probes['backup'] ?? [];
+                $backupBody = (string) ($backupProbe['body'] ?? '');
+                $leaked = ($backupProbe['status'] ?? 0) === 200
+                    && !repdoc_audit_wall($backupBody)
+                    && str_contains($backupBody, '<?php');
+                $groups['filesystem']['exposed_' . md5($relative)] = repdoc_audit_check(
+                    'Exposed: ' . $relative,
+                    $leaked ? 'fail' : 'pass',
+                    $leaked ? 'Backup source is downloadable' : 'present but not served by the host'
+                );
+                continue;
+            }
             $groups['filesystem']['exposed_' . md5($relative)] = repdoc_audit_check(
                 'Exposed: ' . $relative,
                 $present ? $status : 'pass',
@@ -671,17 +684,21 @@ if (!function_exists('repdoc_audit_health')) {
         );
 
         $robotsProbe = $probes['robots'] ?? [];
+        $robotsBody = (string) ($robotsProbe['body'] ?? '');
+        $robotsOk = ($robotsProbe['status'] ?? 0) === 200 && stripos($robotsBody, 'user-agent') !== false;
         $groups['content']['robots_http'] = repdoc_audit_check(
             'robots.txt reachable',
-            ($robotsProbe['status'] ?? 0) === 200 ? 'pass' : 'warn',
-            ($robotsProbe['status'] ?? 0) === 200 ? 'HTTP 200' : 'HTTP ' . (int) ($robotsProbe['status'] ?? 0)
+            $robotsOk ? 'pass' : 'warn',
+            $robotsOk ? 'HTTP 200 · text' : 'HTTP ' . (int) ($robotsProbe['status'] ?? 0) . ' · unexpected body'
         );
 
         $sitemapProbe = $probes['sitemap'] ?? [];
+        $sitemapBody = (string) ($sitemapProbe['body'] ?? '');
+        $sitemapOk = ($sitemapProbe['status'] ?? 0) === 200 && str_contains($sitemapBody, '<urlset');
         $groups['content']['sitemap_http'] = repdoc_audit_check(
             'sitemap.xml reachable',
-            ($sitemapProbe['status'] ?? 0) === 200 ? 'pass' : 'warn',
-            ($sitemapProbe['status'] ?? 0) === 200 ? 'HTTP 200' : 'HTTP ' . (int) ($sitemapProbe['status'] ?? 0)
+            $sitemapOk ? 'pass' : 'warn',
+            $sitemapOk ? 'HTTP 200 · XML' : 'HTTP ' . (int) ($sitemapProbe['status'] ?? 0) . ' · non-XML response'
         );
 
         $ogProbe = $probes['og_image'] ?? [];
@@ -740,9 +757,10 @@ if (!function_exists('repdoc_audit_run')) {
             'googlebot' => repdoc_audit_probe($base, repdoc_audit_ua('googlebot')),
             'twitterbot' => repdoc_audit_probe($base, repdoc_audit_ua('twitterbot')),
             'robots'    => repdoc_audit_probe($base . 'robots.txt', repdoc_audit_ua('chrome')),
-            'sitemap'   => repdoc_audit_probe($base . 'sitemap.xml', repdoc_audit_ua('chrome')),
+            'sitemap'   => repdoc_audit_probe($base . 'sitemap.xml', repdoc_audit_ua('googlebot')),
             'og_image'  => repdoc_audit_probe($base . 'src/assets/image/logo.png', repdoc_audit_ua('chrome')),
             'favicon'   => repdoc_audit_probe($base . 'public/favicon.png', repdoc_audit_ua('chrome')),
+            'backup'    => repdoc_audit_probe($base . 'index.php.bak', repdoc_audit_ua('chrome')),
         ];
 
         $wallChrome = repdoc_audit_wall((string) $probes['chrome']['body']);
@@ -868,7 +886,14 @@ if (!function_exists('repdoc_audit_run')) {
                     : repdoc_audit_check('Social tags', 'info', 'Gated page — social tags optional');
             }
 
-            [$h1Count, $h1Status, $h1Detail] = repdoc_audit_h1($src);
+            $h1Src = $src;
+            if (str_contains($src, 'repdoc_catalog_render(')) {
+                $catalogFile = $root . '/src/catalog.php';
+                if (is_file($catalogFile)) {
+                    $h1Src .= (string) @file_get_contents($catalogFile);
+                }
+            }
+            [$h1Count, $h1Status, $h1Detail] = repdoc_audit_h1($h1Src);
             $checks['h1'] = repdoc_audit_check('H1', $h1Status, $h1Detail);
 
             [$ldStatus, $ldDetail] = repdoc_audit_jsonld($src);
@@ -1108,12 +1133,14 @@ if (!function_exists('repdoc_seo_audit')) {
     function repdoc_seo_audit(bool $force = false): array
     {
         $cacheFile = REPDOC_LOVE . DIRECTORY_SEPARATOR . 'seo-audit.json';
+        $cacheVersion = 2;
         $ttl = 900;
 
         if (!$force && is_file($cacheFile)) {
             $raw = @file_get_contents($cacheFile);
             $json = $raw !== false ? json_decode($raw, true) : null;
-            if (is_array($json) && isset($json['generated_at'], $json['data'])
+            if (is_array($json) && ($json['version'] ?? 0) === $cacheVersion
+                && isset($json['generated_at'], $json['data'])
                 && (time() - (int) $json['generated_at']) < $ttl) {
                 $data = $json['data'];
                 $data['cached'] = true;
@@ -1127,7 +1154,7 @@ if (!function_exists('repdoc_seo_audit')) {
         if (is_dir(REPDOC_LOVE) && is_writable(REPDOC_LOVE)) {
             @file_put_contents(
                 $cacheFile,
-                json_encode(['generated_at' => time(), 'data' => $data], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                json_encode(['version' => $cacheVersion, 'generated_at' => time(), 'data' => $data], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
                 LOCK_EX
             );
         }

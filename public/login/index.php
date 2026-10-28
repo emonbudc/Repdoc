@@ -74,11 +74,11 @@ if ($flash && $error === '') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>লগইন — Repdoc</title>
+    <title>লগইন — Repdoc অ্যাকাউন্টে প্রবেশ করুন</title>
     <meta name="description" content="Repdoc-এ লগইন করুন — একটি অ্যাকাউন্টেই সব ডকুমেন্ট টুল: সিভি, প্রত্যয়ন ও সনদ। UDC উদ্যোক্তা ও অপারেটরদের টুলকিট।">
     <meta name="theme-color" content="#F8FAFC">
     <?php
-    $SEO_TITLE = 'লগইন — Repdoc';
+    $SEO_TITLE = 'লগইন — Repdoc অ্যাকাউন্টে প্রবেশ করুন';
     $SEO_DESC  = 'Repdoc-এ লগইন করুন — একটি অ্যাকাউন্টেই সব ডকুমেন্ট টুল: সিভি, প্রত্যয়ন ও সনদ। UDC উদ্যোক্তা ও অপারেটরদের টুলকিট।';
     $CANON     = repdoc_canonical('public/login/');
     repdoc_seo_head([

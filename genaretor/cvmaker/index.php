@@ -567,6 +567,7 @@ $CV_TEMPLATES = [
             <li data-wstep="3"><b aria-hidden="true">3</b> Get Output</li>
         </ol>
         <main>
+            <h1 class="nid-visually-hidden">CV Maker</h1>
             <form action="output.php" method="POST" enctype="multipart/form-data" id="nidForm">
             <div data-wpane="1">
                 <section class="nid-card" aria-labelledby="t-tpl" data-reveal>
