@@ -85,7 +85,7 @@ $values = [
 ];
 
 // Certificate template: the original pdf2htmlEX layout, filled server-side.
-$html = @file_get_contents(__DIR__ . '/deatha.html');
+$html = @file_get_contents(__DIR__ . '/deatha.txt');
 if ($html === false) {
     http_response_code(500);
     echo 'Certificate template is missing.';
