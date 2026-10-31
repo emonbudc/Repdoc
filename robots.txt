@@ -24,6 +24,8 @@ Allow: /offlinefiles/
 Allow: /officefiles/
 Allow: /software/
 Allow: /about/
+Allow: /sonod/
+Allow: /verify/
 
 # Code, data, and design sources (never content).
 Disallow: /love/

@@ -14,7 +14,7 @@ require_once dirname(__DIR__) . '/src/seo.php';
 require_once dirname(__DIR__) . '/src/catalog.php';
 require_once dirname(__DIR__) . '/src/links.php';
 
-$SEO_TITLE = 'গুরুত্বপূর্ণ লিংক — Repdoc';
+$SEO_TITLE = 'গুরুত্বপূর্ণ লিংক — সরকারি সেবা, শিক্ষা ও চাকরি | Repdoc';
 $SEO_DESC  = 'সরকারি সেবা, শিক্ষা, চাকরি, ইউটিলিটি ও স্বাস্থ্যসেবার দরকারি লিংক এক জায়গায়। ক্যাটাগরি বা নাম দিয়ে খুঁজুন এবং সরাসরি নতুন ট্যাবে খুলুন।';
 $CANON     = repdoc_canonical('importantlinks/');
 $HOME      = repdoc_url('/');

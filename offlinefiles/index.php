@@ -15,7 +15,7 @@ require_once dirname(__DIR__) . '/src/seo.php';
 require_once dirname(__DIR__) . '/src/filemeta.php';
 require_once dirname(__DIR__) . '/src/catalog.php';
 
-$SEO_TITLE = 'PSD, AI ও PLP ফাইল শোকেস — Repdoc';
+$SEO_TITLE = 'PSD, AI ও PLP ডিজাইন টেমপ্লেট — Repdoc';
 $SEO_DESC  = 'Repdoc অফলাইন ফাইল: Adobe Photoshop (PSD), Illustrator (AI) ও PixelLab (PLP) টেমপ্লেট — প্রতিটি ফাইলের বিবরণসহ। লগ ইন করে ডাউনলোড করুন।';
 $CANON     = repdoc_canonical('offlinefiles/');
 $HOME      = repdoc_url('/');

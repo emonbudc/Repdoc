@@ -21,17 +21,22 @@ DirectoryIndex index.php index.html
     RewriteRule ^index\.php$ https://repdoc.rf.gd/ [R=301,L]
 
     RewriteCond %{REQUEST_URI} !/$
-    RewriteRule ^showcase/(word|excel|ppt|psd|ai|plp)/([a-z0-9-]+)$ showcase/$1/$2/ [R=301,L]
+    RewriteRule ^showcase/(word|excel|ppt|psd|ai|plp)/([a-z0-9-]+)$ https://repdoc.rf.gd/showcase/$1/$2/ [R=301,L]
 
     RewriteRule ^showcase/(word|excel|ppt|psd|ai|plp)/([a-z0-9-]+)/?$ showcase/template.php?type=$1&slug=$2 [L,QSA]
 
+    RewriteCond %{REQUEST_URI} !/$
+    RewriteRule ^sonod/([a-z0-9-]+)$ https://repdoc.rf.gd/sonod/$1/ [R=301,L]
+    RewriteRule ^sonod/([a-z0-9-]+)/?$ sonod/guide.php?slug=$1 [L,QSA]
+
     RewriteRule ^sitemap\.xml$ sitemap.php [L]
-    RewriteRule ^Llms\.txt$ llms.txt [R=301,L]
+    RewriteRule ^Llms\.txt$ https://repdoc.rf.gd/llms.txt [R=301,L]
 
     RewriteRule ^love/ - [F,L]
     RewriteRule ^src/.*\.php$ - [F,L]
     RewriteRule ^public/access_log$ - [F,L]
     RewriteRule \.(bak|sql|db|log|ini|sh|env)$ - [F,L,NC]
+    RewriteRule \.(md|csv)$ - [F,L,NC]
 </IfModule>
 
 <IfModule mod_deflate.c>

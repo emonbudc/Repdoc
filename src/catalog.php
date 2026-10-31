@@ -242,6 +242,7 @@ if (!function_exists('repdoc_catalog_header')) {
         $offline   = repdoc_url('offlinefiles/');
         $software  = repdoc_url('software/');
         $important = repdoc_url('importantlinks/');
+        $sonod     = repdoc_url('sonod/');
         $about     = repdoc_url('about/');
         $guide     = $active === 'importantlinks' ? 'লিংক গাইড' : 'ডাউনলোড গাইড';
         $libraryHref = $active === 'about' ? $home . '#tools' : '#library';
@@ -269,6 +270,7 @@ if (!function_exists('repdoc_catalog_header')) {
                     <a class="nav-link" href="<?= e($software) ?>"<?= $current('software') ?>>সফটওয়্যার</a>
                     <a class="nav-link" href="<?= e($libraryHref) ?>">ফাইল লাইব্রেরি</a>
                     <a class="nav-link" href="<?= e($important) ?>"<?= $current('importantlinks') ?>>গুরুত্বপূর্ণ লিংক</a>
+                    <a class="nav-link" href="<?= e($sonod) ?>"<?= $current('sonod') ?>>সনদ গাইড</a>
                     <a class="nav-link" href="<?= e($guideHref) ?>"><?= e($guide) ?></a>
                     <a class="nav-link" href="<?= e($about) ?>"<?= $current('about') ?>>সম্পর্কে</a>
                 </nav>
@@ -366,6 +368,8 @@ if (!function_exists('repdoc_catalog_footer')) {
                         <li><a href="<?= e(repdoc_url('genaretor/cvmaker/')) ?>">সিভি মেকার</a></li>
                         <li><a href="<?= e(repdoc_url('genaretor/prottoyon/')) ?>">প্রত্যয়ন টেমপ্লেট</a></li>
                         <li><a href="<?= e(repdoc_url('genaretor/certificate/')) ?>">সনদ টেমপ্লেট</a></li>
+                        <li><a href="<?= e(repdoc_url('sonod/')) ?>">সনদ গাইড</a></li>
+                        <li><a href="<?= e(repdoc_url('verify/')) ?>">সনদ যাচাই</a></li>
                         <li><a href="<?= e(repdoc_url('importantlinks/')) ?>">গুরুত্বপূর্ণ লিংক</a></li>
                         <li><a href="<?= e($home) ?>#tools">সব টুলস</a></li>
                     </ul>

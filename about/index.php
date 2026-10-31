@@ -15,7 +15,7 @@ require_once dirname(__DIR__) . '/src/seo.php';
 require_once dirname(__DIR__) . '/src/catalog.php';
 require_once dirname(__DIR__) . '/src/links.php';
 
-$SEO_TITLE = 'সম্পর্কে — Repdoc';
+$SEO_TITLE = 'Repdoc সম্পর্কে — ডকুমেন্ট টেমপ্লেট ও অপারেটর টুলকিট';
 $SEO_DESC  = 'Repdoc কী, কাদের জন্য এবং কীভাবে কাজ করে জানুন। বাংলাদেশের কম্পিউটার অপারেটরদের জন্য স্বতন্ত্র ডকুমেন্ট টুলকিট — প্রত্যয়ন, সনদ, সিভি ও দরকারি ফাইল তৈরি করুন।';
 
 $CANON     = repdoc_canonical('about/');

@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__, 2) . '/src/bootstrap.php';
 require_once dirname(__DIR__, 2) . '/src/seo.php';
+require_once dirname(__DIR__, 2) . '/src/sonod_guides.php';
 require_once __DIR__ . '/../prottoyon/types.php';
 
 $SEO_TITLE = 'সনদ (Sonod) — ২৩ ধরনের প্রত্যয়ন — Repdoc';
@@ -73,6 +74,9 @@ $PROT_URL  = repdoc_url('genaretor/prottoyon/');
         .landing-card h2 { margin: 28px 0 8px; font-size: 1.1rem; }
         .landing-card p, .landing-card li { line-height: 1.7; }
         .landing-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+        .sonod-link-list { columns: 2; column-gap: 24px; padding-left: 20px; }
+        .sonod-link-list li { break-inside: avoid; margin-bottom: 4px; }
+        @media (max-width: 520px) { .sonod-link-list { columns: 1; } }
     </style>
 </head>
 <body class="auth-body">
@@ -101,6 +105,14 @@ $PROT_URL  = repdoc_url('genaretor/prottoyon/');
             <ul>
                 <?php foreach (prottoyon_types() as $type): ?>
                     <li><?= e($type['title']) ?></li>
+                <?php endforeach; ?>
+            </ul>
+
+            <h2>সনদ নিয়ে বিস্তারিত বাংলা গাইড</h2>
+            <p>কোন সনদে সাধারণভাবে কী কাগজ লাগে, আবেদনের ধাপ কী এবং যাচাই কীভাবে করবেন—জানতে <a href="<?= e(repdoc_url('sonod/')) ?>">সনদ গাইড</a> দেখুন।</p>
+            <ul class="sonod-link-list">
+                <?php foreach (repdoc_sonod_guides() as $guideSlug => $guide): ?>
+                    <li><a href="<?= e(repdoc_url('sonod/' . $guideSlug . '/')) ?>"><?= e((string) $guide['label']) ?></a></li>
                 <?php endforeach; ?>
             </ul>
 

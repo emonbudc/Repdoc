@@ -282,7 +282,7 @@ function bn_digits(string $v): string
     <header class="site-header" id="top">
         <div class="container header-inner">
             <a class="brand brand-ledger" href="#top" aria-label="Repdoc — হোম">
-                <img class="brand-logo" src="<?= e($LOGO) ?>" alt="" width="120" height="40" decoding="async">
+                <img class="brand-logo" src="<?= e($LOGO) ?>" alt="Repdoc লোগো" width="120" height="40" decoding="async">
                 <span class="brand-word"><strong>Repdoc</strong><small><?= e($DOMAIN) ?> · অপারেটর টুলকিট</small></span>
             </a>
 
@@ -290,6 +290,7 @@ function bn_digits(string $v): string
                 <a class="nav-link" href="#tools">টুলস</a>
                 <a class="nav-link" href="#featured">জনপ্রিয়</a>
                 <a class="nav-link" href="#how">কীভাবে কাজ করে</a>
+                <a class="nav-link" href="<?= e(repdoc_url('sonod/')) ?>">সনদ গাইড</a>
                 <a class="nav-link" href="<?= e(repdoc_url('about/')) ?>">সম্পর্কে</a>
             </nav>
 
@@ -335,7 +336,7 @@ function bn_digits(string $v): string
                         <span class="reg-rule" aria-hidden="true"></span>
                     </div>
                     <figure class="reg-hero-art">
-                        <img class="illus hero-photo" src="src/assets/image/hero.webp" alt="" width="900" height="600" decoding="async" fetchpriority="high">
+                        <img class="illus hero-photo" src="src/assets/image/hero.webp" alt="Repdoc — ফ্রি ডকুমেন্ট টেমপ্লেট ও ফরম তৈরি ও ডাউনলোডের হিরো ইলাস্ট্রেশন" width="900" height="600" decoding="async" fetchpriority="high">
                     </figure>
                 </div>
                 <div class="hero-cta reg-cta">
@@ -417,7 +418,7 @@ function bn_digits(string $v): string
 
                 <!-- Empty state (ux:no-results): guidance + reset, never a blank grid. -->
                 <div class="empty-state" id="emptyState" role="status" hidden>
-                    <img class="illus empty-illus empty-photo" src="src/assets/image/boyfromwhole.png" alt="" width="500" height="500" loading="lazy" decoding="async">
+                    <img class="illus empty-illus empty-photo" src="src/assets/image/boyfromwhole.png" alt="কোনো টুল পাওয়া যায়নি — Repdoc ইলাস্ট্রেশন" width="500" height="500" loading="lazy" decoding="async">
                     <p class="empty-title">কোনো টুল পাওয়া যায়নি</p>
                     <p class="empty-text" id="emptyHint">অন্য ক্যাটাগরি চেষ্টা করুন।</p>
                     <button type="button" class="btn btn-secondary" id="resetSearch">সব টুল দেখুন</button>
@@ -434,8 +435,8 @@ function bn_digits(string $v): string
                             <?php foreach ($featured as $i => $t): ?>
                                 <article class="featured-card featured-slip">
                                     <p><?= e($t['desc']) ?></p>
-                                    <div class="featured-art" aria-hidden="true">
-                                        <img src="src/assets/image/tools-featured.png" alt="" width="385" height="251" loading="lazy" decoding="async">
+                                    <div class="featured-art">
+                                        <img src="src/assets/image/tools-featured.png" alt="Repdoc-এর জনপ্রিয় ডকুমেন্ট টুলস — প্রত্যয়ন, সনদ, CV ও অফিস ফরম" width="385" height="251" loading="lazy" decoding="async">
                                     </div>
                                     <a class="btn btn-primary" href="<?= e($t['url']) ?>" aria-label="<?= e($t['name']) ?> খুলুন">
                                         <span aria-hidden="true">খুলুন</span>
@@ -644,6 +645,8 @@ function bn_digits(string $v): string
                     <?php foreach ($tools as $tool): ?>
                         <li><a href="<?= e($tool['url']) ?>"><?= e($tool['name']) ?></a></li>
                     <?php endforeach; ?>
+                    <li><a href="<?= e(repdoc_url('sonod/')) ?>">সনদ গাইড</a></li>
+                    <li><a href="<?= e(repdoc_url('verify/')) ?>">সনদ যাচাই</a></li>
                 </ul>
             </nav>
 

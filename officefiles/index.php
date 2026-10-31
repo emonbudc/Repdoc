@@ -15,7 +15,7 @@ require_once dirname(__DIR__) . '/src/seo.php';
 require_once dirname(__DIR__) . '/src/filemeta.php';
 require_once dirname(__DIR__) . '/src/catalog.php';
 
-$SEO_TITLE = 'MS Office ফাইল শোকেস — Repdoc';
+$SEO_TITLE = 'Word, Excel ও PowerPoint টেমপ্লেট — Repdoc';
 $SEO_DESC  = 'Repdoc ফাইল শোকেস: Microsoft Word, Excel ও PowerPoint টেমপ্লেট — প্রতিটি ফাইলের বিবরণসহ। লগ ইন করে ডাউনলোড করুন।';
 $CANON     = repdoc_canonical('officefiles/');
 $HOME      = repdoc_url('/');

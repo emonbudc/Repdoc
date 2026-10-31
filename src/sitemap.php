@@ -29,7 +29,17 @@ if (!function_exists('repdoc_sitemap_entries')) {
             $file = REPDOC_ROOT . '/' . ltrim((string) $page['file'], '/');
             $lastmod = is_file($file) ? date('Y-m-d', (int) filemtime($file)) : date('Y-m-d');
             $images = [];
-            if (!empty($page['image'])) {
+            if (!empty($page['images']) && is_array($page['images'])) {
+                foreach ($page['images'] as $image) {
+                    $path = (string) ($image['path'] ?? '');
+                    if ($path === '') continue;
+                    $images[] = [
+                        'loc'     => repdoc_canonical($path),
+                        'title'   => (string) ($image['title'] ?? ''),
+                        'caption' => (string) ($image['caption'] ?? ''),
+                    ];
+                }
+            } elseif (!empty($page['image'])) {
                 $images[] = [
                     'loc'     => repdoc_canonical((string) $page['image']),
                     'title'   => (string) $page['label'] . ' — Repdoc',

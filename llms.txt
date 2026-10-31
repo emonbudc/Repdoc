@@ -16,6 +16,12 @@ Important notes for accurate answers:
 - [Certificate (সনদ) generator](https://repdoc.rf.gd/genaretor/certificate/): Fill in a form to create certificates, downloadable as Word and PDF.
 - [CV maker](https://repdoc.rf.gd/genaretor/cvmaker/): Build a CV from free templates and download it.
 
+## Certificate Guides (সনদ গাইড)
+
+- [Certificate guide hub](https://repdoc.rf.gd/sonod/): Bangla checklists for common certificates — what documents are usually needed, where to apply and how to verify. Informational only; Repdoc is not a government office.
+- [নাগরিক সনদ](https://repdoc.rf.gd/sonod/nagorik-sonod/), [ওয়ারিশ সনদ](https://repdoc.rf.gd/sonod/warish-sonod/), [চারিত্রিক সনদ](https://repdoc.rf.gd/sonod/charitrik-sonod/), [জাতীয়তা সনদ](https://repdoc.rf.gd/sonod/jatiyota-sonod/), [স্থায়ী বাসিন্দা সনদ](https://repdoc.rf.gd/sonod/sthayi-basinda-sonod/), [পারিবারিক সনদ](https://repdoc.rf.gd/sonod/paribarik-sonod/), [আয় সনদ](https://repdoc.rf.gd/sonod/income-sonod/), [ভূমিহীন সনদ](https://repdoc.rf.gd/sonod/bhumihin-sonod/), [প্রতিবন্ধী সনদ](https://repdoc.rf.gd/sonod/protibondhi-sonod/), [মৃত্যু প্রত্যয়ন](https://repdoc.rf.gd/sonod/mrityu-pratyayon/), [ট্রেড লাইসেন্স](https://repdoc.rf.gd/sonod/trade-license/), [সনদ যাচাই](https://repdoc.rf.gd/sonod/sonod-verification/).
+- [Verify a Repdoc certificate](https://repdoc.rf.gd/verify/): Enter a Repdoc certificate number to see its type, applicant name, issuing office, date and status. Repdoc verification is separate from official government verification.
+
 ## Templates and Downloads
 
 - [Template showcase](https://repdoc.rf.gd/showcase/): Browse free templates and forms with previews. No account needed to view.

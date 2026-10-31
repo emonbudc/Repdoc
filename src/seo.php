@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/seo_controls.php';
+require_once __DIR__ . '/sonod_guides.php';
 
 /**
  * Repdoc — central SEO helpers.
@@ -52,8 +53,24 @@ if (!function_exists('repdoc_page_registry')) {
      */
     function repdoc_page_registry(): array
     {
-        return [
-            ['path' => '', 'file' => 'index.php', 'label' => 'Home', 'indexable' => true, 'sitemap' => true, 'changefreq' => 'weekly', 'priority' => '1.0', 'image' => 'src/assets/image/hero.webp'],
+        $pages = [
+            [
+                'path' => '', 'file' => 'index.php', 'label' => 'Home', 'indexable' => true, 'sitemap' => true, 'changefreq' => 'weekly', 'priority' => '1.0', 'image' => 'src/assets/image/hero.webp',
+                'images' => [
+                    ['path' => 'src/assets/image/hero.webp', 'title' => 'Repdoc — ফ্রি ডকুমেন্ট টেমপ্লেট ও ফরম', 'caption' => 'ফরম পূরণ করে যেকোনো ডকুমেন্ট তৈরি করুন — Word, Excel, PDF, PSD, AI ও PLP।'],
+                    ['path' => 'src/assets/image/tools-featured.png', 'title' => 'Repdoc-এর জনপ্রিয় ডকুমেন্ট টুলস', 'caption' => 'প্রত্যয়ন, সনদ, CV ও অফিস ফরমসহ জনপ্রিয় টুলের তালিকা।'],
+                    ['path' => 'src/assets/image/step1.webp', 'title' => 'ধাপ ১ — টুল বেছে নিন', 'caption' => 'ফোন থেকে ডকুমেন্ট টেমপ্লেট বেছে নিচ্ছেন একজন অপারেটর।'],
+                    ['path' => 'src/assets/image/step2.webp', 'title' => 'ধাপ ২ — তথ্য দিন', 'caption' => 'ফরমে তথ্য পূরণ ও যাচাইয়ের ধাপ।'],
+                    ['path' => 'src/assets/image/step3.webp', 'title' => 'ধাপ ৩ — ডাউনলোড করুন', 'caption' => 'প্রিন্টার ও ল্যাপটপে Word ও PDF ডকুমেন্ট তৈরি।'],
+                    ['path' => 'src/assets/image/why-us.webp', 'title' => 'কেন Repdoc', 'caption' => 'PDF, Word, Excel, PSD, AI ও PLP ফরম্যাট এবং মোবাইল ও ডেস্কটপ ইন্টারফেস।'],
+                    ['path' => 'src/assets/image/about1.webp', 'title' => 'এলোমেলো কাগজ থেকে গোছানো ফাইল', 'caption' => 'এলোমেলো কাগজের স্তূপের পাশে গোছানো ডিজিটাল ডকুমেন্ট।'],
+                    ['path' => 'src/assets/image/about2.webp', 'title' => 'একই ফরমে দ্রুত ডকুমেন্ট তৈরি', 'caption' => 'ডকুমেন্ট তৈরির ধাপগুলো একসঙ্গে চলছে এমন একটি কাজের দৃশ্য।'],
+                    ['path' => 'src/assets/image/about3.webp', 'title' => 'প্রত্যয়ন, সনদ ও ফরম — Word ও PDF-এ প্রস্তুত', 'caption' => 'Repdoc থেকে প্রত্যয়ন, সনদ ও ফরম Word ও PDF আকারে বের হচ্ছে।'],
+                    ['path' => 'src/assets/image/cta-start.webp', 'title' => 'শুরু করতে প্রস্তুত', 'caption' => 'ল্যাপটপে ডকুমেন্ট তৈরি করছেন একজন অপারেটর — চারপাশে আবেদনপত্র, সার্টিফিকেট ও প্রতিবেদনের টেমপ্লেট।'],
+                    ['path' => 'src/assets/image/boyfromwhole.png', 'title' => 'কোনো টুল পাওয়া যায়নি', 'caption' => 'সার্চে কোনো টুল না মিললে দেখানো ইলাস্ট্রেশন।'],
+                    ['path' => 'src/assets/image/logo.png', 'title' => 'Repdoc লোগো', 'caption' => 'Repdoc — বাংলাদেশের কম্পিউটার অপারেটরদের ডকুমেন্ট টুলকিট।'],
+                ],
+            ],
             ['path' => 'about/', 'file' => 'about/index.php', 'label' => 'About', 'indexable' => true, 'sitemap' => true, 'changefreq' => 'monthly', 'priority' => '0.5', 'image' => 'src/assets/image/hero.webp'],
             ['path' => 'showcase/', 'file' => 'showcase/index.php', 'label' => 'Template Showcase', 'indexable' => true, 'sitemap' => true, 'changefreq' => 'weekly', 'priority' => '0.8', 'image' => 'src/assets/image/officefiles-hero.png'],
             ['path' => 'officefiles/', 'file' => 'officefiles/index.php', 'label' => 'Office Files', 'indexable' => true, 'sitemap' => true, 'changefreq' => 'weekly', 'priority' => '0.8', 'image' => 'src/assets/image/officefiles-hero.png'],
@@ -65,7 +82,7 @@ if (!function_exists('repdoc_page_registry')) {
             ['path' => 'public/login/', 'file' => 'public/login/index.php', 'label' => 'Login', 'indexable' => true, 'sitemap' => true, 'changefreq' => 'monthly', 'priority' => '0.5', 'image' => 'src/assets/image/hero.webp'],
             ['path' => 'public/register/', 'file' => 'public/register/index.php', 'label' => 'Register', 'indexable' => true, 'sitemap' => true, 'changefreq' => 'monthly', 'priority' => '0.5', 'image' => 'src/assets/image/hero.webp'],
             ['path' => 'Entrepreneur/apply/', 'locked' => true, 'file' => 'Entrepreneur/apply/index.php', 'label' => 'Entrepreneur Apply', 'indexable' => false, 'sitemap' => false, 'changefreq' => 'monthly', 'priority' => '0.3', 'image' => ''],
-            ['path' => 'verify/', 'locked' => true, 'file' => 'verify/index.php', 'label' => 'Certificate Verify', 'indexable' => false, 'sitemap' => false, 'changefreq' => 'monthly', 'priority' => '0.3', 'image' => ''],
+            ['path' => 'verify/', 'file' => 'verify/index.php', 'label' => 'Certificate Verify', 'indexable' => true, 'sitemap' => true, 'changefreq' => 'monthly', 'priority' => '0.6', 'image' => ''],
             ['path' => 'genaretor/birth/', 'locked' => true, 'file' => 'genaretor/birth/index.php', 'label' => 'Birth Generator', 'indexable' => false, 'sitemap' => false, 'changefreq' => 'monthly', 'priority' => '0.3', 'image' => ''],
             ['path' => 'genaretor/death/', 'locked' => true, 'file' => 'genaretor/death/index.php', 'label' => 'Death Generator', 'indexable' => false, 'sitemap' => false, 'changefreq' => 'monthly', 'priority' => '0.3', 'image' => ''],
             ['path' => 'genaretor/cvmaker/', 'locked' => true, 'file' => 'genaretor/cvmaker/index.php', 'label' => 'CV Maker', 'indexable' => false, 'sitemap' => false, 'changefreq' => 'monthly', 'priority' => '0.3', 'image' => ''],
@@ -73,6 +90,22 @@ if (!function_exists('repdoc_page_registry')) {
             ['path' => 'tools/land/', 'locked' => true, 'file' => 'tools/land/index.php', 'label' => 'Land Records', 'indexable' => false, 'sitemap' => false, 'changefreq' => 'monthly', 'priority' => '0.3', 'image' => ''],
             ['path' => 'tools/passport/', 'locked' => true, 'file' => 'tools/passport/index.php', 'label' => 'Passport Photo', 'indexable' => false, 'sitemap' => false, 'changefreq' => 'monthly', 'priority' => '0.3', 'image' => ''],
         ];
+
+        $pages[] = ['path' => 'sonod/', 'file' => 'sonod/index.php', 'label' => 'Sonod Guides', 'indexable' => true, 'sitemap' => true, 'changefreq' => 'monthly', 'priority' => '0.9', 'image' => ''];
+        foreach (repdoc_sonod_guides() as $slug => $guide) {
+            $pages[] = [
+                'path'       => 'sonod/' . $slug . '/',
+                'file'       => 'sonod/guide.php',
+                'label'      => (string) $guide['label'] . ' Guide',
+                'indexable'  => true,
+                'sitemap'    => true,
+                'changefreq' => 'monthly',
+                'priority'   => '0.7',
+                'image'      => '',
+            ];
+        }
+
+        return $pages;
     }
 }
 

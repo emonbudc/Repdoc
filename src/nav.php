@@ -74,6 +74,7 @@ if (!function_exists('repdoc_render_site_nav')) {
                     <a class="nav-menu-all" href="<?= e(repdoc_url('/')) ?>#tools"><?= $pick('সব টুল দেখুন', 'See all tools') ?></a>
                 </div>
             </details>
+            <a class="nav-link" href="<?= e(repdoc_url('sonod/')) ?>"><?= $pick('সনদ গাইড', 'Certificate guides') ?></a>
             <a class="nav-link" href="<?= e(repdoc_url('/')) ?>#featured"><?= $pick('জনপ্রিয়', 'Popular') ?></a>
             <a class="nav-link" href="<?= e(repdoc_url('/')) ?>#how"><?= $pick('কীভাবে কাজ করে', 'How it works') ?></a>
             <a class="nav-link" href="<?= e(repdoc_url('/')) ?>#about"><?= $pick('সম্পর্কে', 'About') ?></a>
