@@ -435,7 +435,7 @@ function bn_digits(string $v): string
                                 <article class="featured-card featured-slip">
                                     <p><?= e($t['desc']) ?></p>
                                     <div class="featured-art" aria-hidden="true">
-                                        <img src="src/assets/image/tools-featured.webp" alt="" width="385" height="251" loading="lazy" decoding="async">
+                                        <img src="src/assets/image/tools-featured.png" alt="" width="385" height="251" loading="lazy" decoding="async">
                                     </div>
                                     <a class="btn btn-primary" href="<?= e($t['url']) ?>" aria-label="<?= e($t['name']) ?> খুলুন">
                                         <span aria-hidden="true">খুলুন</span>
