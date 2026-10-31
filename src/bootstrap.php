@@ -748,6 +748,7 @@ function repdoc_default_tools(): array
 {
     return [
         'birth_generator' => 'Birth certificate generator',
+        'death_generator' => 'Death certificate generator',
         'birth_search'    => 'Birth record search',
         'birth_export'    => 'Record export / download',
         'birth_detail'    => 'Record detail',

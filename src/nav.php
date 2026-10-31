@@ -16,6 +16,7 @@ if (!function_exists('repdoc_nav_tool_groups')) {
                 'items' => [
                     ['key' => 'nid',       'label_bn' => 'জাতীয় পরিচয়পত্র (NID)', 'label_en' => 'National ID (NID)', 'url' => 'genaretor/nid/'],
                     ['key' => 'birth',     'label_bn' => 'জন্ম নিবন্ধন',            'label_en' => 'Birth Certificate',  'url' => 'genaretor/birth/'],
+                    ['key' => 'death',     'label_bn' => 'মৃত্যু নিবন্ধন',           'label_en' => 'Death Certificate',  'url' => 'genaretor/death/'],
                     ['key' => 'smartnid',  'label_bn' => 'স্মার্ট NID',             'label_en' => 'Smart NID',          'url' => 'genaretor/smartnid/'],
                     ['key' => 'passport',  'label_bn' => 'পাসপোর্ট সাইজ ছবি',      'label_en' => 'Passport Photo',     'url' => 'tools/passport/'],
                 ],

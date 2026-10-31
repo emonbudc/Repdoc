@@ -1,0 +1,11 @@
+# BDRIS — Apache settings (InfinityFree-safe, well under the 10 kB .htaccess limit)
+AddDefaultCharset UTF-8
+ServerSignature Off
+
+# Never serve the raw database / installer state / backups directly
+<FilesMatch "(\.db|\.sqlite|\.lock|\.sql|\.zip)$">
+  Require all denied
+</FilesMatch>
+
+# Keep install.php reachable only when you need it; delete it after importing.
+# (No rewrite rules — InfinityFree's security layer handles its own validation.)

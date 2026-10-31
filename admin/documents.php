@@ -13,6 +13,7 @@ $db = repdoc_db();
 
 $allowedTools = [
     'birth_generator' => 'Birth',
+    'death_generator' => 'Death',
     'nid'             => 'NID',
     'smartnid'        => 'Smart NID',
     'cvmaker'         => 'CV',

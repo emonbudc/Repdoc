@@ -78,6 +78,7 @@ function admin_tool_registry(): array
 {
     return [
         ['name' => 'Birth Certificate Generator', 'cat' => 'Birth', 'slug' => 'birth-certificate', 'url' => '../genaretor/birth/index.php', 'check' => '../genaretor/birth/index.php', 'keys' => ['birth_generator']],
+        ['name' => 'Death Certificate Generator', 'cat' => 'Death', 'slug' => 'death-certificate', 'url' => '../genaretor/death/index.php', 'check' => '../genaretor/death/index.php', 'keys' => ['death_generator']],
         ['name' => 'Record Search (alt copy)', 'cat' => 'Birth', 'slug' => 'birth-search', 'url' => '../tools/birthsearch/index.php', 'check' => '../tools/birthsearch/index.php', 'keys' => ['birth_search', 'birth_export', 'birth_detail']],
         ['name' => 'National ID Card (NID)', 'cat' => 'Identity', 'slug' => 'nid', 'url' => '../genaretor/nid/', 'check' => '../genaretor/nid/index.php', 'keys' => ['nid']],
         ['name' => 'Smart NID', 'cat' => 'Identity', 'slug' => 'smart-nid', 'url' => '../genaretor/smartnid/', 'check' => '../genaretor/smartnid/index.php', 'keys' => ['smartnid']],
@@ -136,7 +137,7 @@ function admin_tool_price_keys(array $tool): array
 function admin_tool_icon(string $category): string
 {
     $icons = [
-        'Birth' => 'a-id', 'Identity' => 'a-id', 'Education' => 'a-file', 'Documents' => 'a-file',
+        'Birth' => 'a-id', 'Death' => 'a-file', 'Identity' => 'a-id', 'Education' => 'a-file', 'Documents' => 'a-file',
         'Land' => 'a-grid', 'Templates' => 'a-layout', 'Public pages' => 'a-link',
         'Admin' => 'a-lock', 'Applications' => 'a-users',
     ];
