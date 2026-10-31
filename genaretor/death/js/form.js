@@ -489,7 +489,7 @@ async function doDirectFetch() {
 
         const filled = fillDeathRecord(data.record, dod);
 
-        statusEl.innerHTML = icon('i-check-circle') + ' ' + filled + 'টি ফিল্ড সফলভাবে পূরণ হয়েছে!';
+        statusEl.innerHTML = icon('i-check-circle') + ' ' + filled + 'টি ফিল্ড পূরণ হয়েছে — বাকি তথ্য যাচাই করে সম্পূর্ণ করুন।';
         statusEl.style.color = 'var(--success)';
 
         setFormLocked(false);

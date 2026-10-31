@@ -33,57 +33,61 @@ function deathAssignLabel(array &$r, string $label, array $vals): void
         }
         return false;
     };
+    $val = static fn(int $i): string => trim((string) ($vals[$i] ?? ''));
 
     if ($is(['death registration number', 'মৃত্যু নিবন্ধন নম্বর', 'মৃত্যু নিবন্ধন নং'])) {
-        $r['drn'] = $vals[0] ?? ($r['drn'] ?? '');
+        $r['drn'] = $val(0);
     } elseif ($is(['registration date', 'নিবন্ধনের তারিখ'])) {
-        $r['reg_date'] = $vals[0] ?? '';
-        $r['reg_office'] = $vals[1] ?? ($r['reg_office'] ?? '');
-        $r['issue_date'] = $vals[2] ?? ($r['issue_date'] ?? '');
+        $r['reg_date'] = $val(0);
+        $r['reg_office'] = $val(1);
+        $r['issue_date'] = $val(2);
     } elseif ($is(['date of issuance', 'ইস্যু'])) {
-        $r['issue_date'] = $vals[0] ?? '';
+        $r['issue_date'] = $val(0);
     } elseif ($is(['date of death', 'death date', 'মৃত্যুর তারিখ'])) {
-        $r['dod'] = $vals[0] ?? '';
-        if (!empty($vals[1]) && preg_match('/^\d{17}$/', preg_replace('/\D/', '', $vals[1]))) {
-            $r['drn'] = $vals[1];
+        $r['dod'] = $val(0);
+        if (preg_match('/^\d{17}$/', preg_replace('/\D/', '', $val(1)))) {
+            $r['drn'] = $val(1);
         }
-        if (!empty($vals[2])) $r['sex'] = $vals[2];
+        if ($val(2) !== '') $r['sex'] = $val(2);
     } elseif ($is(['date of birth', 'জন্ম তারিখ'])) {
-        $r['dob'] = $vals[0] ?? '';
-        if (!empty($vals[1]) && preg_match('/^\d{17}$/', preg_replace('/\D/', '', $vals[1]))) {
-            $r['drn'] = $vals[1];
+        $r['dob'] = $val(0);
+        if (preg_match('/^\d{17}$/', preg_replace('/\D/', '', $val(1)))) {
+            $r['drn'] = $val(1);
         }
-        if (!empty($vals[2])) $r['sex'] = $vals[2];
+        if ($val(2) !== '') $r['sex'] = $val(2);
     } elseif ($is(['sex', 'gender', 'লিঙ্গ'])) {
-        $r['sex'] = $vals[0] ?? '';
+        $r['sex'] = $val(0);
     } elseif ($is(['place of death', 'মৃত্যুর স্থান', 'মৃত্যুস্থান'])) {
-        $r['pod_bn'] = $vals[0] ?? '';
-        $r['pod_en'] = $vals[1] ?? ($r['pod_en'] ?? '');
+        $r['pod_bn'] = $val(0);
+        $r['pod_en'] = $val(1);
     } elseif ($is(['place of birth', 'জন্মস্থান'])) {
-        if (empty($r['pod_bn'])) $r['pod_bn'] = $vals[0] ?? '';
-        if (empty($r['pod_en'])) $r['pod_en'] = $vals[1] ?? '';
+        if (empty($r['pod_bn'])) $r['pod_bn'] = $val(0);
+        if (empty($r['pod_en'])) $r['pod_en'] = $val(1);
     } elseif ($is(['cause of death', 'মৃত্যুর কারণ'])) {
-        $r['cause_bn'] = $vals[0] ?? '';
-        $r['cause_en'] = $vals[1] ?? ($r['cause_en'] ?? '');
+        $r['cause_bn'] = $val(0);
+        $r['cause_en'] = $val(1);
     } elseif ($is(['mother', 'মাতার'])) {
         if ($is(['nationality', 'জাতীয়তা'])) {
-            $r['mother_nat_bn'] = $vals[0] ?? '';
-            $r['mother_nat_en'] = $vals[1] ?? ($r['mother_nat_en'] ?? '');
+            $r['mother_nat_bn'] = $val(0);
+            $r['mother_nat_en'] = $val(1);
         } else {
-            $r['mother_name_bn'] = $vals[0] ?? '';
-            $r['mother_name_en'] = $vals[1] ?? ($r['mother_name_en'] ?? '');
+            $r['mother_name_bn'] = $val(0);
+            $r['mother_name_en'] = $val(1);
         }
     } elseif ($is(['father', 'পিতার'])) {
         if ($is(['nationality', 'জাতীয়তা'])) {
-            $r['father_nat_bn'] = $vals[0] ?? '';
-            $r['father_nat_en'] = $vals[1] ?? ($r['father_nat_en'] ?? '');
+            $r['father_nat_bn'] = $val(0);
+            $r['father_nat_en'] = $val(1);
         } else {
-            $r['father_name_bn'] = $vals[0] ?? '';
-            $r['father_name_en'] = $vals[1] ?? ($r['father_name_en'] ?? '');
+            $r['father_name_bn'] = $val(0);
+            $r['father_name_en'] = $val(1);
         }
-    } elseif ($is(['deceased', 'registered person name', 'মৃত ব্যক্তির নাম', 'নিবন্ধিত ব্যক্তির নাম'])) {
-        $r['name_bn'] = $vals[0] ?? '';
-        $r['name_en'] = $vals[1] ?? ($r['name_en'] ?? '');
+    } elseif ($is([
+        'name of dead person', 'name of deceased person', 'name of deceased',
+        'deceased person', 'registered person name', 'মৃত ব্যক্তির নাম', 'নিবন্ধিত ব্যক্তির নাম',
+    ])) {
+        $r['name_bn'] = $val(0);
+        $r['name_en'] = $val(1);
     }
 }
 
@@ -93,57 +97,62 @@ function parseDeathSearchResult(string $html): ?array
     @$doc->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
     $xpath = new DOMXPath($doc);
 
-    $tables = $xpath->query('//table[contains(@class, "table-hover")]');
-    if ($tables->length === 0) return null;
-
     $r = [];
 
-    // ─── Registration block: 3-column label row / value row pairs ───
-    $labelPattern = '/registration date|registration office|issuance date|date of birth|birth registration number|date of death|death registration number|\bsex\b/i';
-    $tableRows = [];
-    foreach ($xpath->query('.//tr', $tables->item(0)) as $row) {
-        $tableRows[] = deathCellTexts($xpath, $row);
+    // The live result page states the number, death date and name in a sentence
+    // above the table instead of repeating them as labelled table cells.
+    $pageText = trim(preg_replace('/\s+/u', ' ', $doc->textContent));
+    if (preg_match(
+        '/Given Death registration number\s+(\d{17})\s+and Date of Death is\s+(.+?)\s+are belonged to\s+(.+?)\s+with the following particulars/iu',
+        $pageText,
+        $m
+    )) {
+        $r['drn'] = trim($m[1]);
+        $r['dod'] = trim($m[2]);
+        $r['name_en'] = trim($m[3]);
     }
 
-    for ($i = 0; $i < count($tableRows); $i++) {
-        $vals = $tableRows[$i];
-        if (!$vals || !preg_match($labelPattern, implode(' | ', $vals))) continue;
+    $tables = $xpath->query('//table');
 
-        $next = $tableRows[$i + 1] ?? [];
-        foreach ($vals as $j => $label) {
-            $l = mb_strtolower($label, 'UTF-8');
-            $value = $next[$j] ?? '';
-            if ($value === '' && isset($vals[$j + 1]) && $vals[$j + 1] !== '') {
-                $value = $vals[$j + 1];
+    // Some BDRIS pages use a 3-column label row followed by a value row.
+    foreach ($tables as $table) {
+        $rows = [];
+        foreach ($xpath->query('.//tr', $table) as $row) {
+            $rows[] = deathCellTexts($xpath, $row);
+        }
+        for ($i = 0, $n = count($rows); $i < $n; $i++) {
+            $labels = $rows[$i];
+            $values = $rows[$i + 1] ?? [];
+            if (count($labels) !== 3 || count($values) !== 3) continue;
+
+            $flat = mb_strtolower(implode(' | ', $labels), 'UTF-8');
+            if (!preg_match('/registration date|registration office|issuance date|date of birth|birth registration number|date of death|death registration number|\bsex\b|নিবন্ধনের তারিখ|জন্ম তারিখ|মৃত্যুর তারিখ|মৃত্যু নিবন্ধন/', $flat)) {
+                continue;
             }
 
-            if (str_contains($l, 'birth registration number')) {
-                $r['brn'] = $value;
-            } elseif (str_contains($l, 'death registration number') || str_contains($l, 'মৃত্যু নিবন্ধন নম্বর')) {
-                $r['drn'] = $value;
-            } elseif (str_contains($l, 'registration date') || str_contains($l, 'নিবন্ধনের তারিখ')) {
-                $r['reg_date'] = $value;
-            } elseif (str_contains($l, 'registration office')) {
-                $r['reg_office'] = $value;
-            } elseif (str_contains($l, 'issuance date') || str_contains($l, 'ইস্যু')) {
-                $r['issue_date'] = $value;
-            } elseif (str_contains($l, 'date of birth') || str_contains($l, 'জন্ম তারিখ')) {
-                $r['dob'] = $value;
-            } elseif (str_contains($l, 'date of death') || str_contains($l, 'মৃত্যুর তারিখ')) {
-                $r['dod'] = $value;
-            } elseif (preg_match('/\bsex\b|লিঙ্গ/', $l)) {
-                $r['sex'] = $value;
+            if (str_contains($flat, 'registration date')) {
+                $r['reg_date'] = $values[0];
+                $r['reg_office'] = $values[1];
+                $r['issue_date'] = $values[2];
+            } elseif (str_contains($flat, 'date of birth')) {
+                $r['dob'] = $values[0];
+                $r['brn'] = $values[1];
+                $r['sex'] = $values[2];
+            } elseif (str_contains($flat, 'date of death')) {
+                $r['dod'] = $values[0];
+                if (preg_match('/^\d{17}$/', preg_replace('/\D/', '', $values[1]))) {
+                    $r['drn'] = $values[1];
+                }
+                if ($values[2] !== '') $r['sex'] = $values[2];
             }
         }
     }
 
-    // ─── Person details (label_bn, value_bn, label_en, value_en) ───
-    for ($t = 1; $t < $tables->length; $t++) {
-        $rows = $xpath->query('.//tr', $tables->item($t));
-        foreach ($rows as $row) {
-            $cells = $xpath->query('.//td', $row);
+    // Live/person tables: Bengali label, Bengali value, English label, English value.
+    foreach ($tables as $table) {
+        foreach ($xpath->query('.//tr', $table) as $row) {
             $cellData = [];
-            foreach ($cells as $cell) {
+            foreach ($xpath->query('.//td', $row) as $cell) {
                 $img = $xpath->query('.//img', $cell);
                 if ($img->length > 0) {
                     $src = $img->item(0)->getAttribute('src');
@@ -154,52 +163,15 @@ function parseDeathSearchResult(string $html): ?array
                 }
                 $cellData[] = trim(preg_replace('/\s+/u', ' ', $cell->textContent));
             }
-            if (count($cellData) < 4) continue;
+            if (count($cellData) !== 4) continue;
 
-            $labelBn = $cellData[0] ?? '';
-            $valueBn = $cellData[1] ?? '';
-            $labelEn = $cellData[2] ?? '';
-            $valueEn = $cellData[3] ?? '';
-            $combined = $labelBn . ' | ' . $labelEn;
-
-            // Fall back to Bengali/English values separately where labels only carry one language.
-            $pair = [$valueBn, $valueEn];
-            deathAssignLabel($r, $combined, $pair);
-
-            $bh = mb_strpos($combined, 'মাতার', 0, 'UTF-8');
-            $fh = mb_strpos($combined, 'পিতার', 0, 'UTF-8');
-            if ($bh !== false && mb_strpos($combined, 'জাতীয়তা', 0, 'UTF-8') !== false) {
-                $r['mother_nat_bn'] = $valueBn;
-                $r['mother_nat_en'] = $valueEn;
-            } elseif ($bh !== false) {
-                $r['mother_name_bn'] = $valueBn;
-                $r['mother_name_en'] = $valueEn;
-            }
-            if ($fh !== false && mb_strpos($combined, 'জাতীয়তা', 0, 'UTF-8') !== false) {
-                $r['father_nat_bn'] = $valueBn;
-                $r['father_nat_en'] = $valueEn;
-            } elseif ($fh !== false) {
-                $r['father_name_bn'] = $valueBn;
-                $r['father_name_en'] = $valueEn;
-            }
-            if (stripos($combined, 'Cause of Death') !== false || mb_strpos($combined, 'মৃত্যুর কারণ', 0, 'UTF-8') !== false) {
-                $r['cause_bn'] = $valueBn;
-                $r['cause_en'] = $valueEn;
-            }
-            if (stripos($combined, 'Place of Death') !== false || mb_strpos($combined, 'মৃত্যুর স্থান', 0, 'UTF-8') !== false) {
-                $r['pod_bn'] = $valueBn;
-                $r['pod_en'] = $valueEn;
-            }
-            if (stripos($combined, 'Date of Death') !== false || mb_strpos($combined, 'মৃত্যুর তারিখ', 0, 'UTF-8') !== false) {
-                $r['dod'] = $valueEn ?: $valueBn;
-            }
-            if (stripos($combined, 'Date of Birth') !== false || mb_strpos($combined, 'জন্ম তারিখ', 0, 'UTF-8') !== false) {
-                $r['dob'] = $valueEn ?: $valueBn;
-            }
+            deathAssignLabel($r, $cellData[0] . ' | ' . $cellData[2], [$cellData[1], $cellData[3]]);
         }
     }
 
-    return empty($r) ? null : $r;
+    $r = array_filter($r, static fn($v): bool => is_array($v) ? $v !== [] : $v !== '');
+
+    return (isset($r['drn']) || isset($r['name_bn']) || isset($r['name_en'])) ? $r : null;
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['action'] ?? '') === 'init') {
@@ -276,19 +248,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $session = getSession();
-    if (!$session) {
-        $result = initSession('death');
-        if (!$result['ok']) {
-            http_response_code(500);
-            echo json_encode(['ok' => false, 'error' => 'Could not connect to the verification service.']);
-            exit;
-        }
-        $session = $_SESSION['everify'];
-    }
-
     $captchaToken = trim($_POST['captcha_token'] ?? '');
-    if (!$captchaToken) {
-        $captchaToken = $session['captcha_token'];
+
+    // Never re-initialise a session and then submit the old captcha token:
+    // that guarantees an "invalid captcha" response. Ask the client to refresh.
+    if (!$session || $captchaToken === '' || !hash_equals((string) $session['captcha_token'], $captchaToken)) {
+        unset($_SESSION['everify']);
+        echo json_encode([
+            'ok' => false,
+            'errors' => ['Captcha expired. Please solve the new captcha and try again.'],
+            'captcha_expired' => true,
+        ]);
+        exit;
     }
 
     // BDRIS' death form posts the death date under the historical "BirthDate" name.
@@ -325,44 +296,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    if (stripos($raw['body'], 'validation-summary-errors') !== false || stripos($raw['body'], 'text-danger') !== false) {
-        $doc = new DOMDocument();
-        @$doc->loadHTML(mb_convert_encoding($raw['body'], 'HTML-ENTITIES', 'UTF-8'));
-        $xpath = new DOMXPath($doc);
+    // Parse first: a successful BDRIS page also contains the word
+    // "text-danger" in its footer, so it must not be treated as an error.
+    $record = parseDeathSearchResult($raw['body']);
 
-        $errorNodes = $xpath->query('//*[contains(@class, "validation-summary-errors")]//li');
-        $apiErrors = [];
-        foreach ($errorNodes as $node) {
-            $apiErrors[] = trim($node->textContent);
-        }
-
-        if (empty($apiErrors)) {
-            $errorNodes = $xpath->query('//span[contains(@class, "field-validation-error")]');
-            foreach ($errorNodes as $node) {
-                $apiErrors[] = trim($node->textContent);
-            }
-        }
-
-        if (empty($apiErrors)) {
-            $apiErrors[] = 'Invalid captcha or input. Please try again.';
-        }
-
+    if ($record) {
         refreshSession('death');
-        echo json_encode(['ok' => false, 'errors' => $apiErrors, 'captcha_expired' => true]);
+        echo json_encode(['ok' => true, 'record' => $record]);
         exit;
     }
 
-    $record = parseDeathSearchResult($raw['body']);
+    $doc = new DOMDocument();
+    @$doc->loadHTML(mb_convert_encoding($raw['body'], 'HTML-ENTITIES', 'UTF-8'));
+    $xpath = new DOMXPath($doc);
 
-    if (!$record) {
-        refreshSession('death');
-        echo json_encode(['ok' => false, 'errors' => ['Could not parse record data. The site structure may have changed.'], 'captcha_expired' => true]);
-        exit;
+    $apiErrors = [];
+    $captchaInvalid = false;
+
+    $errorNodes = $xpath->query(
+        '//*[contains(@class, "validation-summary-errors")]//li'
+        . ' | //span[contains(@class, "field-validation-error")]'
+        . ' | //p[contains(@class, "text-danger")]'
+    );
+    foreach ($errorNodes as $node) {
+        $text = trim(preg_replace('/\s+/u', ' ', $node->textContent));
+        if ($text === '') continue;
+        if (preg_match('/captcha/i', $text)) $captchaInvalid = true;
+        $apiErrors[] = $text;
+    }
+
+    $captchaInput = $xpath->query('//input[@id="CaptchaInputText" or @name="CaptchaInputText"]')->item(0);
+    if ($captchaInput instanceof DOMElement && str_contains($captchaInput->getAttribute('class'), 'input-validation-error')) {
+        $captchaInvalid = true;
+    }
+
+    if ($captchaInvalid) {
+        $apiErrors = ['Invalid captcha. Please try again with the new captcha.'];
+    } elseif (empty($apiErrors)) {
+        $apiErrors = ['No record found, or the verification response could not be read. Please check the UDRN and date.'];
     }
 
     refreshSession('death');
-
-    echo json_encode(['ok' => true, 'record' => $record]);
+    echo json_encode([
+        'ok' => false,
+        'errors' => array_values(array_unique($apiErrors)),
+        'captcha_expired' => true,
+    ]);
     exit;
 }
 
