@@ -13,7 +13,7 @@ require_once dirname(__DIR__) . '/src/gsc.php';
 @set_time_limit(60);
 
 $tab = (string) ($_GET['tab'] ?? 'seo');
-if (!in_array($tab, ['seo', 'health', 'controls', 'search'], true)) {
+if (!in_array($tab, ['seo', 'health', 'controls', 'keywords', 'search'], true)) {
     $tab = 'seo';
 }
 
@@ -242,6 +242,54 @@ $inspectData = $gscEntries['inspect']['data'] ?? null;
 $inspectItems = is_array($inspectData['items'] ?? null) ? $inspectData['items'] : [];
 $gscSyncedAt = (int) ($gscEntries['totals']['at'] ?? 0);
 
+$kwFile = REPDOC_ROOT . '/repdoc_keyword_database.csv';
+$kwFileOk = false;
+$kwTotal = 0;
+$kwMapped = 0;
+$kwByPath = [];
+$kwByLang = [];
+$kwByPriority = [];
+$kwUnmapped = [];
+$kwUnmappedSamples = [];
+
+if (is_file($kwFile) && ($kwHandle = @fopen($kwFile, 'rb')) !== false) {
+    $kwFileOk = true;
+    fgetcsv($kwHandle, 0, ',', '"', '\\');
+    while (($kwRow = fgetcsv($kwHandle, 0, ',', '"', '\\')) !== false) {
+        if (count($kwRow) < 6) continue;
+        $kwTotal++;
+        $kwUrl = trim((string) $kwRow[5]);
+        $kwLang = trim((string) $kwRow[1]);
+        $kwLang = $kwLang !== '' ? $kwLang : 'Unknown';
+        $kwPriority = trim((string) $kwRow[6]);
+        $kwPriority = $kwPriority !== '' ? $kwPriority : 'Unknown';
+        $kwByLang[$kwLang] = ($kwByLang[$kwLang] ?? 0) + 1;
+        $kwByPriority[$kwPriority] = ($kwByPriority[$kwPriority] ?? 0) + 1;
+
+        if ($kwUrl === '' || strcasecmp($kwUrl, 'UNMAPPED') === 0) {
+            $kwTopic = trim((string) $kwRow[4]);
+            $kwTopic = $kwTopic !== '' ? $kwTopic : 'unmapped';
+            $kwUnmapped[$kwTopic] = ($kwUnmapped[$kwTopic] ?? 0) + 1;
+            if (count($kwUnmappedSamples[$kwTopic] ?? []) < 3) {
+                $kwUnmappedSamples[$kwTopic][] = trim((string) $kwRow[0]);
+            }
+            continue;
+        }
+
+        $kwPath = (string) (parse_url($kwUrl, PHP_URL_PATH) ?: '/');
+        if ($kwPath === '') $kwPath = '/';
+        if ($kwPath !== '/' && !str_ends_with($kwPath, '/')) $kwPath .= '/';
+        $kwByPath[$kwPath] = ($kwByPath[$kwPath] ?? 0) + 1;
+        $kwMapped++;
+    }
+    fclose($kwHandle);
+}
+
+arsort($kwByPath);
+uksort($kwByPriority, static fn(string $a, string $b): int => (['high' => 0, 'medium' => 1, 'low' => 2][$a] ?? 9) <=> (['high' => 0, 'medium' => 1, 'low' => 2][$b] ?? 9));
+$kwUnmappedTotal = $kwTotal - $kwMapped;
+$kwTargets = count($kwByPath);
+
 $healthGroups = [
     'runtime'    => ['label' => 'Runtime & PHP', 'icon' => 'a-layout'],
     'filesystem' => ['label' => 'Files & exposure', 'icon' => 'a-file'],
@@ -278,6 +326,7 @@ admin_notice();
     <a class="audit-tab<?= $tab === 'seo' ? ' is-active' : '' ?>" href="seo-health.php" role="tab" aria-selected="<?= $tab === 'seo' ? 'true' : 'false' ?>">SEO Audit</a>
     <a class="audit-tab<?= $tab === 'health' ? ' is-active' : '' ?>" href="seo-health.php?tab=health" role="tab" aria-selected="<?= $tab === 'health' ? 'true' : 'false' ?>">Website Health</a>
     <a class="audit-tab<?= $tab === 'controls' ? ' is-active' : '' ?>" href="seo-health.php?tab=controls" role="tab" aria-selected="<?= $tab === 'controls' ? 'true' : 'false' ?>">Index Controls</a>
+    <a class="audit-tab<?= $tab === 'keywords' ? ' is-active' : '' ?>" href="seo-health.php?tab=keywords" role="tab" aria-selected="<?= $tab === 'keywords' ? 'true' : 'false' ?>">Keywords</a>
     <a class="audit-tab<?= $tab === 'search' ? ' is-active' : '' ?>" href="seo-health.php?tab=search" role="tab" aria-selected="<?= $tab === 'search' ? 'true' : 'false' ?>">Search Console</a>
 </div>
 
@@ -382,6 +431,7 @@ admin_notice();
                     <th>JSON-LD</th>
                     <th>Index</th>
                     <th>Sitemap</th>
+                    <th>Keywords</th>
                     <th>Score</th>
                     <th>Status</th>
                 </tr>
@@ -403,6 +453,14 @@ admin_notice();
                         <td><?= $cell($checks['jsonld'] ?? []) ?></td>
                         <td><?= $cell($checks['indexability'] ?? []) ?></td>
                         <td><?= $cell($checks['sitemap'] ?? []) ?></td>
+                        <?php
+                        $pageKwPath = '/' . trim((string) $page['path'], '/');
+                        if ($pageKwPath !== '/') $pageKwPath .= '/';
+                        $pageKwCount = (int) ($kwByPath[$pageKwPath] ?? 0);
+                        ?>
+                        <td title="<?= e(number_format($pageKwCount) . ' keyword rows mapped to ' . $pageKwPath) ?>">
+                            <?= $pageKwCount > 0 ? '<strong>' . number_format($pageKwCount) . '</strong>' : '<span class="cell-sub">—</span>' ?>
+                        </td>
                         <td class="audit-score is-<?= e((string) $page['status']) ?>"><?= (int) $page['score'] ?></td>
                         <td><?= $pill(['status' => $page['status'], 'label' => 'Page status', 'detail' => 'Score ' . (int) $page['score'] . '/100']) ?></td>
                     </tr>
@@ -410,7 +468,7 @@ admin_notice();
             </tbody>
         </table>
     </div>
-    <p class="audit-legend">Hover any cell for the check detail. Gated pages are expected to report <code>n/a</code> for description, canonical and social tags.</p>
+    <p class="audit-legend">Hover any cell for the check detail. Gated pages are expected to report <code>n/a</code> for description, canonical and social tags. Keyword counts come from <code>repdoc_keyword_database.csv</code>.</p>
 </div>
 
 <?php elseif ($tab === 'health'): ?>
@@ -551,6 +609,116 @@ admin_notice();
     </div>
     <p class="audit-legend">Changes apply on the next request. Noindex removes the page from <code>/sitemap.xml</code>; enabling indexing adds it back. Gated pages and allowed-indexing pages keep their own app-level noindex rules.</p>
 </div>
+
+<?php elseif ($tab === 'keywords'): ?>
+
+<?php if (!$kwFileOk): ?>
+
+<div class="panel">
+    <div class="panel-head">Keyword database</div>
+    <div class="panel-body">
+        <p class="cell-sub"><code>repdoc_keyword_database.csv</code> is missing or unreadable in the project root. Restore it to see keyword coverage.</p>
+    </div>
+</div>
+
+<?php else: ?>
+
+<?php $kwHubCount = (int) ($kwByPath['/officefiles/'] ?? 0); ?>
+<?php
+$kwMix = [];
+foreach ($kwByLang as $kwLang => $kwCount) $kwMix[] = ['Language', $kwLang, $kwCount];
+foreach ($kwByPriority as $kwPriority => $kwCount) $kwMix[] = ['Priority', $kwPriority, $kwCount];
+?>
+
+<div class="stat-grid">
+    <div class="stat-card">
+        <span class="stat-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><use href="#a-search"/></svg></span>
+        <span class="stat-text"><span class="k">Keyword rows</span><span class="v"><?= number_format($kwTotal) ?></span><span class="s">database entries</span></span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><use href="#a-check"/></svg></span>
+        <span class="stat-text"><span class="k">Mapped</span><span class="v"><?= number_format($kwMapped) ?></span><span class="s"><?= number_format($kwMapped / max($kwTotal, 1) * 100, 1) ?>% of rows</span></span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><use href="#a-x"/></svg></span>
+        <span class="stat-text"><span class="k">Unmapped</span><span class="v"><?= number_format($kwUnmappedTotal) ?></span><span class="s">need a public page</span></span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><use href="#a-link"/></svg></span>
+        <span class="stat-text"><span class="k">Target URLs</span><span class="v"><?= number_format($kwTargets) ?></span><span class="s">mapped destinations</span></span>
+    </div>
+</div>
+
+<div class="audit-meta">
+    <span>Source <code>repdoc_keyword_database.csv</code></span>
+    <span>Private file · denied by <code>.htaccess</code></span>
+    <span><?= number_format($kwMapped / max($kwTotal, 1) * 100, 1) ?>% mapped</span>
+</div>
+
+<div class="panel">
+    <div class="panel-head">Keyword targets <span class="count"><?= number_format($kwTargets) ?> URLs</span></div>
+    <div class="table-wrap">
+        <table class="data audit-table">
+            <thead><tr><th>Target</th><th>Rows</th><th>Share of mapped</th></tr></thead>
+            <tbody>
+                <?php foreach ($kwByPath as $kwPath => $kwCount): ?>
+                    <tr>
+                        <td class="audit-page-cell">
+                            <span class="audit-path"><a href="<?= e(repdoc_canonical(ltrim($kwPath, '/'))) ?>" target="_blank" rel="noopener"><?= e($kwPath) ?></a></span>
+                        </td>
+                        <td><?= number_format($kwCount) ?></td>
+                        <td><?= number_format($kwCount / max($kwMapped, 1) * 100, 1) ?>%</td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <p class="audit-legend"><code>/officefiles/</code> owns <?= number_format($kwHubCount) ?> rows (<?= number_format($kwHubCount / max($kwMapped, 1) * 100, 1) ?>% of mapped).</p>
+</div>
+
+<?php if ($kwUnmapped): ?>
+<div class="panel">
+    <div class="panel-head">Unmapped keywords <span class="count"><?= number_format($kwUnmappedTotal) ?> rows</span></div>
+    <div class="panel-body" style="padding-bottom:0">
+        <p class="cell-sub">These rows still use <code>UNMAPPED</code>. The birth-certificate cluster has no public guide yet, so it stays out of the sitemap.</p>
+    </div>
+    <div class="table-wrap">
+        <table class="data audit-table">
+            <thead><tr><th>Topic</th><th>Rows</th><th>Sample keywords</th></tr></thead>
+            <tbody>
+                <?php foreach ($kwUnmapped as $kwTopic => $kwCount): ?>
+                    <tr>
+                        <td><code><?= e($kwTopic) ?></code></td>
+                        <td><?= number_format($kwCount) ?></td>
+                        <td class="cell-sub"><?= e(implode(' · ', $kwUnmappedSamples[$kwTopic] ?? [])) ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+<?php endif; ?>
+
+<div class="panel">
+    <div class="panel-head">Coverage mix <span class="count"><?= number_format($kwTotal) ?> rows</span></div>
+    <div class="table-wrap">
+        <table class="data audit-table">
+            <thead><tr><th>Dimension</th><th>Value</th><th>Rows</th><th>Share</th></tr></thead>
+            <tbody>
+                <?php foreach ($kwMix as [$kwDimension, $kwValue, $kwCount]): ?>
+                    <tr>
+                        <td><?= e($kwDimension) ?></td>
+                        <td><?= e($kwValue) ?></td>
+                        <td><?= number_format($kwCount) ?></td>
+                        <td><?= number_format($kwCount / max($kwTotal, 1) * 100, 1) ?>%</td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<?php endif; ?>
 
 <?php else: ?>
 

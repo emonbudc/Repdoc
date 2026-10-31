@@ -205,7 +205,8 @@ if (!function_exists('repdoc_audit_h1')) {
         $between = ($first !== false && $last !== false && $last > $first)
             ? substr($src, $first, $last - $first)
             : '';
-        if (preg_match('/<\?php\s*(else|elseif)\b/i', $between)) {
+        if (preg_match('/<\?php\s*(else|elseif)\b/i', $between)
+            || preg_match('/\b(exit|die)\s*;/i', $between)) {
             return [$count, 'pass', $count . ' H1s in exclusive branches'];
         }
         return [$count, 'warn', $count . ' H1 tags found'];
@@ -654,6 +655,13 @@ if (!function_exists('repdoc_audit_health')) {
             $hasErrorDoc ? 'configured in .htaccess' : 'not configured'
         );
 
+        $seoSourcesDenied = str_contains($rootHtaccess, '(md|csv)');
+        $groups['security']['seo_source_denied'] = repdoc_audit_check(
+            'SEO source files denied',
+            $seoSourcesDenied ? 'pass' : 'warn',
+            $seoSourcesDenied ? '.htaccess blocks .md and .csv' : 'No .md/.csv deny rule in .htaccess'
+        );
+
         $hsts = $headers['strict-transport-security'] ?? '';
         $groups['security']['hsts'] = repdoc_audit_check(
             'Strict-Transport-Security',
@@ -819,6 +827,17 @@ if (!function_exists('repdoc_audit_run')) {
             $title = repdoc_audit_title($src, $vars);
             $desc = repdoc_audit_description($src, $vars);
             $path = trim((string) $page['path'], '/');
+            $noindexOverride = null;
+            $canonicalOverride = null;
+            if (str_starts_with($path, 'sonod/')) {
+                $guideMeta = repdoc_sonod_guide(substr($path, strlen('sonod/')));
+                if (is_array($guideMeta)) {
+                    $title = (string) ($guideMeta['seo_title'] ?? '');
+                    $desc = (string) ($guideMeta['desc'] ?? '');
+                    $noindexOverride = false;
+                    $canonicalOverride = $path;
+                }
+            }
             $robotsPath = '/' . $path . (str_ends_with((string) $page['path'], '/') ? '/' : '');
             $control = repdoc_seo_page_state($path);
             $indexable = (bool) $control['indexable'];
@@ -874,7 +893,7 @@ if (!function_exists('repdoc_audit_run')) {
                     ? repdoc_audit_check('Viewport', 'fail', 'No viewport meta tag')
                     : repdoc_audit_check('Viewport', 'info', $noindexWhy . ' — viewport rendered by app layout'));
 
-            $canonPath = repdoc_audit_canonical_path($src);
+            $canonPath = $canonicalOverride ?? repdoc_audit_canonical_path($src);
             if ($canonPath === null) {
                 $checks['canonical'] = $indexable
                     ? repdoc_audit_check('Canonical', 'fail', 'No canonical URL')
@@ -917,7 +936,7 @@ if (!function_exists('repdoc_audit_run')) {
             }
             $checks['jsonld'] = repdoc_audit_check('JSON-LD', $ldStatus, $ldDetail);
 
-            $hasNoindex = repdoc_audit_has_noindex($src);
+            $hasNoindex = $noindexOverride ?? repdoc_audit_has_noindex($src);
             if ($indexable) {
                 $checks['indexability'] = $hasNoindex
                     ? repdoc_audit_check('Indexability', 'fail', 'noindex on an indexable page')
@@ -1188,7 +1207,7 @@ if (!function_exists('repdoc_seo_audit')) {
     function repdoc_seo_audit(bool $force = false): array
     {
         $cacheFile = REPDOC_LOVE . DIRECTORY_SEPARATOR . 'seo-audit.json';
-        $cacheVersion = 6;
+        $cacheVersion = 7;
         $ttl = 900;
 
         if (!$force && is_file($cacheFile)) {
