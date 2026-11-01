@@ -28,7 +28,7 @@ $repdocIsAdmin = $repdocUser['role'] === 'admin';
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tokens.css?v=2')) ?>">
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/shell.css?v=2')) ?>">
-    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tool.css?v=1')) ?>">
+    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tool.css?v=2')) ?>">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
@@ -180,6 +180,15 @@ $repdocIsAdmin = $repdocUser['role'] === 'admin';
                                 </div>
                                 <div class="bulk-status" id="fetchStatus" role="status" aria-live="polite"></div>
                     </section>
+
+                    <?php
+                    $birthAdDevice = repdoc_detect_device();
+                    $birthAdPosition = $birthAdDevice === 'mobile' ? 'home_mobile_banner' : 'home_middle_banner';
+                    $birthAd = repdoc_render_ad_slot($birthAdPosition, 'birth', $birthAdDevice);
+                    ?>
+                    <?php if ($birthAd !== ''): ?>
+                        <div class="birth-ad-placement" aria-label="বিজ্ঞাপন"><?= $birthAd ?></div>
+                    <?php endif; ?>
 
                     <!-- Form card (hidden until verify-and-fill succeeds) -->
                     <div class="form-card" id="formCard" hidden>

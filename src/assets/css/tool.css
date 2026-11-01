@@ -62,6 +62,15 @@
 .tool-sidebar a:hover { color: var(--primary); background: var(--primary-light); }
 
 .tool-workspace { display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; }
+.birth-ad-placement {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+}
+.birth-ad-placement .repdoc-ad-slot { max-width: 100%; margin-inline: auto; text-align: center; }
+.birth-ad-placement iframe { display: block; max-width: 100%; margin-inline: auto; }
 
 /* ── Notice bar ──────────────────────────────────────────────── */
 .notice-bar {
