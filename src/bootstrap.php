@@ -827,8 +827,8 @@ function repdoc_render_ad_slot(string $positionSlug, string $pageSlug = 'all', ?
                   AND a.status = :status
                   AND (aa.page_slug = :page OR aa.page_slug = :all_page)
                   AND (a.device_target = :device OR a.device_target = :all_device OR a.device_target = :empty)
-                  AND (a.start_date IS NULL OR a.start_date <= :now)
-                  AND (a.end_date IS NULL OR a.end_date >= :now)
+                  AND (a.start_date IS NULL OR a.start_date <= :start_now)
+                  AND (a.end_date IS NULL OR a.end_date >= :end_now)
                 ORDER BY a.priority DESC, a.rotation_weight DESC, a.id DESC
                 LIMIT 1';
         $st = $db->prepare($sql);
@@ -840,7 +840,8 @@ function repdoc_render_ad_slot(string $positionSlug, string $pageSlug = 'all', ?
             ':device' => $deviceType,
             ':all_device' => 'all',
             ':empty' => '',
-            ':now' => $now,
+            ':start_now' => $now,
+            ':end_now' => $now,
         ]);
         $ad = $st->fetch();
         if (!$ad) return '';
