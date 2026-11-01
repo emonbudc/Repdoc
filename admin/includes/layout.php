@@ -30,6 +30,17 @@ function admin_nav_items(): array
             ],
         ],
         'document-archive.php' => ['label' => 'Document Archive', 'icon' => 'a-file'],
+        'ads'              => [
+            'label'    => 'Adsterra Ads',
+            'icon'     => 'a-tag',
+            'children' => [
+                'ads.php'            => ['label' => 'Ads', 'icon' => 'a-tag'],
+                'ad-positions.php'   => ['label' => 'Positions', 'icon' => 'a-layout'],
+                'ad-assignments.php' => ['label' => 'Assignments', 'icon' => 'a-grid'],
+                'ad-settings.php'   => ['label' => 'Settings', 'icon' => 'a-lock'],
+                'ad-logs.php'        => ['label' => 'Logs', 'icon' => 'a-log'],
+            ],
+        ],
         // Tools opens admin/tools.php on click; the caret shows every tool.
         'tools.php'        => [
             'label'    => 'Tools',

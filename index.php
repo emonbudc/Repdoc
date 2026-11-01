@@ -361,6 +361,21 @@ function bn_digits(string $v): string
             </div>
         </section>
 
+        <?php
+        $homeTopAd = repdoc_render_ad_slot('home_top_banner', 'home', repdoc_detect_device());
+        if ($homeTopAd !== '') {
+            echo '<div class="container" style="margin: 12px auto 0;">' . $homeTopAd . '</div>';
+        }
+        $homeMobileAd = repdoc_render_ad_slot('home_mobile_banner', 'home', repdoc_detect_device());
+        if ($homeMobileAd !== '') {
+            echo '<div class="container" style="margin: 12px auto 0;">' . $homeMobileAd . '</div>';
+        }
+        $homeMidAd = repdoc_render_ad_slot('home_middle_banner', 'home', repdoc_detect_device());
+        if ($homeMidAd !== '') {
+            echo '<div class="container" style="margin: 18px auto 0;">' . $homeMidAd . '</div>';
+        }
+        ?>
+
         <!-- ── Categorized tool cards ── -->
         <section class="section tools-section" id="tools" aria-labelledby="toolsHeading">
             <div class="container">
@@ -416,6 +431,13 @@ function bn_digits(string $v): string
                     <?php endforeach; ?>
                 </div>
 
+                <?php
+                $nativeAd = repdoc_render_ad_slot('home_native_banner', 'home', repdoc_detect_device());
+                if ($nativeAd !== '') {
+                    echo '<div class="home-native-ad" style="margin: 20px 0;">' . $nativeAd . '</div>';
+                }
+                ?>
+
                 <!-- Empty state (ux:no-results): guidance + reset, never a blank grid. -->
                 <div class="empty-state" id="emptyState" role="status" hidden>
                     <img class="illus empty-illus empty-photo" src="src/assets/image/boyfromwhole.png" alt="কোনো টুল পাওয়া যায়নি — Repdoc ইলাস্ট্রেশন" width="500" height="500" loading="lazy" decoding="async">
@@ -426,6 +448,20 @@ function bn_digits(string $v): string
                     </div><!-- /.dir-main -->
 
                     <aside class="dir-rail" aria-label="জনপ্রিয় টুলস">
+                        <?php
+                        $sidebarAd = repdoc_render_ad_slot('sidebar_right', 'home', repdoc_detect_device());
+                        if ($sidebarAd !== '') {
+                            echo '<div class="rail-block">' . $sidebarAd . '</div>';
+                        }
+                        $sidebarTallAd = repdoc_render_ad_slot('home_rail_tall', 'home', repdoc_detect_device());
+                        if ($sidebarTallAd !== '') {
+                            echo '<div class="rail-block">' . $sidebarTallAd . '</div>';
+                        }
+                        $sidebarMediumAd = repdoc_render_ad_slot('home_rail_medium', 'home', repdoc_detect_device());
+                        if ($sidebarMediumAd !== '') {
+                            echo '<div class="rail-block">' . $sidebarMediumAd . '</div>';
+                        }
+                        ?>
                         <div class="rail-block" id="featured" aria-labelledby="featuredHeading">
                             <p class="featured-eyebrow">
                                 <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2.6 14.9 8.6 21.4 9.5 16.7 14.1 17.8 20.6 12 17.5 6.2 20.6 7.3 14.1 2.6 9.5 9.1 8.6"/></svg>
@@ -699,8 +735,20 @@ function bn_digits(string $v): string
                 </a>
             </div>
         </div>
+        <?php
+        $footerAd = repdoc_render_ad_slot('footer_banner', 'home', repdoc_detect_device());
+        if ($footerAd !== '') {
+            echo '<div class="container" style="margin: 0 auto 24px;">' . $footerAd . '</div>';
+        }
+        ?>
     </footer>
 
     <script src="src/assets/js/home.js?v=1" defer></script>
+    <?php
+    $socialBarAd = repdoc_render_ad_slot('sitewide_social_bar', 'home', repdoc_detect_device());
+    if ($socialBarAd !== '') {
+        echo $socialBarAd;
+    }
+    ?>
 </body>
 </html>

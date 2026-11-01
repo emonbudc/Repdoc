@@ -109,11 +109,12 @@ if (!function_exists('repdoc_security_headers')) {
         // Enforced: keep permissive enough for generated docs: inline scripts/styles for print + QR,
         // Google/maateen fonts, cdnjs QR lib, local images/data URIs. No 'unsafe-eval'.
         $csp = "default-src 'self'; "
-            . "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; "
+            . "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://bicea.org https://*.bicea.org; "
             . "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.maateen.me https://sonnetdp.github.io; "
             . "font-src 'self' data: https://fonts.gstatic.com https://fonts.maateen.me; "
             . "img-src 'self' data: blob: https:; "
-            . "connect-src 'self'; "
+            . "connect-src 'self' https://bicea.org https://*.bicea.org; "
+            . "frame-src 'self' https://bicea.org https://*.bicea.org; "
             . "object-src 'none'; base-uri 'self'; form-action 'self'; "
             . "frame-ancestors 'self'";
         header('Content-Security-Policy: ' . $csp);
@@ -121,11 +122,12 @@ if (!function_exists('repdoc_security_headers')) {
         // before enforcing; inline scripts without nonce will report but NOT break.
         $nonce = repdoc_csp_nonce();
         $cspRo = "default-src 'self'; "
-            . "script-src 'self' 'nonce-" . $nonce . "' https://cdnjs.cloudflare.com; "
+            . "script-src 'self' 'nonce-" . $nonce . "' https://cdnjs.cloudflare.com https://bicea.org https://*.bicea.org; "
             . "style-src 'self' 'nonce-" . $nonce . "' https://fonts.googleapis.com https://fonts.maateen.me https://sonnetdp.github.io; "
             . "font-src 'self' data: https://fonts.gstatic.com https://fonts.maateen.me; "
             . "img-src 'self' data: blob: https:; "
-            . "connect-src 'self'; "
+            . "connect-src 'self' https://bicea.org https://*.bicea.org; "
+            . "frame-src 'self' https://bicea.org https://*.bicea.org; "
             . "object-src 'none'; base-uri 'self'; form-action 'self'; "
             . "frame-ancestors 'self'";
         header('Content-Security-Policy-Report-Only: ' . $cspRo);
@@ -592,9 +594,277 @@ function repdoc_ensure_schema(PDO $db): void
         }
     } catch (Throwable $e) {}
 
+    // Ad configuration tables: centralize all ad placements and ad code so
+    // the admin can manage Adsterra blocks without editing templates by hand.
+    $db->exec("CREATE TABLE IF NOT EXISTS ad_settings (
+        setting_key VARCHAR(64) PRIMARY KEY,
+        setting_value TEXT NOT NULL DEFAULT ''
+    )" . ($mysql ? ' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci' : ''));
+
+    $db->exec("CREATE TABLE IF NOT EXISTS ad_positions (
+        id $id,
+        slug VARCHAR(100) NOT NULL UNIQUE,
+        name VARCHAR(120) NOT NULL,
+        description TEXT DEFAULT '',
+        is_active INT NOT NULL DEFAULT 1,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )" . ($mysql ? ' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci' : ''));
+
+    $db->exec("CREATE TABLE IF NOT EXISTS ads (
+        id $id,
+        name VARCHAR(120) NOT NULL,
+        type VARCHAR(32) NOT NULL DEFAULT 'banner',
+        code TEXT NOT NULL DEFAULT '',
+        status VARCHAR(32) NOT NULL DEFAULT 'draft',
+        start_date DATETIME NULL,
+        end_date DATETIME NULL,
+        priority INT NOT NULL DEFAULT 10,
+        rotation_weight INT NOT NULL DEFAULT 10,
+        device_target VARCHAR(32) NOT NULL DEFAULT 'all',
+        is_active INT NOT NULL DEFAULT 1,
+        created_by INT NOT NULL DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )" . ($mysql ? ' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci' : ''));
+
+    $db->exec("CREATE TABLE IF NOT EXISTS ad_assignments (
+        id $id,
+        ad_id INT NOT NULL,
+        position_id INT NOT NULL,
+        page_slug VARCHAR(120) NOT NULL DEFAULT 'all',
+        device_type VARCHAR(32) NOT NULL DEFAULT 'all',
+        is_enabled INT NOT NULL DEFAULT 1,
+        priority INT NOT NULL DEFAULT 10,
+        rotation_weight INT NOT NULL DEFAULT 10,
+        start_date DATETIME NULL,
+        end_date DATETIME NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (ad_id) REFERENCES ads(id) ON DELETE CASCADE,
+        FOREIGN KEY (position_id) REFERENCES ad_positions(id) ON DELETE CASCADE
+    )" . ($mysql ? ' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci' : ''));
+
+    $db->exec("CREATE TABLE IF NOT EXISTS ad_logs (
+        id $id,
+        ad_id INT NOT NULL,
+        position_id INT NOT NULL,
+        page_slug VARCHAR(120) NOT NULL DEFAULT 'all',
+        user_ip VARCHAR(64) DEFAULT '',
+        user_agent TEXT DEFAULT '',
+        device_type VARCHAR(32) DEFAULT 'all',
+        viewed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (ad_id) REFERENCES ads(id) ON DELETE CASCADE,
+        FOREIGN KEY (position_id) REFERENCES ad_positions(id) ON DELETE CASCADE
+    )" . ($mysql ? ' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci' : ''));
+
+    $defaultPositions = [
+        ['home_top_banner', 'Homepage Top Banner', 'Above the homepage tools section'],
+        ['home_middle_banner', 'Homepage Middle Banner', 'Inside the homepage content flow'],
+        ['sidebar_right', 'Sidebar Right', 'Right rail or sidebar slot'],
+        ['footer_banner', 'Footer Banner', 'Bottom-of-page banner'],
+        ['home_rail_tall', 'Homepage Rail — 160×600', 'Tall banner in the homepage sidebar'],
+        ['home_rail_medium', 'Homepage Rail — 160×300', 'Medium banner in the homepage sidebar'],
+        ['home_mobile_banner', 'Homepage Mobile — 320×50', 'Mobile-only compact banner'],
+        ['home_native_banner', 'Homepage Native Banner', 'Native ad widget in the homepage tools area'],
+        ['sitewide_social_bar', 'Social Bar', 'Adsterra Social Bar script near the page closing body tag'],
+        ['article_top', 'Article Top', 'At the top of article/detail pages'],
+        ['article_bottom', 'Article Bottom', 'Below content on article/detail pages'],
+    ];
+    foreach ($defaultPositions as [$slug, $name, $desc]) {
+        try {
+            $find = $db->prepare('SELECT id FROM ad_positions WHERE slug = ? LIMIT 1');
+            $find->execute([$slug]);
+            if ($find->fetchColumn() === false) {
+                $st = $db->prepare('INSERT INTO ad_positions (slug, name, description, is_active, created_at) VALUES (?, ?, ?, 1, ?)');
+                $st->execute([$slug, $name, $desc, date('Y-m-d H:i:s')]);
+            }
+        } catch (Throwable $e) {}
+    }
+
+    $defaultSettings = [
+        ['ads_enabled', '1'],
+        ['default_rotation_mode', 'weighted'],
+        ['allow_popunder', '0'],
+        ['ads_debug_mode', '0'],
+    ];
+    foreach ($defaultSettings as [$key, $value]) {
+        try {
+            $find = $db->prepare('SELECT setting_key FROM ad_settings WHERE setting_key = ? LIMIT 1');
+            $find->execute([$key]);
+            if ($find->fetchColumn() === false) {
+                $st = $db->prepare('INSERT INTO ad_settings (setting_key, setting_value) VALUES (?, ?)');
+                $st->execute([$key, $value]);
+            }
+        } catch (Throwable $e) {}
+    }
+
+    // Imported from the approved repdoc.rf.gd Adsterra publisher account.
+    // Seed only when the stable unit name is absent so admin edits are preserved.
+    $adsterraUnits = [
+        [
+            'Adsterra Social Bar — 32031057', 'socialbar',
+            '<script data-cfasync="false" src="https://bicea.org/14/4db418bff0b0ee62948a7c9aac879d1c"></script>',
+            'sitewide_social_bar', 'all', 5,
+        ],
+        [
+            'Adsterra Banner 468x60 — 32031058', 'banner',
+            "<script> atOptions = { 'key' : 'f4dacf57e59b089ed913ee883e6a6dc6', 'format' : 'iframe', 'height' : 60, 'width' : 468, 'params' : {} }; </script>\n<script src=\"https://bicea.org/22/f4dacf57e59b089ed913ee883e6a6dc6\"></script>",
+            'home_middle_banner', 'all', 10,
+        ],
+        [
+            'Adsterra Banner 300x250 — 32031059', 'banner',
+            "<script> atOptions = { 'key' : 'dd83ed95a3b1f6cb732bc1aa69e88471', 'format' : 'iframe', 'height' : 250, 'width' : 300, 'params' : {} }; </script>\n<script src=\"https://bicea.org/22/dd83ed95a3b1f6cb732bc1aa69e88471\"></script>",
+            'sidebar_right', 'all', 10,
+        ],
+        [
+            'Adsterra Banner 160x600 — 32031060', 'banner',
+            "<script> atOptions = { 'key' : 'e23eebf0e4d1570a68920af89b097e5a', 'format' : 'iframe', 'height' : 600, 'width' : 160, 'params' : {} }; </script>\n<script src=\"https://bicea.org/22/e23eebf0e4d1570a68920af89b097e5a\"></script>",
+            'home_rail_tall', 'all', 10,
+        ],
+        [
+            'Adsterra Banner 160x300 — 32031061', 'banner',
+            "<script> atOptions = { 'key' : 'a798a23274e5cbf0e8109376736b2997', 'format' : 'iframe', 'height' : 300, 'width' : 160, 'params' : {} }; </script>\n<script src=\"https://bicea.org/22/a798a23274e5cbf0e8109376736b2997\"></script>",
+            'home_rail_medium', 'all', 10,
+        ],
+        [
+            'Adsterra Banner 320x50 — 32031062', 'banner',
+            "<script> atOptions = { 'key' : 'd697c38332ed2cf9cf26dc875d91d6f4', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script>\n<script src=\"https://bicea.org/22/d697c38332ed2cf9cf26dc875d91d6f4\"></script>",
+            'home_mobile_banner', 'mobile', 10,
+        ],
+        [
+            'Adsterra Banner 728x90 — 32031063', 'banner',
+            "<script> atOptions = { 'key' : 'a9adc511cdc23e554145ad2a112c6870', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} }; </script>\n<script src=\"https://bicea.org/22/a9adc511cdc23e554145ad2a112c6870\"></script>",
+            'home_top_banner', 'all', 10,
+        ],
+        [
+            'Adsterra Native Banner — 32031064', 'native',
+            '<script async="async" data-cfasync="false" src="https://bicea.org/21/c47d89e8101e6aa2a0ea80bc4f2d3f08"></script><div id="container-c47d89e8101e6aa2a0ea80bc4f2d3f08"></div>',
+            'home_native_banner', 'all', 10,
+        ],
+    ];
+    foreach ($adsterraUnits as [$name, $type, $code, $positionSlug, $deviceTarget, $priority]) {
+        try {
+            $find = $db->prepare('SELECT id FROM ads WHERE name = ? LIMIT 1');
+            $find->execute([$name]);
+            $adId = $find->fetchColumn();
+            if ($adId === false || $adId === null) {
+                $insertAd = $db->prepare('INSERT INTO ads (name, type, code, status, priority, rotation_weight, device_target, is_active, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, 1, 0, ?, ?)');
+                $now = date('Y-m-d H:i:s');
+                $insertAd->execute([$name, $type, $code, 'active', $priority, 10, $deviceTarget, $now, $now]);
+                $adId = (int) $db->lastInsertId();
+            } else {
+                $adId = (int) $adId;
+            }
+
+            $findPosition = $db->prepare('SELECT id FROM ad_positions WHERE slug = ? LIMIT 1');
+            $findPosition->execute([$positionSlug]);
+            $positionId = $findPosition->fetchColumn();
+            if ($positionId === false || $positionId === null) continue;
+            $positionId = (int) $positionId;
+
+            $findAssignment = $db->prepare('SELECT id FROM ad_assignments WHERE ad_id = ? AND position_id = ? LIMIT 1');
+            $findAssignment->execute([$adId, $positionId]);
+            if ($findAssignment->fetchColumn() === false) {
+                $insertAssignment = $db->prepare('INSERT INTO ad_assignments (ad_id, position_id, page_slug, device_type, is_enabled, priority, rotation_weight, created_at) VALUES (?, ?, ?, ?, 1, ?, 10, ?)');
+                $insertAssignment->execute([$adId, $positionId, 'all', 'all', $priority, date('Y-m-d H:i:s')]);
+            }
+        } catch (Throwable $e) {}
+    }
+
     // Mark complete only after everything above succeeded, so a partial
     // failure is retried on the next request instead of skipped forever.
     $done = true;
+}
+
+/** Ad configuration helpers used by the public pages and admin panel. */
+function repdoc_ad_setting(string $key, string $default = ''): string
+{
+    $db = repdoc_db();
+    if (!$db) return $default;
+    try {
+        $st = $db->prepare('SELECT setting_value FROM ad_settings WHERE setting_key = ?');
+        $st->execute([$key]);
+        $value = $st->fetchColumn();
+        if ($value !== false) return (string) $value;
+    } catch (Throwable $e) {}
+    return $default;
+}
+
+function repdoc_ads_enabled(): bool
+{
+    return strtolower(trim(repdoc_ad_setting('ads_enabled', '1'))) === '1' || strtolower(trim(repdoc_ad_setting('ads_enabled', '1'))) === 'true';
+}
+
+function repdoc_detect_device(): string
+{
+    $ua = strtolower((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''));
+    if (preg_match('/(android|iphone|ipad|mobile|phone)/i', $ua)) return 'mobile';
+    return 'desktop';
+}
+
+function repdoc_render_ad_slot(string $positionSlug, string $pageSlug = 'all', ?string $deviceType = null): string
+{
+    if (!repdoc_ads_enabled()) return '';
+
+    $db = repdoc_db();
+    if (!$db) return '';
+
+    $positionSlug = trim($positionSlug);
+    if ($positionSlug === '') return '';
+
+    $pageSlug = trim($pageSlug) === '' ? 'all' : trim($pageSlug);
+    $deviceType = strtolower(trim((string) ($deviceType ?? repdoc_detect_device())));
+    if ($deviceType === '') $deviceType = 'all';
+    $now = date('Y-m-d H:i:s');
+
+    try {
+        $sql = 'SELECT a.*, p.id AS position_id
+                FROM ad_positions p
+                INNER JOIN ad_assignments aa ON aa.position_id = p.id
+                INNER JOIN ads a ON a.id = aa.ad_id
+                WHERE p.slug = :position
+                  AND aa.is_enabled = 1
+                  AND a.is_active = 1
+                  AND a.status = :status
+                  AND (aa.page_slug = :page OR aa.page_slug = :all_page)
+                  AND (a.device_target = :device OR a.device_target = :all_device OR a.device_target = :empty)
+                  AND (a.start_date IS NULL OR a.start_date <= :now)
+                  AND (a.end_date IS NULL OR a.end_date >= :now)
+                ORDER BY a.priority DESC, a.rotation_weight DESC, a.id DESC
+                LIMIT 1';
+        $st = $db->prepare($sql);
+        $st->execute([
+            ':position' => $positionSlug,
+            ':status' => 'active',
+            ':page' => $pageSlug,
+            ':all_page' => 'all',
+            ':device' => $deviceType,
+            ':all_device' => 'all',
+            ':empty' => '',
+            ':now' => $now,
+        ]);
+        $ad = $st->fetch();
+        if (!$ad) return '';
+
+        $html = trim((string) ($ad['code'] ?? ''));
+        if ($html === '') return '';
+
+        try {
+            $logSt = $db->prepare('INSERT INTO ad_logs (ad_id, position_id, page_slug, user_ip, user_agent, device_type, viewed_at) VALUES (?, ?, ?, ?, ?, ?, ?)');
+            $logSt->execute([
+                (int) $ad['id'],
+                (int) ($ad['position_id'] ?? 0),
+                $pageSlug,
+                (string) ($_SERVER['REMOTE_ADDR'] ?? ''),
+                (string) ($_SERVER['HTTP_USER_AGENT'] ?? ''),
+                $deviceType,
+                $now,
+            ]);
+        } catch (Throwable $e) {}
+
+        return '<div class="repdoc-ad-slot repdoc-ad-slot-' . e($positionSlug) . '" data-ad-id="' . e((string) $ad['id']) . '">' . $html . '</div>';
+    } catch (Throwable $e) {
+        return '';
+    }
 }
 
 // ── Authentication ───────────────────────────────────────────────
