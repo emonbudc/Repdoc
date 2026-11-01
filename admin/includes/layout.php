@@ -39,6 +39,7 @@ function admin_nav_items(): array
                 'ad-assignments.php' => ['label' => 'Assignments', 'icon' => 'a-grid'],
                 'ad-settings.php'   => ['label' => 'Settings', 'icon' => 'a-lock'],
                 'ad-logs.php'        => ['label' => 'Logs', 'icon' => 'a-log'],
+                   'ad-health.php'      => ['label' => 'Health', 'icon' => 'a-search'],
             ],
         ],
         // Tools opens admin/tools.php on click; the caret shows every tool.
