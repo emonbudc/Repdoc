@@ -365,8 +365,7 @@ function bn_digits(string $v): string
         $homeDevice = repdoc_detect_device();
         $homeTopAd = $homeDevice === 'desktop' ? repdoc_render_ad_slot('home_top_banner', 'home', $homeDevice) : '';
         $homeMobileAd = $homeDevice === 'mobile' ? repdoc_render_ad_slot('home_mobile_banner', 'home', $homeDevice) : '';
-        $homeMidAd = $homeDevice === 'desktop' ? repdoc_render_ad_slot('home_middle_banner', 'home', $homeDevice) : '';
-        $hasIntroAds = $homeTopAd !== '' || $homeMobileAd !== '' || $homeMidAd !== '';
+        $hasIntroAds = $homeTopAd !== '' || $homeMobileAd !== '';
         ?>
         <?php if ($hasIntroAds): ?>
             <div class="home-ad-stack" aria-label="বিজ্ঞাপন">
@@ -375,9 +374,6 @@ function bn_digits(string $v): string
                 <?php endif; ?>
                 <?php if ($homeMobileAd !== ''): ?>
                     <div class="home-ad-unit home-ad-unit--mobile"><?= $homeMobileAd ?></div>
-                <?php endif; ?>
-                <?php if ($homeMidAd !== ''): ?>
-                    <div class="home-ad-unit home-ad-unit--middle"><?= $homeMidAd ?></div>
                 <?php endif; ?>
             </div>
         <?php endif; ?>
@@ -458,16 +454,6 @@ function bn_digits(string $v): string
                         $sidebarAd = repdoc_render_ad_slot('sidebar_right', 'home', repdoc_detect_device());
                         if ($sidebarAd !== '') {
                             echo '<div class="rail-block rail-block--ad">' . $sidebarAd . '</div>';
-                        }
-                        if ($homeDevice === 'desktop') {
-                            $sidebarTallAd = repdoc_render_ad_slot('home_rail_tall', 'home', $homeDevice);
-                            if ($sidebarTallAd !== '') {
-                                echo '<div class="rail-block rail-block--ad rail-block--desktop-ad">' . $sidebarTallAd . '</div>';
-                            }
-                            $sidebarMediumAd = repdoc_render_ad_slot('home_rail_medium', 'home', $homeDevice);
-                            if ($sidebarMediumAd !== '') {
-                                echo '<div class="rail-block rail-block--ad rail-block--desktop-ad">' . $sidebarMediumAd . '</div>';
-                            }
                         }
                         ?>
                         <div class="rail-block" id="featured" aria-labelledby="featuredHeading">
