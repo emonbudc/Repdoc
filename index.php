@@ -195,7 +195,7 @@ function bn_digits(string $v): string
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="src/assets/css/tokens.css?v=2">
     <link rel="stylesheet" href="src/assets/css/shell.css?v=2">
-    <link rel="stylesheet" href="src/assets/css/home.css?v=4">
+    <link rel="stylesheet" href="src/assets/css/home.css?v=5">
 
     <!-- Homepage renders one look only (no theme switching here). -->
     <?php
@@ -362,22 +362,28 @@ function bn_digits(string $v): string
         </section>
 
         <?php
-        $homeTopAd = repdoc_render_ad_slot('home_top_banner', 'home', repdoc_detect_device());
-        if ($homeTopAd !== '') {
-            echo '<div class="container" style="margin: 12px auto 0;">' . $homeTopAd . '</div>';
-        }
-        $homeMobileAd = repdoc_render_ad_slot('home_mobile_banner', 'home', repdoc_detect_device());
-        if ($homeMobileAd !== '') {
-            echo '<div class="container" style="margin: 12px auto 0;">' . $homeMobileAd . '</div>';
-        }
-        $homeMidAd = repdoc_render_ad_slot('home_middle_banner', 'home', repdoc_detect_device());
-        if ($homeMidAd !== '') {
-            echo '<div class="container" style="margin: 18px auto 0;">' . $homeMidAd . '</div>';
-        }
+        $homeDevice = repdoc_detect_device();
+        $homeTopAd = $homeDevice === 'desktop' ? repdoc_render_ad_slot('home_top_banner', 'home', $homeDevice) : '';
+        $homeMobileAd = $homeDevice === 'mobile' ? repdoc_render_ad_slot('home_mobile_banner', 'home', $homeDevice) : '';
+        $homeMidAd = $homeDevice === 'desktop' ? repdoc_render_ad_slot('home_middle_banner', 'home', $homeDevice) : '';
+        $hasIntroAds = $homeTopAd !== '' || $homeMobileAd !== '' || $homeMidAd !== '';
         ?>
+        <?php if ($hasIntroAds): ?>
+            <div class="home-ad-stack" aria-label="বিজ্ঞাপন">
+                <?php if ($homeTopAd !== ''): ?>
+                    <div class="home-ad-unit home-ad-unit--top"><?= $homeTopAd ?></div>
+                <?php endif; ?>
+                <?php if ($homeMobileAd !== ''): ?>
+                    <div class="home-ad-unit home-ad-unit--mobile"><?= $homeMobileAd ?></div>
+                <?php endif; ?>
+                <?php if ($homeMidAd !== ''): ?>
+                    <div class="home-ad-unit home-ad-unit--middle"><?= $homeMidAd ?></div>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
 
         <!-- ── Categorized tool cards ── -->
-        <section class="section tools-section" id="tools" aria-labelledby="toolsHeading">
+        <section class="section tools-section<?= $hasIntroAds ? ' tools-section--after-ad' : '' ?>" id="tools" aria-labelledby="toolsHeading">
             <div class="container">
                 <div class="section-head">
                     <div>
@@ -434,7 +440,7 @@ function bn_digits(string $v): string
                 <?php
                 $nativeAd = repdoc_render_ad_slot('home_native_banner', 'home', repdoc_detect_device());
                 if ($nativeAd !== '') {
-                    echo '<div class="home-native-ad" style="margin: 20px 0;">' . $nativeAd . '</div>';
+                    echo '<div class="home-native-ad">' . $nativeAd . '</div>';
                 }
                 ?>
 
@@ -451,15 +457,17 @@ function bn_digits(string $v): string
                         <?php
                         $sidebarAd = repdoc_render_ad_slot('sidebar_right', 'home', repdoc_detect_device());
                         if ($sidebarAd !== '') {
-                            echo '<div class="rail-block">' . $sidebarAd . '</div>';
+                            echo '<div class="rail-block rail-block--ad">' . $sidebarAd . '</div>';
                         }
-                        $sidebarTallAd = repdoc_render_ad_slot('home_rail_tall', 'home', repdoc_detect_device());
-                        if ($sidebarTallAd !== '') {
-                            echo '<div class="rail-block">' . $sidebarTallAd . '</div>';
-                        }
-                        $sidebarMediumAd = repdoc_render_ad_slot('home_rail_medium', 'home', repdoc_detect_device());
-                        if ($sidebarMediumAd !== '') {
-                            echo '<div class="rail-block">' . $sidebarMediumAd . '</div>';
+                        if ($homeDevice === 'desktop') {
+                            $sidebarTallAd = repdoc_render_ad_slot('home_rail_tall', 'home', $homeDevice);
+                            if ($sidebarTallAd !== '') {
+                                echo '<div class="rail-block rail-block--ad rail-block--desktop-ad">' . $sidebarTallAd . '</div>';
+                            }
+                            $sidebarMediumAd = repdoc_render_ad_slot('home_rail_medium', 'home', $homeDevice);
+                            if ($sidebarMediumAd !== '') {
+                                echo '<div class="rail-block rail-block--ad rail-block--desktop-ad">' . $sidebarMediumAd . '</div>';
+                            }
                         }
                         ?>
                         <div class="rail-block" id="featured" aria-labelledby="featuredHeading">
@@ -738,7 +746,7 @@ function bn_digits(string $v): string
         <?php
         $footerAd = repdoc_render_ad_slot('footer_banner', 'home', repdoc_detect_device());
         if ($footerAd !== '') {
-            echo '<div class="container" style="margin: 0 auto 24px;">' . $footerAd . '</div>';
+            echo '<div class="home-footer-ad">' . $footerAd . '</div>';
         }
         ?>
     </footer>
