@@ -17,8 +17,14 @@ $slots = [
     'sitewide_social_bar' => 'Social Bar',
 ];
 $reports = [];
+$probeTransaction = false;
 
 if ($db) {
+    try {
+        $db->beginTransaction();
+        $probeTransaction = $db->inTransaction();
+    } catch (Throwable $e) {}
+
     $st = $db->prepare('SELECT a.name, a.status, a.is_active, a.device_target, a.start_date, a.end_date,
                                aa.page_slug, aa.device_type, aa.is_enabled
                         FROM ad_positions p
@@ -31,9 +37,11 @@ if ($db) {
         $device = $slug === 'home_mobile_banner' ? 'mobile' : $detectedDevice;
         $eligible = [];
         $candidates = [];
+        $rendererBytes = 0;
         try {
             $st->execute([$slug]);
             $candidates = $st->fetchAll();
+            $rendererBytes = strlen(repdoc_render_ad_slot($slug, 'home', $device));
             $now = time();
             foreach ($candidates as $candidate) {
                 $start = trim((string) ($candidate['start_date'] ?? ''));
@@ -62,8 +70,13 @@ if ($db) {
             'device' => $device,
             'candidate_count' => count($candidates),
             'eligible' => $eligible,
+            'renderer_bytes' => $rendererBytes,
             'candidates' => $candidates,
         ];
+    }
+
+    if ($probeTransaction && $db->inTransaction()) {
+        try { $db->rollBack(); } catch (Throwable $e) {}
     }
 }
 
@@ -94,6 +107,7 @@ admin_notice();
                             <th>Test device</th>
                             <th>Assignments</th>
                             <th>Eligible ads</th>
+                            <th>Renderer bytes</th>
                             <th>Filter details</th>
                         </tr>
                     </thead>
@@ -104,6 +118,7 @@ admin_notice();
                                 <td><?= e($report['device']) ?></td>
                                 <td><?= (int) $report['candidate_count'] ?></td>
                                 <td><?= count($report['eligible']) ?></td>
+                                <td><?= (int) $report['renderer_bytes'] ?></td>
                                 <td>
                                     <?php if ($report['eligible']): ?>
                                         <?= e(implode(', ', $report['eligible'])) ?>
