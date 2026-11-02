@@ -18,6 +18,7 @@ function udc_tools(): array
 {
     $tools = [
         ['key' => 'birth',      'name' => 'Birth Certificate Generator', 'nav' => 'জন্ম নিবন্ধন', 'cat' => 'Birth', 'icon' => 'a-file', 'url' => 'genaretor/birth/', 'check' => 'genaretor/birth/index.php'],
+        ['key' => 'death',      'name' => 'Death Certificate Generator', 'nav' => 'মৃত্যু নিবন্ধন', 'cat' => 'Death', 'icon' => 'a-file', 'url' => 'genaretor/death/', 'check' => 'genaretor/death/index.php'],
         ['key' => 'birthsearch', 'name' => 'Record Search (alt copy)', 'nav' => 'রেকর্ড সার্চ', 'cat' => 'Birth', 'icon' => 'a-file', 'url' => 'tools/birthsearch/', 'check' => 'tools/birthsearch/index.php', 'admin_only' => true],
         ['key' => 'nid',        'name' => 'National ID Card (NID)', 'nav' => 'জাতীয় পরিচয়পত্র (NID)', 'cat' => 'Identity', 'icon' => 'a-id', 'url' => 'genaretor/nid/', 'check' => 'genaretor/nid/index.php'],
         ['key' => 'smartnid',   'name' => 'Smart NID', 'nav' => 'স্মার্ট NID', 'cat' => 'Identity', 'icon' => 'a-id', 'url' => 'genaretor/smartnid/', 'check' => 'genaretor/smartnid/index.php'],
