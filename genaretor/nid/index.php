@@ -521,7 +521,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         $nidAd = repdoc_render_ad_slot($nidAdPosition, 'nid', $nidAdDevice);
         ?>
         <?php if ($nidAd !== ''): ?>
-        <div style="display:flex;justify-content:center;align-items:center;width:100%;margin:12px 0;overflow:hidden;text-align:center;">
+        <div style="display:flex !important;justify-content:center;align-items:center;width:100%;margin:12px 0;overflow:hidden;text-align:center;">
             <div style="max-width:100%;margin:0 auto;text-align:center;"><?= $nidAd ?></div>
         </div>
         <?php endif; ?>
@@ -575,7 +575,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                 $nidAd2 = repdoc_render_ad_slot($nidAd2Position, 'nid', $nidAd2Device);
                 ?>
                 <?php if ($nidAd2 !== ''): ?>
-                <div style="display:flex;justify-content:center;align-items:center;width:100%;margin:12px 0;overflow:hidden;text-align:center;">
+                <div style="display:flex !important;justify-content:center;align-items:center;width:100%;margin:12px 0;overflow:hidden;text-align:center;">
                     <div style="max-width:100%;margin:0 auto;text-align:center;"><?= $nidAd2 ?></div>
                 </div>
                 <?php endif; ?>

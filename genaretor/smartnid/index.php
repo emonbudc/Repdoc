@@ -451,7 +451,7 @@ $repdocIsAdmin = $repdocUser['role'] === 'admin';
         $smartNidAd = repdoc_render_ad_slot($smartNidAdPosition, 'smartnid', $smartNidAdDevice);
         ?>
         <?php if ($smartNidAd !== ''): ?>
-        <div style="display:flex;justify-content:center;align-items:center;width:100%;margin:12px 0;overflow:hidden;text-align:center;">
+        <div style="display:flex !important;justify-content:center;align-items:center;width:100%;margin:12px 0;overflow:hidden;text-align:center;">
             <div style="max-width:100%;margin:0 auto;text-align:center;"><?= $smartNidAd ?></div>
         </div>
         <?php endif; ?>
@@ -506,7 +506,7 @@ $repdocIsAdmin = $repdocUser['role'] === 'admin';
                 $smartNidAd2 = repdoc_render_ad_slot($smartNidAd2Position, 'smartnid', $smartNidAd2Device);
                 ?>
                 <?php if ($smartNidAd2 !== ''): ?>
-                <div style="display:flex;justify-content:center;align-items:center;width:100%;margin:12px 0;overflow:hidden;text-align:center;">
+                <div style="display:flex !important;justify-content:center;align-items:center;width:100%;margin:12px 0;overflow:hidden;text-align:center;">
                     <div style="max-width:100%;margin:0 auto;text-align:center;"><?= $smartNidAd2 ?></div>
                 </div>
                 <?php endif; ?>
