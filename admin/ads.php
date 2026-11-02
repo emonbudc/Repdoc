@@ -174,6 +174,9 @@ admin_notice();
         <h1 class="admin-title">Adsterra Ads</h1>
         <p class="admin-sub">Manage ad blocks, placements and page targeting from one place.</p>
     </div>
+    <div style="display:flex;gap:8px">
+        <a class="btn btn-secondary btn-sm" href="ad-settings.php">Ad settings</a>
+    </div>
 </div>
 
 <?php if (!$db): ?>

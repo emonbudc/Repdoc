@@ -54,6 +54,9 @@ admin_notice();
         <h1 class="admin-title">Ad Settings</h1>
         <p class="admin-sub">Control global rules for your Adsterra placements.</p>
     </div>
+    <div style="display:flex;gap:8px">
+        <a class="btn btn-secondary btn-sm" href="ads.php">Ad manager</a>
+    </div>
 </div>
 
 <?php if (!$db): ?>

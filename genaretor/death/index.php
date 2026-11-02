@@ -197,6 +197,15 @@ $repdocDemoRecord = [
                                 <div class="bulk-status" id="fetchStatus" role="status" aria-live="polite"></div>
                     </section>
 
+                    <?php
+                    $deathAdDevice = repdoc_detect_device();
+                    $deathAdPosition = $deathAdDevice === 'mobile' ? 'home_mobile_banner' : 'home_middle_banner';
+                    $deathAd = repdoc_render_ad_slot($deathAdPosition, 'death', $deathAdDevice);
+                    ?>
+                    <?php if ($deathAd !== ''): ?>
+                        <div class="death-ad-placement" aria-label="বিজ্ঞাপন"><?= $deathAd ?></div>
+                    <?php endif; ?>
+
                     <!-- Form card (hidden until verify-and-fill succeeds) -->
                     <div class="form-card" id="formCard" hidden>
                         <div class="progress-track" role="progressbar" aria-label="ফর্ম পূরণের অগ্রগতি" aria-valuemin="0" aria-valuemax="100">
