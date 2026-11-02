@@ -445,6 +445,16 @@ $repdocIsAdmin = $repdocUser['role'] === 'admin';
         </div>
     </header>
     <div class="nid-wrap">
+        <?php
+        $smartNidAdDevice = repdoc_detect_device();
+        $smartNidAdPosition = $smartNidAdDevice === 'mobile' ? 'home_mobile_banner' : 'home_middle_banner';
+        $smartNidAd = repdoc_render_ad_slot($smartNidAdPosition, 'smartnid', $smartNidAdDevice);
+        ?>
+        <?php if ($smartNidAd !== ''): ?>
+        <div style="display:flex;justify-content:center;align-items:center;width:100%;margin:12px 0;overflow:hidden;text-align:center;">
+            <div style="max-width:100%;margin:0 auto;text-align:center;"><?= $smartNidAd ?></div>
+        </div>
+        <?php endif; ?>
         <main>
             <form action="output.php" method="POST" enctype="multipart/form-data" id="nidForm">
                 <section class="nid-card" id="sec-photo" aria-labelledby="t-photo" data-reveal>
