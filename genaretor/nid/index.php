@@ -515,6 +515,17 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         </div>
         <?php } ?>
 
+        <?php
+        $nidAdDevice = repdoc_detect_device();
+        $nidAdPosition = $nidAdDevice === 'mobile' ? 'home_mobile_banner' : 'home_middle_banner';
+        $nidAd = repdoc_render_ad_slot($nidAdPosition, 'nid', $nidAdDevice);
+        ?>
+        <?php if ($nidAd !== ''): ?>
+        <div style="display:flex;justify-content:center;align-items:center;width:100%;margin:12px 0;overflow:hidden;text-align:center;">
+            <div style="max-width:100%;margin:0 auto;text-align:center;"><?= $nidAd ?></div>
+        </div>
+        <?php endif; ?>
+
         <main>
             <form action="" method="POST" enctype="multipart/form-data" id="nidForm">
                 <section class="nid-card" id="sec-photo" aria-labelledby="t-photo" data-reveal>
