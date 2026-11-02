@@ -895,7 +895,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                     setTimeout(function () {
                         submitBtn.disabled = false;
                         submitBtn.textContent = submitBtn.getAttribute('data-default-label') || 'কার্ড তৈরি করুন';
-                    }, 4000);
+                    }, 6000);
                 });
             }
 
@@ -916,13 +916,17 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
 setTimeout(function(){
   var slots=document.querySelectorAll('.repdoc-ad-slot');
   var blocked = slots.length > 0;
-  slots.forEach(function(s){ if(s && s.children.length > 0 && s.offsetHeight > 0) blocked = false; });
+  slots.forEach(function(s){
+    if(!s) return;
+    var real = Array.prototype.filter.call(s.children, function(c){ return c.tagName !== 'SCRIPT' && c.tagName !== 'NOSCRIPT'; });
+    if(real.length > 0 && s.offsetHeight > 10){ blocked = false; }
+  });
   if(blocked){
     var w=document.getElementById('adblockWall');
     if(w){ w.style.display='flex'; }
     document.body.style.overflow='hidden';
   }
-}, 4000);
+}, 6000);
 </script>
 
 </body>
