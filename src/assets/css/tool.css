@@ -66,12 +66,15 @@
 .death-ad-placement {
     display: flex;
     justify-content: center;
+    align-items: center;
     width: 100%;
     min-width: 0;
     overflow: hidden;
+    text-align: center;
+    margin: 0 auto;
 }
-.birth-ad-placement .repdoc-ad-slot, .death-ad-placement .repdoc-ad-slot { max-width: 100%; margin-inline: auto; text-align: center; }
-.birth-ad-placement iframe, .death-ad-placement iframe { display: block; max-width: 100%; margin-inline: auto; }
+.birth-ad-placement .repdoc-ad-slot, .death-ad-placement .repdoc-ad-slot { max-width: 100%; margin: 0 auto !important; text-align: center; }
+.birth-ad-placement iframe, .death-ad-placement iframe { display: block; max-width: 100%; margin: 0 auto !important; }
 
 /* ── Notice bar ──────────────────────────────────────────────── */
 .notice-bar {
