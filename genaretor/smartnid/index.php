@@ -629,6 +629,8 @@ $repdocIsAdmin = $repdocUser['role'] === 'admin';
                     btn.setAttribute('aria-label', open ? 'মেনু বন্ধ করুন' : 'মেনু খুলুন');
                 }
             }
+            window.toggleNav = toggleNav;
+            window.toggleTheme = toggleTheme;
             function applyThemeUI(theme) {
                 var label = document.getElementById('themeToggleLabel');
                 if (label) label.textContent = theme === 'dark' ? 'Light' : 'Dark';
