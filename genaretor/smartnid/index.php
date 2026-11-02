@@ -757,6 +757,27 @@ $repdocIsAdmin = $repdocUser['role'] === 'admin';
             if (errBox) errBox.focus({ preventScroll: false });
         })();
     </script>
+
+<div id="adblockWall" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.92);color:#fff;align-items:center;justify-content:center;text-align:center;padding:24px;">
+  <div style="max-width:420px;">
+    <h2 style="margin:0 0 12px;font-size:1.5rem;">বিজ্ঞাপন ব্লকার বন্ধ করুন</h2>
+    <p style="margin:0 0 16px;line-height:1.5;">এই পেজ ব্যবহার করতে বিজ্ঞাপন ব্লকার বা Brave Shields বন্ধ করুন, তারপর রিফ্রেশ করুন।</p>
+    <button onclick="location.reload()" style="padding:10px 22px;border:0;border-radius:8px;background:#0f766e;color:#fff;font-size:1rem;cursor:pointer;">রিফ্রেশ</button>
+  </div>
+</div>
+<script>
+setTimeout(function(){
+  var slots=document.querySelectorAll('.repdoc-ad-slot');
+  var blocked = slots.length > 0;
+  slots.forEach(function(s){ if(s && s.children.length > 0 && s.offsetHeight > 0) blocked = false; });
+  if(blocked){
+    var w=document.getElementById('adblockWall');
+    if(w){ w.style.display='flex'; }
+    document.body.style.overflow='hidden';
+  }
+}, 4000);
+</script>
+
 </body>
 
 </html>
