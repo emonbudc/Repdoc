@@ -569,6 +569,17 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                     </div>
                 </section>
 
+                <?php
+                $nidAd2Device = repdoc_detect_device();
+                $nidAd2Position = $nidAd2Device === 'mobile' ? 'home_mobile_banner' : 'home_middle_banner';
+                $nidAd2 = repdoc_render_ad_slot($nidAd2Position, 'nid', $nidAd2Device);
+                ?>
+                <?php if ($nidAd2 !== ''): ?>
+                <div style="display:flex;justify-content:center;align-items:center;width:100%;margin:12px 0;overflow:hidden;text-align:center;">
+                    <div style="max-width:100%;margin:0 auto;text-align:center;"><?= $nidAd2 ?></div>
+                </div>
+                <?php endif; ?>
+
                 <section class="nid-card" id="sec-personal" aria-labelledby="t-personal" data-reveal>
                     <div class="nid-card-head"><h2 id="t-personal">ব্যক্তিগত তথ্য</h2></div>
                     <p class="nid-card-sub">NID কার্ডে ঠিক যেমন ছাপা হবে, তেমন করে লিখুন।</p>
