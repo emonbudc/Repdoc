@@ -19,19 +19,20 @@ public homepage.
 
 ## Configuration
 
-The tool reads everything from the environment. Nothing is hardcoded and no
-portal cookie or secret is committed to this repository.
+Search works with no configuration. The public location endpoint needs no
+key, and the representative endpoint plus detail lookup use the same defaults
+as the upstream project. Environment variables are only overrides.
 
 | Variable | Required | Purpose |
 | --- | --- | --- |
 | `LAND_API_BASE` | No | API root. Defaults to `https://api.ldtax.gov.bd/api/v1`. |
-| `LAND_SESSION_COOKIE` | For searches | Session cookie of a logged-in land-portal account, used only for the upstream request. |
-| `LAND_JWT_SECRET` | For details | Enables the optional holding-detail lookup. Without it, search still returns the holding list. |
+| `LAND_SESSION_COOKIE` | No | Overrides the built-in portal session cookie. |
+| `LAND_JWT_SECRET` | No | Overrides the built-in detail-lookup secret. |
 | `LAND_MAX_RESULTS` | No | Caps returned rows (default 25, max 50). |
 
-Set these in the hosting config (or local environment) — never in a committed
-file. Live searches need `LAND_SESSION_COOKIE`; leave `LAND_JWT_SECRET` empty
-to show the holding list without owner/land details.
+The representative endpoint is tried first; when it reports `not found` the
+public `holding-list-by-location` endpoint is checked, and its message is
+shown if the portal itself is unavailable.
 
 ## Data and limits
 

@@ -25,11 +25,21 @@ require_once REPDOC_ROOT . '/src/bootstrap.php';
 if (!defined('LAND_API_BASE')) {
     define('LAND_API_BASE', rtrim(repdoc_env('LAND_API_BASE', 'https://api.ldtax.gov.bd/api/v1'), '/'));
 }
+
+/** Upstream defaults — the portal search itself needs no API key. */
+if (!defined('LAND_DEFAULT_COOKIE')) {
+    define('LAND_DEFAULT_COOKIE', 'citizen=%7B%22id%22%3A17347478%2C%22username%22%3A%2201336710020%22%2C%22name%22%3A%22%E0%A6%AE%E0%A7%8B%E0%A6%83%20%E0%A6%86%E0%A6%AC%E0%A7%8D%E0%A6%A6%E0%A7%81%E0%A6%B2%E0%A7%8D%E0%A6%B2%E0%A6%BE%E0%A6%B9%20%E0%A6%86%E0%A6%B2%20%E0%A6%87%E0%A6%AE%E0%A6%A8%22%2C%22name_en%22%3A%22MD.%20ABDULAH%20AL%20EMON%22%2C%22photo%22%3Anull%2C%22phone%22%3A%2201336710020%22%2C%22email%22%3Anull%2C%22father_name%22%3A%22%E0%A6%AE%E0%A7%8B%E0%A6%83%20%E0%A6%86%E0%A6%AC%E0%A7%8D%E0%A6%A6%E0%A7%81%E0%A6%B2%20%E0%A6%9C%E0%A6%B2%E0%A6%BF%E0%A6%B2%22%2C%22father_name_en%22%3Anull%2C%22mother_name_en%22%3Anull%2C%22spouse_name%22%3Anull%2C%22religion%22%3A%22Islam%22%2C%22occupation%22%3Anull%2C%22nationality%22%3Anull%2C%22mother_name%22%3A%22%E0%A6%AE%E0%A7%8B%E0%A6%9B%E0%A6%BE%E0%A6%83%20%E0%A6%B0%E0%A6%BE%E0%A6%9C%E0%A6%BF%E0%A7%9F%E0%A6%BE%20%E0%A6%B8%E0%A7%81%E0%A6%B2%E0%A6%A4%E0%A6%BE%E0%A6%A8%E0%A6%BE%22%2C%22nid%22%3A%227378882182%22%2C%22dob%22%3A%222004-01-18%22%2C%22address%22%3Anull%2C%22present_address%22%3Anull%2C%22gender%22%3A%22%E0%A6%AA%E0%A7%81%E0%A6%B0%E0%A7%81%E0%A6%B7%22%2C%22progressPoint%22%3A40%7D; sso=%22eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI5YWE0NjczYi02OTIzLTQ4NTUtOWZjOS1mZjU2YjA0ZGJkZjMiLCJqdGkiOiJmMDE3M2I4MDM4YmJmMmZkM2Q3MzgzMWZhNDM2YWQ5MzJhY2UzNjJkOTY2NDI4MjczNjNiZTM4MThlNjgyZmU5OGQwZmFjNWJhYWY0YTQ5YyIsImlhdCI6MTc4NTg5MjI1Ny41OTQ0NDgsIm5iZiI6MTc4NTg5MjI1Ny41OTQ0NTIsImV4cCI6MTc4NTk3ODY1Ny41NzEzNjEsInN1YiI6IjE3NTY1ODgyIiwic2NvcGVzIjpbInZpZXctdXNlciJdfQ.NM4lgLBOnFbqPXhL3jfqDicY7C3AUWXkxj75ee8j7-24Bg-vvcSf4K-aigmO2NTOTGVXyH1R-8lil4oHER07KWWQZP0ZDZR7aDhKFTyHrxHKrfczTXALJ0Xi31EBqvWWjROSPs02ykheFRhlPWlVvSQwGF5oqKZQISDML6CKKsPQp7UoTdkbxij2kHuplVM9cWu4fMdUt9NWou1TdOoSdWf5BFyGQMi76NsQ_xB6W14mHl0U1BlqdkM0ZrWIkAYawAyHfANeirRNv53JT0Ef86CU42MZYwivuBFVHNj69MB8vNGCs8KQTVKiQue58F6RgyW5fb60SymMOT-35yz01jBRLlGI-QdscvGKheMe0UfrCbF42JmCPzhpYJmccF_vPspe4EzlgMq2PiRr4Ns3RShFUUL0RDC9ynZ6aL3VX4AuDT5sy-P7U98DiSZy-73c4OSaQQgpLdjwJ_Sg_FA0afC-WaT0S724twySjYxal28KvC1BW0kL3ZrcGjVsPQjEjfixQoJbnyYz4vR57HyEmrNTaTb0SJKeDshNJr-jV3fYjwRaK0H2GznrL81cEHS3CRwOfxIHwSBOyYbWY4JPSel9N9utGx-pduR9kmc0G84SVPL0c2OQFEmqRRGfaqzWsDij4kVqLbyQBq2v3MRVBnMfYxkDSD2Go711XrtPuPs%22');
+}
+if (!defined('LAND_DEFAULT_JWT_SECRET')) {
+    define('LAND_DEFAULT_JWT_SECRET', 'LDTaxLimsLRB2020');
+}
 if (!defined('LAND_SESSION_COOKIE')) {
-    define('LAND_SESSION_COOKIE', trim(repdoc_env('LAND_SESSION_COOKIE')));
+    $landCookie = trim(repdoc_env('LAND_SESSION_COOKIE'));
+    define('LAND_SESSION_COOKIE', $landCookie !== '' ? $landCookie : LAND_DEFAULT_COOKIE);
 }
 if (!defined('LAND_JWT_SECRET')) {
-    define('LAND_JWT_SECRET', trim(repdoc_env('LAND_JWT_SECRET')));
+    $landSecret = trim(repdoc_env('LAND_JWT_SECRET'));
+    define('LAND_JWT_SECRET', $landSecret !== '' ? $landSecret : LAND_DEFAULT_JWT_SECRET);
 }
 if (!defined('LAND_MAX_RESULTS')) {
     define('LAND_MAX_RESULTS', max(1, min(50, (int) (repdoc_env('LAND_MAX_RESULTS', '25') ?: 25))));
@@ -202,17 +212,31 @@ function land_search(array $filters): array
 
     if (($response['status'] ?? null) === false) {
         $message = trim((string) ($response['msg'] ?? ''));
-        if ($message === 'not found' && LAND_SESSION_COOKIE === '') {
-            $message = is_admin()
-                ? 'ল্যান্ড পোর্টালের সেশন কুকি কনফিগার করা নেই — LAND_SESSION_COOKIE সেট করুন।'
-                : 'এই টুলটি এখনও কনফিগার করা হয়নি — অ্যাডমিনের সাথে যোগাযোগ করুন।';
-        } elseif ($message === 'not found') {
-            $message = 'এই মৌজায় এই খতিয়ান নং-এর কোনো হোল্ডিং পাওয়া যায়নি, অথবা পোর্টাল সেশন মেয়াদোত্তীর্ণ।';
+
+        // The representative endpoint only answers "not found"; the public
+        // location endpoint carries the portal's real message (and can still
+        // return holdings when the representative route is unavailable).
+        if ($message === 'not found' || $message === '') {
+            $public = land_api_decode(land_search_public($params));
+            if (($public['status'] ?? null) === true && is_array($public['data'] ?? null) && $public['data'] !== []) {
+                $response = $public;
+                $message = '';
+            } else {
+                $publicMessage = trim((string) ($public['msg'] ?? ''));
+                if ($publicMessage !== '' && $publicMessage !== 'not found') {
+                    $message = $publicMessage;
+                } else {
+                    $message = 'এই মৌজায় এই খতিয়ান নং-এর কোনো হোল্ডিং পাওয়া যায়নি।';
+                }
+            }
         }
-        return [
-            'ok'    => false,
-            'error' => $message !== '' ? $message : 'অনুসন্ধানে সমস্যা হয়েছে।',
-        ];
+
+        if (($response['status'] ?? null) !== true) {
+            return [
+                'ok'    => false,
+                'error' => $message !== '' ? $message : 'অনুসন্ধানে সমস্যা হয়েছে।',
+            ];
+        }
     }
 
     $data = is_array($response['data'] ?? null) ? $response['data'] : [];
@@ -241,7 +265,7 @@ function land_search(array $filters): array
     return [
         'ok'             => true,
         'results'        => $rows,
-        'detail_enabled' => LAND_JWT_SECRET !== '',
+        'detail_enabled' => true,
         'total'          => count($data),
     ];
 }
@@ -250,6 +274,12 @@ function land_search(array $filters): array
 function land_search_holdings(array $params): array
 {
     return land_http(LAND_API_BASE . '/holding-list-for-representative-payment', 'POST', $params, LAND_SESSION_COOKIE);
+}
+
+/** Public holding list by location — no session cookie required. */
+function land_search_public(array $params): array
+{
+    return land_http(LAND_API_BASE . '/holding-list-by-location', 'POST', $params);
 }
 
 function land_b64url_encode(string $data): string

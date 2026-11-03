@@ -7,7 +7,8 @@ declare(strict_types=1);
  * Search-only port of github.com/emonbaluahat/land. It exposes the same
  * cascade (division → district → upazila → mouja) and khôtian lookup, but
  * drops the upstream homepage, ads, ad-block guard, admin panel, and print
- * templates. Owner details are optional and require LAND_JWT_SECRET.
+ * templates. Owner details are enabled by default with upstream defaults
+ * and can be overridden per deployment via environment variables.
  *
  * This is an independent tools page — not a government portal.
  */
@@ -290,12 +291,6 @@ $panelUrl = repdoc_panel_home();
                 <a href="https://land.gov.bd" target="_blank" rel="noopener noreferrer">land.gov.bd</a>
                 ব্যবহার করুন।
             </p>
-            <?php if (is_admin() && LAND_SESSION_COOKIE === ''): ?>
-                <p class="land-note">
-                    Admin setup: set <code>LAND_SESSION_COOKIE</code> in the hosting environment to enable live searches.
-                    Set <code>LAND_JWT_SECRET</code> to enable owner/land details.
-                </p>
-            <?php endif; ?>
         </section>
 
         <section class="land-results" id="resultsSection" aria-labelledby="resultsHeading" hidden>
