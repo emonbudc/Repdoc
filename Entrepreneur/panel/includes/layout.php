@@ -131,10 +131,11 @@ function udc_page_start(string $title, string $active): void
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tokens.css?v=2')) ?>">
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/app.css?v=2')) ?>">
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/admin.css?v=12')) ?>">
+    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/udc.css?v=1')) ?>">
     <script>/* Rail state before paint, so the sidebar never flashes wide. */
     try { if (localStorage.getItem('repdoc-udc-rail') === '1') document.documentElement.classList.add('admin-rail'); } catch (e) {}</script>
 </head>
-<body class="admin-body">
+<body class="admin-body udc-body">
     <svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
         <defs>
             <symbol id="a-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></symbol>
