@@ -234,45 +234,7 @@ body::before, body::after {
 .section-head h2 { font-size: clamp(1.4rem, 2.4vw, 1.8rem); font-weight: 800; letter-spacing: 0; }
 .section-sub { margin-top: 6px; color: var(--text-muted); font-size: .96rem; }
 
-/* Compact ad rhythm: keep the intro banner stack close to the hero and
-   reclaim section padding immediately after it. */
-.home-ad-stack {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    width: 100%;
-    max-width: var(--container);
-    margin: 8px auto 0;
-    padding-inline: var(--gutter);
-}
-.home-ad-unit {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    min-width: 0;
-    overflow: hidden;
-    line-height: 0;
-}
-.home-ad-unit .repdoc-ad-slot,
-.home-native-ad .repdoc-ad-slot,
-.rail-block--ad .repdoc-ad-slot,
-.home-footer-ad .repdoc-ad-slot {
-    max-width: 100%;
-    margin-inline: auto;
-    text-align: center;
-}
-.home-ad-unit iframe,
-.home-native-ad iframe,
-.rail-block--ad iframe,
-.home-footer-ad iframe {
-    display: block;
-    max-width: 100%;
-    margin-inline: auto;
-}
-.tools-section--after-ad { padding-top: clamp(20px, 2.4vw, 30px); }
-.home-native-ad { margin: 12px 0; overflow: hidden; }
-.home-footer-ad { width: 100%; max-width: var(--container); margin: 0 auto 12px; padding-inline: var(--gutter); }
+/* Ad layout was removed from the homepage — no ad slots render here. */
 .kicker {
     display: flex; align-items: center; gap: 8px;
     margin: 0 0 8px;
@@ -380,16 +342,6 @@ body::before, body::after {
     border-radius: 16px;
     background: linear-gradient(160deg, #F2FBF5 0%, #E3F4EA 100%);
     box-shadow: inset 0 1px 0 #fff;
-}
-.rail-block--ad {
-    display: flex;
-    justify-content: center;
-    padding: 0;
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none;
-    overflow: hidden;
 }
 .rail-block::before { display: none; }
 .featured-eyebrow {
@@ -883,8 +835,6 @@ body::before, body::after {
 }
 
 @media (max-width: 640px) {
-    .home-ad-stack { gap: 6px; margin-top: 6px; }
-    .tools-section--after-ad { padding-top: 20px; }
     .hero { padding: var(--space-6) 0 var(--space-6); }
     .chip { padding: 8px 14px; font-size: .85rem; }
     .category-chips { margin-bottom: var(--space-5); }

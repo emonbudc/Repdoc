@@ -198,7 +198,7 @@ function bn_digits(string $v): string
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="src/assets/css/tokens.css?v=2">
     <link rel="stylesheet" href="src/assets/css/shell.css?v=2">
-    <link rel="stylesheet" href="src/assets/css/home.css?v=5">
+    <link rel="stylesheet" href="src/assets/css/home.css?v=6">
 
     <!-- Homepage renders one look only (no theme switching here). -->
     <?php
@@ -358,25 +358,8 @@ function bn_digits(string $v): string
             </div>
         </section>
 
-        <?php
-        $homeDevice = repdoc_detect_device();
-        $homeTopAd = $homeDevice === 'desktop' ? repdoc_render_ad_slot('home_top_banner', 'home', $homeDevice) : '';
-        $homeMobileAd = $homeDevice === 'mobile' ? repdoc_render_ad_slot('home_mobile_banner', 'home', $homeDevice) : '';
-        $hasIntroAds = $homeTopAd !== '' || $homeMobileAd !== '';
-        ?>
-        <?php if ($hasIntroAds): ?>
-            <div class="home-ad-stack" aria-label="বিজ্ঞাপন">
-                <?php if ($homeTopAd !== ''): ?>
-                    <div class="home-ad-unit home-ad-unit--top"><?= $homeTopAd ?></div>
-                <?php endif; ?>
-                <?php if ($homeMobileAd !== ''): ?>
-                    <div class="home-ad-unit home-ad-unit--mobile"><?= $homeMobileAd ?></div>
-                <?php endif; ?>
-            </div>
-        <?php endif; ?>
-
         <!-- ── Categorized tool cards ── -->
-        <section class="section tools-section<?= $hasIntroAds ? ' tools-section--after-ad' : '' ?>" id="tools" aria-label="সকল টুলস">
+        <section class="section tools-section" id="tools" aria-label="সকল টুলস">
             <div class="container">
                 <div class="category-chips" id="categoryChips" role="group" aria-label="টুল ক্যাটাগরি">
                     <button type="button" class="chip chip-cat is-active" data-cat="all" aria-pressed="true">
@@ -422,13 +405,6 @@ function bn_digits(string $v): string
                     <?php endforeach; ?>
                 </div>
 
-                <?php
-                $nativeAd = repdoc_render_ad_slot('home_native_banner', 'home', repdoc_detect_device());
-                if ($nativeAd !== '') {
-                    echo '<div class="home-native-ad">' . $nativeAd . '</div>';
-                }
-                ?>
-
                 <!-- Empty state (ux:no-results): guidance + reset, never a blank grid. -->
                 <div class="empty-state" id="emptyState" role="status" hidden>
                     <img class="illus empty-illus empty-photo" src="src/assets/image/boyfromwhole.png" alt="কোনো টুল পাওয়া যায়নি — Repdoc ইলাস্ট্রেশন" width="500" height="500" loading="lazy" decoding="async">
@@ -439,12 +415,6 @@ function bn_digits(string $v): string
                     </div><!-- /.dir-main -->
 
                     <aside class="dir-rail" aria-label="জনপ্রিয় টুলস">
-                        <?php
-                        $sidebarAd = repdoc_render_ad_slot('sidebar_right', 'home', repdoc_detect_device());
-                        if ($sidebarAd !== '') {
-                            echo '<div class="rail-block rail-block--ad">' . $sidebarAd . '</div>';
-                        }
-                        ?>
                         <div class="rail-block" id="featured" aria-labelledby="featuredHeading">
                             <p class="featured-eyebrow">
                                 <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 2.6 14.9 8.6 21.4 9.5 16.7 14.1 17.8 20.6 12 17.5 6.2 20.6 7.3 14.1 2.6 9.5 9.1 8.6"/></svg>
@@ -713,20 +683,8 @@ function bn_digits(string $v): string
                 </a>
             </div>
         </div>
-        <?php
-        $footerAd = repdoc_render_ad_slot('footer_banner', 'home', repdoc_detect_device());
-        if ($footerAd !== '') {
-            echo '<div class="home-footer-ad">' . $footerAd . '</div>';
-        }
-        ?>
     </footer>
 
     <script src="src/assets/js/home.js?v=1" defer></script>
-    <?php
-    $socialBarAd = repdoc_render_ad_slot('sitewide_social_bar', 'home', repdoc_detect_device());
-    if ($socialBarAd !== '') {
-        echo $socialBarAd;
-    }
-    ?>
 </body>
 </html>
