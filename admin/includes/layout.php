@@ -61,6 +61,7 @@ function admin_nav_items(): array
                 'documents.php'    => ['label' => 'Document Log',   'icon' => 'a-id'],
                 'prottoyon.php'    => ['label' => 'Prottoyon Log',  'icon' => 'a-file'],
                 'transactions.php' => ['label' => 'Transactions',   'icon' => 'a-wallet'],
+                'bad-requests.php' => ['label' => 'Bad Requests',   'icon' => 'a-shield'],
             ],
         ],
         'pricing.php'      => ['label' => 'Tool Prices',       'icon' => 'a-tag'],
@@ -274,6 +275,7 @@ function admin_page_start(string $title, string $active): void
             <symbol id="a-sidebar" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></symbol>
             <symbol id="a-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
             <symbol id="a-pulse" viewBox="0 0 24 24"><polyline points="3 12 7 12 10 5 14 19 17 12 21 12"/></symbol>
+            <symbol id="a-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11.2 14.2 15.5 9.9"/></symbol>
         </defs>
     </svg>
 

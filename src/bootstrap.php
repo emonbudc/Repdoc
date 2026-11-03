@@ -666,6 +666,24 @@ function repdoc_ensure_schema(PDO $db): void
         updated_at DATETIME NULL
     )" . $suffix);
 
+    // Unauthorized / broken requests (403 + 404), aggregated per path+IP.
+    $db->exec("CREATE TABLE IF NOT EXISTS bad_requests (
+        id $id,
+        sig CHAR(32) NOT NULL,
+        status INT NOT NULL DEFAULT 404,
+        method VARCHAR(8) DEFAULT '',
+        path VARCHAR(180) NOT NULL DEFAULT '',
+        query TEXT NULL,
+        ip VARCHAR(45) DEFAULT '',
+        user_agent TEXT NULL,
+        referer TEXT NULL,
+        probe INT NOT NULL DEFAULT 0,
+        hits INT NOT NULL DEFAULT 1,
+        first_seen DATETIME NULL,
+        last_seen DATETIME NULL,
+        UNIQUE (sig)
+    )$suffix");
+
     $defaultPositions = [
         ['home_top_banner', 'Homepage Top Banner', 'Above the homepage tools section'],
         ['home_middle_banner', 'Homepage Middle Banner', 'Inside the homepage content flow'],
@@ -802,6 +820,8 @@ function repdoc_track_view(bool $force = false): bool
     if (!$force) {
         if (PHP_SAPI === 'cli') return false;
         if (strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET')) !== 'GET') return false;
+        // Apache ErrorDocument hits (403/404) are not page views.
+        if (isset($_SERVER['REDIRECT_STATUS'])) return false;
 
         $path = '/' . ltrim((string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? '/'), PHP_URL_PATH), '/');
         foreach (['/admin', '/Entrepreneur/panel', '/public', '/api', '/src', '/love', '/vendor'] as $prefix) {
@@ -854,6 +874,86 @@ function repdoc_view_stats(): array
     } catch (Throwable $e) {}
 
     return $stats;
+}
+
+/**
+ * Path fragments that usually mean someone is probing the server rather than
+ * following a broken link. Used to tag rows in the admin Bad Requests screen.
+ */
+function repdoc_probe_patterns(): array
+{
+    return [
+        'wp-admin', 'wp-login', 'wp-content', 'wp-includes', 'xmlrpc', 'wlwmanifest',
+        'phpmyadmin', 'pma', 'adminer', 'myadmin', 'dbadmin', 'sqladmin',
+        '.env', '.git', '.svn', '.htaccess', '.htpasswd', '.ds_store', '.aws', '.ssh',
+        'config', 'backup', 'database', 'dump', '.sql', '.bak', '.old', '.zip', '.tar',
+        'admin/login', 'admin-login', 'administrator', 'webadmin', 'cpanel', 'plesk', 'webmail',
+        'vendor/', 'composer.json', 'composer.lock', 'package.json', 'dockerfile', 'docker-compose',
+        'cgi-bin', 'shell', 'passwd', 'server-status', 'server-info', 'actuator',
+        'swagger', 'phpinfo', 'graphql', '/api/v1', 'test.php', 'debug', 'autodiscover',
+    ];
+}
+
+/** True when the path looks like automated probing instead of a broken link. */
+function repdoc_is_probe(string $path, string $query = ''): bool
+{
+    $hay = strtolower($path . '?' . $query);
+    foreach (repdoc_probe_patterns() as $needle) {
+        if (str_contains($hay, $needle)) return true;
+    }
+    return false;
+}
+
+/**
+ * Record a 403/404 hit into bad_requests (aggregated by status + path + IP).
+ *
+ * Served by 404.php, which .htaccess wires to ErrorDocument 403 and 404.
+ * $force is for CLI tests only.
+ */
+function repdoc_log_bad_request(?int $status = null, ?string $uri = null, bool $force = false): bool
+{
+    if (PHP_SAPI === 'cli' && !$force) return false;
+
+    $status = $status ?? (int) ($_SERVER['REDIRECT_STATUS'] ?? 404);
+    if (!in_array($status, [403, 404], true)) $status = 404;
+
+    $uri = $uri ?? (string) ($_SERVER['REDIRECT_URL'] ?? $_SERVER['REQUEST_URI'] ?? '/');
+    $parts = parse_url($uri) ?: [];
+    $path = '/' . ltrim((string) ($parts['path'] ?? '/'), '/');
+    if ($path === '/' || $path === '') return false;
+
+    $query = (string) ($parts['query'] ?? '');
+    if ($query === '') $query = (string) ($_SERVER['QUERY_STRING'] ?? '');
+
+    $path   = mb_substr($path, 0, 180, 'UTF-8');
+    $query  = mb_substr($query, 0, 300, 'UTF-8');
+    $ip     = (string) ($_SERVER['REMOTE_ADDR'] ?? '');
+    $ua     = mb_substr((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 400, 'UTF-8');
+    $ref    = mb_substr((string) ($_SERVER['HTTP_REFERER'] ?? ''), 0, 300, 'UTF-8');
+    $method = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
+    if ($method === '' || strlen($method) > 8) $method = 'GET';
+    $probe  = repdoc_is_probe($path, $query) ? 1 : 0;
+
+    $db = repdoc_db();
+    if (!$db) return false;
+
+    $now = date('Y-m-d H:i:s');
+    $sig = md5($status . '|' . $path . '|' . $ip);
+
+    try {
+        $sql = 'INSERT INTO bad_requests (sig, status, method, path, query, ip, user_agent, referer, probe, hits, first_seen, last_seen)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)';
+        if ($db->getAttribute(PDO::ATTR_DRIVER_NAME) === 'mysql') {
+            $sql .= ' ON DUPLICATE KEY UPDATE hits = hits + 1, last_seen = VALUES(last_seen), query = VALUES(query), user_agent = VALUES(user_agent), referer = VALUES(referer), probe = VALUES(probe)';
+        } else {
+            $sql .= ' ON CONFLICT(sig) DO UPDATE SET hits = hits + 1, last_seen = excluded.last_seen, query = excluded.query, user_agent = excluded.user_agent, referer = excluded.referer, probe = excluded.probe';
+        }
+        $st = $db->prepare($sql);
+        $st->execute([$sig, $status, $method, $path, $query, $ip, $ua, $ref, $probe, $now, $now]);
+        return true;
+    } catch (Throwable $e) {
+        return false;
+    }
 }
 
 /** Ad configuration helpers used by the public pages and admin panel. */
