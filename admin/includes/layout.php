@@ -90,7 +90,22 @@ function admin_nav_items(): array
         ],
     ];
 
-    return $items;
+    $flat = [];
+    foreach ($items as $key => $item) {
+        if (!empty($item['children']) && is_array($item['children']) && count($item['children']) === 1) {
+            $childKey = (string) array_key_first($item['children']);
+            $child = (array) $item['children'][$childKey];
+            $flat[$childKey] = [
+                'label' => (string) ($child['label'] ?? $item['label']),
+                'icon'  => (string) ($child['icon'] ?? $item['icon']),
+            ];
+            if (!empty($child['badge'])) $flat[$childKey]['badge'] = $child['badge'];
+            continue;
+        }
+        $flat[$key] = $item;
+    }
+
+    return $flat;
 }
 
 /** Pending-approval counts for nav badges. Never throws — degrades to zeros. */

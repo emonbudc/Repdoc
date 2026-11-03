@@ -92,7 +92,22 @@ function udc_nav_items(): array
 
     $items['office.php'] = ['label' => 'অফিস সেটিংস', 'icon' => 'a-lock', 'url' => 'genaretor/prottoyon/office.php'];
 
-    return $items;
+    $flat = [];
+    foreach ($items as $key => $item) {
+        if (!empty($item['children']) && is_array($item['children']) && count($item['children']) === 1) {
+            $childKey = (string) array_key_first($item['children']);
+            $child = (array) $item['children'][$childKey];
+            $flat[$childKey] = [
+                'label' => (string) ($child['label'] ?? $item['label']),
+                'icon'  => (string) ($child['icon'] ?? $item['icon']),
+                'url'   => (string) ($child['url'] ?? ''),
+            ];
+            continue;
+        }
+        $flat[$key] = $item;
+    }
+
+    return $flat;
 }
 
 function udc_page_start(string $title, string $active): void
