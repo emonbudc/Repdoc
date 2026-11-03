@@ -106,7 +106,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tokens.css?v=2')) ?>">
-    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/apply.css?v=1')) ?>">
+    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/apply.css?v=2')) ?>">
+    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/login.css?v=2')) ?>">
 </head>
 <body class="apply-body">
     <svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
@@ -125,37 +126,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </svg>
 
     <div class="apply-shell">
-        <aside class="apply-rail" aria-label="আবেদনের ধাপ">
+        <aside class="login-brandpanel is-sticky" aria-label="আবেদনের নির্দেশনা">
             <a class="apply-brand" href="<?= e(repdoc_url('/')) ?>" aria-label="Repdoc — হোমপেজ">
                 <img src="<?= e(repdoc_url('src/assets/image/logo.png')) ?>" alt="Repdoc" width="96" height="28">
             </a>
 
-            <p class="rail-label">Operator access</p>
-            <ul class="rail-nav">
-                <li class="is-current">
-                    <a class="rail-link" href="#identity"><span class="num">01</span> পরিচয়</a>
-                </li>
-                <li>
-                    <a class="rail-link" href="#contact"><span class="num">02</span> যোগাযোগ</a>
-                </li>
-                <li>
-                    <a class="rail-link" href="#area"><span class="num">03</span> এলাকা</a>
-                </li>
-                <li>
-                    <a class="rail-link" href="#review"><span class="num">04</span> যাচাই</a>
-                </li>
-            </ul>
-
-            <div class="rail-note">
-                <span class="rn-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-shield"/></svg></span>
-                <strong>নিরাপদ আবেদন</strong>
-                <p>আপনার আইডি ডকুমেন্ট শুধু পরিচয় যাচাইয়ের জন্য ব্যবহার করা হয়।</p>
+            <div class="login-pitch">
+                <span class="kicker"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-bolt"/></svg> Operator onboarding</span>
+                <h1>কয়েক ধাপেই অপারেটর অ্যাকাউন্ট</h1>
+                <p>ফর্মটি পূরণ করে ডকুমেন্ট দিন — অ্যাডমিন যাচাইয়ের পরে এক লগইনে সব টুল চালু হবে।</p>
+                <ul class="login-points">
+                    <li>
+                        <span class="num">01</span>
+                        <div><strong>পরিচয় ও প্রতিষ্ঠান</strong><span class="txt">আইডি কার্ড বা ট্রেড লাইসেন্সের ছবি দিন।</span></div>
+                    </li>
+                    <li>
+                        <span class="num">02</span>
+                        <div><strong>এলাকা ও যোগাযোগ</strong><span class="txt">জেলা, উপজেলা ও মোবাইল নম্বর দিন।</span></div>
+                    </li>
+                    <li>
+                        <span class="num">03</span>
+                        <div><strong>অ্যাডমিন যাচাই</strong><span class="txt">অনুমোদনের পরে অ্যাকাউন্ট সক্রিয় হবে।</span></div>
+                    </li>
+                </ul>
             </div>
 
-            <div class="rail-foot">
+            <p class="login-panel-foot">
                 <a href="<?= e(repdoc_url('/')) ?>"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-back"/></svg> সাইটে ফিরুন</a>
                 <a href="<?= e(repdoc_url('/public/login/')) ?>"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-login"/></svg> আগে থেকেই অ্যাকাউন্ট আছে?</a>
-            </div>
+            </p>
         </aside>
 
         <div class="apply-content">

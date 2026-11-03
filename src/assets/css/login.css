@@ -1,3 +1,11 @@
+.apply-body {
+    --auth-panel-w: 340px;
+}
+
+.login-body {
+    --auth-panel-w: clamp(360px, 42%, 470px);
+}
+
 .login-body .login-shell {
     display: flex;
     align-items: stretch;
@@ -7,9 +15,9 @@
     box-shadow: 0 34px 70px -46px rgba(19, 50, 35, .55);
 }
 
-.login-body .login-brandpanel {
+.apply-body .login-brandpanel {
     position: relative;
-    flex: 0 0 clamp(360px, 42%, 470px);
+    flex: 0 0 var(--auth-panel-w);
     display: flex;
     flex-direction: column;
     gap: 24px;
@@ -21,26 +29,32 @@
     color: #FFFFFF;
 }
 
-.login-body .login-brandpanel .apply-brand {
+.apply-body .login-brandpanel.is-sticky {
+    position: sticky;
+    top: 10px;
+    height: calc(100vh - 20px);
+}
+
+.apply-body .login-brandpanel .apply-brand {
     margin: 0;
     width: fit-content;
     align-self: flex-start;
 }
 
-.login-body .login-pitch {
+.apply-body .login-pitch {
     margin: auto 0;
     display: flex;
     flex-direction: column;
 }
 
-.login-body .login-brandpanel .kicker {
+.apply-body .login-brandpanel .kicker {
     align-self: flex-start;
     background: rgba(255, 255, 255, .09);
     color: var(--g-mint);
     border: 1px solid rgba(255, 255, 255, .12);
 }
 
-.login-body .login-pitch h1 {
+.apply-body .login-pitch h1 {
     margin-top: 2px;
     font-size: 2rem;
     font-weight: 800;
@@ -49,7 +63,7 @@
     color: #FFFFFF;
 }
 
-.login-body .login-pitch > p {
+.apply-body .login-pitch > p {
     max-width: 340px;
     margin-top: 12px;
     font-size: .92rem;
@@ -57,7 +71,7 @@
     color: rgba(255, 255, 255, .64);
 }
 
-.login-body .login-points {
+.apply-body .login-points {
     margin: 26px 0 0;
     padding: 0;
     list-style: none;
@@ -65,7 +79,7 @@
     flex-direction: column;
 }
 
-.login-body .login-points li {
+.apply-body .login-points li {
     display: flex;
     align-items: flex-start;
     gap: 12px;
@@ -73,7 +87,7 @@
     border-top: 1px solid rgba(255, 255, 255, .12);
 }
 
-.login-body .login-points .num {
+.apply-body .login-points .num {
     flex: 0 0 auto;
     width: 30px;
     height: 30px;
@@ -87,14 +101,14 @@
     font-weight: 600;
 }
 
-.login-body .login-points strong {
+.apply-body .login-points strong {
     display: block;
     font-size: .9rem;
     font-weight: 700;
     color: #FFFFFF;
 }
 
-.login-body .login-points .txt {
+.apply-body .login-points .txt {
     display: block;
     margin-top: 2px;
     font-size: .78rem;
@@ -102,7 +116,7 @@
     color: rgba(255, 255, 255, .58);
 }
 
-.login-body .login-panel-foot {
+.apply-body .login-panel-foot {
     display: flex;
     flex-wrap: wrap;
     gap: 6px 18px;
@@ -112,7 +126,7 @@
     color: rgba(255, 255, 255, .55);
 }
 
-.login-body .login-panel-foot a {
+.apply-body .login-panel-foot a {
     display: inline-flex;
     align-items: center;
     gap: 7px;
@@ -121,11 +135,11 @@
     transition: color .15s ease;
 }
 
-.login-body .login-panel-foot a:hover {
+.apply-body .login-panel-foot a:hover {
     color: #FFFFFF;
 }
 
-.login-body .login-panel-foot .icon {
+.apply-body .login-panel-foot .icon {
     width: 14px;
     height: 14px;
 }
@@ -231,37 +245,41 @@
         box-shadow: none;
     }
 
-    .login-body .login-brandpanel {
+    .apply-body .login-brandpanel,
+    .apply-body .login-brandpanel.is-sticky {
+        position: static;
         flex: none;
+        width: 100%;
+        height: auto;
         padding: 16px 16px 18px;
         border-radius: 0 0 28px 28px;
         gap: 14px;
     }
 
-    .login-body .login-brandpanel .apply-brand {
+    .apply-body .login-brandpanel .apply-brand {
         margin: 0;
         padding: 7px 12px;
     }
 
-    .login-body .login-brandpanel .apply-brand img {
+    .apply-body .login-brandpanel .apply-brand img {
         height: 24px;
     }
 
-    .login-body .login-pitch {
+    .apply-body .login-pitch {
         margin: 0;
     }
 
-    .login-body .login-pitch h1 {
+    .apply-body .login-pitch h1 {
         font-size: 1.45rem;
     }
 
-    .login-body .login-pitch > p {
+    .apply-body .login-pitch > p {
         margin-top: 6px;
         font-size: .84rem;
     }
 
-    .login-body .login-points,
-    .login-body .login-panel-foot {
+    .apply-body .login-points,
+    .apply-body .login-panel-foot {
         display: none;
     }
 

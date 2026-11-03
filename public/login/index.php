@@ -108,8 +108,8 @@ if ($flash && $error === '') {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tokens.css?v=2')) ?>">
-    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/apply.css?v=1')) ?>">
-    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/login.css?v=1')) ?>">
+    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/apply.css?v=2')) ?>">
+    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/login.css?v=2')) ?>">
 </head>
 <body class="apply-body login-body">
     <svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
