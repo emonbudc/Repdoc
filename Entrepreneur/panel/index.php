@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 /**
  * Repdoc — UDC panel dashboard.
- * Own prottoyon counts, balance and office status at a glance.
+ * Live clock, account details, balance and quick links at a glance.
  */
 
 require_once __DIR__ . '/includes/layout.php';
@@ -12,7 +12,6 @@ $me = current_user();
 $db = repdoc_db();
 
 $stats = ['balance' => 0, 'last_login' => ''];
-$office = office_profile();
 
 $udcTools = udc_tools();
 
@@ -57,7 +56,7 @@ udc_notice();
     <div class="alert alert-error" role="alert">ডেটাবেস পাওয়া যাচ্ছে না।<?= isset($dbErr) && $dbErr !== '' ? ' (' . e($dbErr) . ')' : '' ?></div>
 <?php else: ?>
 
-<div class="stat-grid">
+<div class="stat-grid stat-grid-3">
     <div class="stat-card stat-clock">
         <span class="stat-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><use href="#a-clock"/></svg></span>
         <span class="stat-text">
@@ -78,10 +77,6 @@ udc_notice();
     <div class="stat-card">
         <span class="stat-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><use href="#a-wallet"/></svg></span>
         <span class="stat-text"><span class="k">ব্যালেন্স</span><span class="v"><?= number_format($stats['balance']) ?></span><span class="s">ক্রেডিট</span></span>
-    </div>
-    <div class="stat-card">
-        <span class="stat-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><use href="#a-id"/></svg></span>
-        <span class="stat-text"><span class="k">অফিস</span><span class="v" style="font-size:1rem"><?= e($office['office_name'] !== '' ? $office['office_name'] : 'সেট হয়নি') ?></span><span class="s"><a href="<?= e(repdoc_url('Entrepreneur/panel/office.php')) ?>">সেটিংস</a></span></span>
     </div>
 </div>
 

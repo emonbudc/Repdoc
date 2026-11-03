@@ -139,3 +139,19 @@
         box-shadow: 0 30px 60px -30px rgba(10, 23, 18, .8);
     }
 }
+
+.udc-body .stat-grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 1140px) {
+    .udc-body .stat-grid-3 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .udc-body .stat-grid-3 {
+        grid-template-columns: 1fr;
+    }
+}
