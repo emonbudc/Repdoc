@@ -31,7 +31,7 @@ $userBalance = $currentUser !== null ? user_balance($currentUser['id']) : 0;
 $categories = [
     'documents'    => ['label' => 'ডকুমেন্টস',      'icon' => 'i-grid'],
     'templates'    => ['label' => 'টেমপ্লেট',       'icon' => 'i-layout'],
-    'certificates' => ['label' => 'সার্টিফিকেট',    'icon' => 'i-award'],
+    'certificates' => ['label' => 'সার্টিফিকেট ও সনদ', 'icon' => 'i-award'],
     'software'     => ['label' => 'সফটওয়্যার',     'icon' => 'i-download'],
 ];
 
@@ -51,7 +51,8 @@ $tools = [
         'cat' => 'templates',
         'icon' => 'i-layout',
         'name' => 'টেমপ্লেট শোকেস',
-        'desc' => 'ফ্রি টেমপ্লেট ও ফরম — Word ও PDF আকারে।',
+        'desc' => 'টেম্পলেট ও ফরম — Word ও PDF আকারে।',
+        'featured_desc' => 'ফ্রি টেমপ্লেট ও ফরম — Word ও PDF আকারে।',
         'url' => 'showcase/',
         'featured' => true,
         'status' => 'folder',
@@ -63,7 +64,7 @@ $tools = [
         'cat' => 'documents',
         'icon' => 'i-user',
         'name' => 'সিভি মেকার',
-        'desc' => 'ফ্রি টেমপ্লেট থেকে সিভি বানিয়ে ডাউনলোড করুন।',
+        'desc' => 'টেম্পলেট থেকে সিভি বানিয়ে ডাউনলোড করুন।',
         'url' => 'genaretor/cvmaker/',
         'featured' => false,
         'status' => 'folder',
@@ -74,24 +75,26 @@ $tools = [
         'id' => 'prottoyon',
         'cat' => 'certificates',
         'icon' => 'i-award',
-        'name' => 'প্রত্যয়ন টেমপ্লেট',
-        'desc' => '২৩ ধরনের প্রত্যয়ন সনদ — তথ্য দিয়ে প্রিন্ট বা PDF সংরক্ষণ করুন।',
+        'name' => 'অনলাইন প্রত্যয়ন সেবা',
+        'desc' => 'সকল প্রত্যয়ন — প্রিন্ট বা PDF, QR কোড সহ।',
         'url' => 'genaretor/prottoyon/',
         'featured' => false,
         'status' => 'folder',
         'badge' => 'জনপ্রিয়',
+        'menu' => 'প্রত্যয়ন টেমপ্লেট',
         'keywords' => 'prottoyon attestation certificate sonod print pdf প্রত্যয়ন সনদ',
     ],
     [
         'id' => 'certificate',
         'cat' => 'certificates',
         'icon' => 'i-file',
-        'name' => 'সনদ টেমপ্লেট',
-        'desc' => 'সনদ টেমপ্লেট ও ফরম — Word ও PDF আকারে।',
+        'name' => 'প্রত্যয়ন টেমপ্লেট',
+        'desc' => 'অফলাইন প্রত্যয়ন — এডিটেবল Word ফরম্যাট',
         'url' => 'genaretor/certificate/',
         'featured' => false,
         'status' => 'folder',
         'badge' => 'জনপ্রিয়',
+        'menu' => 'সনদ টেমপ্লেট',
         'keywords' => 'sonod certificate template word pdf free form download সনদ',
     ],
     [
@@ -287,11 +290,11 @@ function bn_digits(string $v): string
             </a>
 
             <nav class="site-nav" id="siteNav" aria-label="প্রধান নেভিগেশন">
-                <a class="nav-link" href="#tools">টুলস</a>
-                <a class="nav-link" href="#featured">জনপ্রিয়</a>
+                <a class="nav-link" href="#tools">সকল টুলস</a>
+                <a class="nav-link" href="#featured">জনপ্রিয় টুলস</a>
                 <a class="nav-link" href="#how">কীভাবে কাজ করে</a>
-                <a class="nav-link" href="<?= e(repdoc_url('sonod/')) ?>">সনদ গাইড</a>
-                <a class="nav-link" href="<?= e(repdoc_url('about/')) ?>">সম্পর্কে</a>
+                <a class="nav-link" href="<?= e(repdoc_url('sonod/')) ?>">সনদ সম্পর্কিত গাইড</a>
+                <a class="nav-link" href="<?= e(repdoc_url('about/')) ?>">আমাদের সম্পর্কে</a>
             </nav>
 
             <div class="header-actions">
@@ -311,7 +314,7 @@ function bn_digits(string $v): string
                 <?php else: ?>
                     <a class="btn btn-primary btn-login" href="<?= e($LOGIN_URL) ?>" aria-label="লগ ইন">
                         <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-login"/></svg>
-                        <span>লগ ইন</span>
+                        <span>প্রবেশ করুন</span>
                     </a>
                 <?php endif; ?>
                 <button type="button" class="icon-btn nav-toggle" id="navToggle"
@@ -330,7 +333,7 @@ function bn_digits(string $v): string
                 <p class="reg-kicker"><span class="reg-no" aria-hidden="true">Psd</span>ঘষামাজার দিন শেষ!</p>
                 <div class="reg-hero-main">
                     <div class="reg-hero-title">
-                        <h1 class="reg-title" id="heroHeading">যেকোন ডকুমেন্ট তৈরি করুন
+                        <h1 class="reg-title" id="heroHeading">দরকারি সকল ডকুমেন্ট তৈরি করুন
                             <span class="reg-title-accent">ফরম পূরণ করে!</span>
                         </h1>
                         <span class="reg-rule" aria-hidden="true"></span>
@@ -341,23 +344,17 @@ function bn_digits(string $v): string
                 </div>
                 <div class="hero-cta reg-cta">
                     <a class="btn btn-ledger" href="#tools">
-                        <span>টুলস দেখুন</span>
+                        <span>সব টুলস দেখুন</span>
                     </a>
                     <a class="btn btn-ledger-outline" href="<?= e(repdoc_url('Entrepreneur/apply/')) ?>">
-                        <span>ফ্রি অ্যাকাউন্টের জন্য আবেদন করুন</span>
+                        <span>ফ্রি অ্যাকাউন্ট খুলুন</span>
                         <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow"/></svg>
                     </a>
                 </div>
                 <p class="hero-sub reg-sub">
-                    রেডি টেমপ্লেট থেকে প্রত্যয়ন ও দরকারি সব ডকুমেন্ট,
+                    প্রত্যয়ন ও দরকারি সব ডকুমেন্ট,
                     Word, Excel, PDF, PSD, AI ও PLP আকারে।
                 </p>
-                <?php if ($currentUser === null): ?>
-                    <p class="hero-note reg-note">
-                        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-shield"/></svg>
-                        সব টুল ব্যবহার করতে <a href="<?= e($LOGIN_URL) ?>">লগ ইন</a> করুন।
-                    </p>
-                <?php endif; ?>
             </div>
         </section>
 
@@ -379,20 +376,12 @@ function bn_digits(string $v): string
         <?php endif; ?>
 
         <!-- ── Categorized tool cards ── -->
-        <section class="section tools-section<?= $hasIntroAds ? ' tools-section--after-ad' : '' ?>" id="tools" aria-labelledby="toolsHeading">
+        <section class="section tools-section<?= $hasIntroAds ? ' tools-section--after-ad' : '' ?>" id="tools" aria-label="সকল টুলস">
             <div class="container">
-                <div class="section-head">
-                    <div>
-                        <p class="kicker">কাজ যেন সহজ, সময় যেন সাশ্রয়</p>
-                        <h2 id="toolsHeading">সব টুলস</h2>
-                        <p class="section-sub">দৈনন্দিন কাজে প্রয়োজনীয় সব ডিজিটাল টুল এক জায়গায় — ফিল্টার করতে ক্যাটাগরি বেছে নিন।</p>
-                    </div>
-                </div>
-
                 <div class="category-chips" id="categoryChips" role="group" aria-label="টুল ক্যাটাগরি">
                     <button type="button" class="chip chip-cat is-active" data-cat="all" aria-pressed="true">
                         <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-grid"/></svg>
-                        সব
+                        সকল টুলস
                     </button>
                     <?php foreach ($categories as $key => $cat): ?>
                         <button type="button" class="chip chip-cat" data-cat="<?= e($key) ?>" aria-pressed="false">
@@ -464,7 +453,7 @@ function bn_digits(string $v): string
                             <h2 class="rail-title" id="featuredHeading">জনপ্রিয় টুলস</h2>
                             <?php foreach ($featured as $i => $t): ?>
                                 <article class="featured-card featured-slip">
-                                    <p><?= e($t['desc']) ?></p>
+                                    <p><?= e($t['featured_desc'] ?? $t['desc']) ?></p>
                                     <div class="featured-art">
                                         <img src="src/assets/image/tools-featured.png" alt="Repdoc-এর জনপ্রিয় ডকুমেন্ট টুলস — প্রত্যয়ন, সনদ, CV ও অফিস ফরম" width="385" height="251" loading="lazy" decoding="async">
                                     </div>
@@ -486,7 +475,6 @@ function bn_digits(string $v): string
             <div class="container">
                 <div class="section-head">
                     <div>
-                        <p class="kicker">প্রক্রিয়া</p>
                         <h2 id="howHeading">কীভাবে কাজ করে</h2>
                     </div>
                 </div>
@@ -524,7 +512,6 @@ function bn_digits(string $v): string
             <div class="container">
                 <div class="section-head">
                     <div>
-                        <p class="kicker">আস্থা</p>
                         <h2 id="trustHeading">কেন Repdoc</h2>
                     </div>
                 </div>
@@ -548,14 +535,11 @@ function bn_digits(string $v): string
         <section class="section section-alt" id="about" aria-labelledby="aboutHeading">
             <div class="container about-grid">
                 <div class="about-inner">
-                    <p class="kicker">সম্পর্কে</p>
                     <h2 id="aboutHeading"><?= e($BRAND) ?> সম্পর্কে</h2>
                     <p>
-                        <?= e($BRAND) ?> যেকোনো কম্পিউটার অপারেটরের জন্য — দোকান বা ব্যবসা থেকে
-                        নাগরিকদের সেবা দিন। কাগজের স্তূপ নয়, ফরম পূরণ করেই তৈরি হয়
-                        প্রত্যয়ন, সনদ ও দরকারি ডকুমেন্ট — Word ও PDF আকারে।
+                        <?= e($BRAND) ?> কম্পিউটার অপারেটরের জন্য একটি স্বতন্ত্র প্লাটফর্ম — দোকান কিংবা অফিস, আপনার কাস্টমার ও নাগরিকদের দ্রুত, নির্ভুল ও নিখুতভাবে সেবা প্রদানের উদ্দেশ্যে এক ছাদের নিচে সকল দরকারি সকল টুলস এবং রিসোর্স সরবরাহই আমাদের উদ্দেশ্য।
                     </p>
-                    <p class="about-legal">স্বতন্ত্র টুলস সাইট — সরকারি পোর্টাল নয়।</p>
+                    <p class="about-legal"></p>
                     <p>
                         <a class="btn btn-secondary" href="<?= e(repdoc_url('about/')) ?>">
                             <span>আমাদের সম্পর্কে আরও জানুন</span>
@@ -567,19 +551,19 @@ function bn_digits(string $v): string
                     <li>
                         <figure>
                             <img src="src/assets/image/about1.webp" alt="এলোমেলো কাগজের স্তূপের পাশে গোছানো ডিজিটাল ডকুমেন্ট" width="760" height="316" loading="lazy" decoding="async">
-                            <figcaption>এলোমেলো কাগজ থেকে গোছানো ফাইল</figcaption>
+                            <figcaption>বারবার ফাইল হারানোর ভয় নেই।</figcaption>
                         </figure>
                     </li>
                     <li>
                         <figure>
                             <img src="src/assets/image/about2.webp" alt="ডকুমেন্ট তৈরির ধাপগুলো একসঙ্গে চলছে এমন একটি কাজের দৃশ্য" width="760" height="316" loading="lazy" decoding="async">
-                            <figcaption>একই ফরমে দ্রুত ডকুমেন্ট তৈরি</figcaption>
+                            <figcaption>নির্ভুল ও দ্রুত সেবা প্রদানের নিশ্চয়তা।</figcaption>
                         </figure>
                     </li>
                     <li>
                         <figure>
                             <img src="src/assets/image/about3.webp" alt="Repdoc থেকে প্রত্যয়ন, সনদ ও ফরম Word ও PDF আকারে বের হচ্ছে" width="760" height="316" loading="lazy" decoding="async">
-                            <figcaption>প্রত্যয়ন, সনদ ও ফরম — Word ও PDF-এ প্রস্তুত</figcaption>
+                            <figcaption>লক্ষাধিক Word, Excel, PSD ও AI ফাইল</figcaption>
                         </figure>
                     </li>
                 </ul>
@@ -597,9 +581,9 @@ function bn_digits(string $v): string
                             </span>
                             সহজ · দ্রুত · নির্ভরযোগ্য
                         </p>
-                        <h2 id="ctaHeading">শুরু করতে প্রস্তুত?</h2>
-                        <p class="cta-lead">অপারেটর অ্যাকাউন্টের জন্য আবেদন করুন, লগ ইন করে যেকোনো টুল খুলুন।</p>
-                        <p class="cta-note">এখন বাংলাদেশের যেকোনো কম্পিউটার অপারেটরের আবেদন নেওয়া হচ্ছে — অনুমোদনের পর সব টুল খুলে যাবে।</p>
+                        <h2 id="ctaHeading">আমাদের সাথে যোগ দিন</h2>
+                        <p class="cta-lead">৬৪ জেলা থেকেই আবেদন অনুমোদন করা হচ্ছে।</p>
+                        <p class="cta-note">আপনি একজন কম্পিউটার অপারেটর অথবা অফিস হিসেবে আবেদন করতে পারেন। দ্রুত অনুমোদন পেতে আপনার প্রতিষ্ঠান বা অফিসের প্রমাণক যুক্ত করুন — অনুমোদনের পর সব টুল ব্যবহার করা যাবে।</p>
                         <ul class="cta-perks">
                             <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-file"/></svg>রেডি টেমপ্লেট</li>
                             <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-shield"/></svg>নিরাপদ লগইন</li>
@@ -615,7 +599,7 @@ function bn_digits(string $v): string
                             <span>অপারেটর হিসেবে আবেদন</span>
                             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow"/></svg>
                         </a>
-                        <a class="btn btn-secondary" href="<?= e($LOGIN_URL) ?>">লগ ইন</a>
+                        <a class="btn btn-secondary" href="<?= e($LOGIN_URL) ?>">প্রবেশ করুন</a>
                     </div>
                 </div>
             </div>
@@ -673,7 +657,7 @@ function bn_digits(string $v): string
                 </h3>
                 <ul>
                     <?php foreach ($tools as $tool): ?>
-                        <li><a href="<?= e($tool['url']) ?>"><?= e($tool['name']) ?></a></li>
+                        <li><a href="<?= e($tool['url']) ?>"><?= e($tool['menu'] ?? $tool['name']) ?></a></li>
                     <?php endforeach; ?>
                     <li><a href="<?= e(repdoc_url('sonod/')) ?>">সনদ গাইড</a></li>
                     <li><a href="<?= e(repdoc_url('verify/')) ?>">সনদ যাচাই</a></li>
@@ -725,7 +709,7 @@ function bn_digits(string $v): string
                 <p>&copy; <?= date('Y') ?> <?= e($BRAND) ?>. সর্বস্বত্ব সংরক্ষিত — বাংলাদেশ থেকে।</p>
                 <a class="back-top" href="#top">
                     <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="6 15 12 9 18 15"/></svg>
-                    <span>উপরে যান</span>
+                    <span>উপরে</span>
                 </a>
             </div>
         </div>
