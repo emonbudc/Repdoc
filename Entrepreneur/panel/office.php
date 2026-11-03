@@ -169,14 +169,7 @@ udc_notice();
                         </div>
                     </div>
                 </div>
-                <p class="hint" style="margin-top:0">ছবি সর্বোচ্চ ৩ MB। লোগো সনদের হেডারে, সিল স্বাক্ষরের পাশে বসবে।</p>
-
-                <?php if (strlen((string) ($profile['union_code'] ?? '')) !== 7): ?>
-                    <div class="alert alert-warning" role="alert" style="margin-top:16px">ইউনিয়ন কোড ৭ ডিজিট না থাকলে নতুন সনদ নম্বরে <b>0000000</b> ব্যবহার হবে। সঠিক কোড দিন।</div>
-                <?php endif; ?>
-
-                <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:20px">
-                    <span class="hint">সব তথ্য সনদের snapshot হিসেবে সংরক্ষিত হবে; পরে বদলালে পুরাতন সনদ বদলাবে না।</span>
+                <div style="display:flex;align-items:center;justify-content:flex-end;gap:16px;flex-wrap:wrap;margin-top:20px">
                     <button type="submit" class="btn btn-primary">সংরক্ষণ করুন</button>
                 </div>
             </form>
