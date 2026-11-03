@@ -17,7 +17,6 @@ function prottoyon_page_start(string $title, string $active = ''): void
     $me = current_user();
     $balance = $me ? user_balance((int) $me['id']) : 0;
     $isAdmin = $me && ($me['role'] ?? '') === 'admin';
-    $canOffice = $me && (is_udc() || $isAdmin);
     ?>
 <!DOCTYPE html>
 <html lang="bn">
@@ -85,9 +84,6 @@ function prottoyon_page_start(string $title, string $active = ''): void
             <a class="pp-nav-link<?= $active === 'home' ? ' is-active' : '' ?>" href="<?= e(repdoc_url('genaretor/prottoyon/')) ?>">সনদ বাছাই</a>
             <a class="pp-nav-link<?= $active === 'applications' ? ' is-active' : '' ?>" href="<?= e(repdoc_url('genaretor/prottoyon/applications.php')) ?>">আমার আবেদন</a>
             <a class="pp-nav-link<?= $active === 'verify' ? ' is-active' : '' ?>" href="<?= e(repdoc_url('verify/')) ?>">যাচাই</a>
-            <?php if ($canOffice): ?>
-                <a class="pp-nav-link<?= $active === 'office' ? ' is-active' : '' ?>" href="<?= e(repdoc_url('genaretor/prottoyon/office.php')) ?>">অফিস সেটিংস</a>
-            <?php endif; ?>
             <a class="pp-nav-link pp-nav-cta<?= $active === 'form' ? ' is-active' : '' ?>" href="<?= e(repdoc_url('genaretor/prottoyon/')) ?>">+ নতুন আবেদন</a>
         </div>
     </nav>

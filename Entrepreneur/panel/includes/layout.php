@@ -90,7 +90,7 @@ function udc_nav_items(): array
         ];
     }
 
-    $items['office.php'] = ['label' => 'অফিস সেটিংস', 'icon' => 'a-lock', 'url' => 'genaretor/prottoyon/office.php'];
+    $items['office.php'] = ['label' => 'অফিস সেটিংস', 'icon' => 'a-lock', 'url' => 'Entrepreneur/panel/office.php'];
 
     $flat = [];
     foreach ($items as $key => $item) {

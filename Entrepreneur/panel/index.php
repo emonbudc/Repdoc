@@ -70,7 +70,7 @@ udc_notice();
     </div>
     <div class="stat-card">
         <span class="stat-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><use href="#a-id"/></svg></span>
-        <span class="stat-text"><span class="k">অফিস</span><span class="v" style="font-size:1rem"><?= e($office['office_name'] !== '' ? $office['office_name'] : 'সেট হয়নি') ?></span><span class="s"><a href="<?= e(repdoc_url('genaretor/prottoyon/office.php')) ?>">সেটিংস</a></span></span>
+        <span class="stat-text"><span class="k">অফিস</span><span class="v" style="font-size:1rem"><?= e($office['office_name'] !== '' ? $office['office_name'] : 'সেট হয়নি') ?></span><span class="s"><a href="<?= e(repdoc_url('Entrepreneur/panel/office.php')) ?>">সেটিংস</a></span></span>
     </div>
 </div>
 
@@ -96,7 +96,7 @@ udc_notice();
             <div class="panel-body quick-grid">
                 <a class="quick-link" href="<?= e(repdoc_url('Entrepreneur/panel/prottoyons.php')) ?>"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#a-award"/></svg>প্রত্যয়নসমূহ</a>
                 <a class="quick-link" href="<?= e(repdoc_url('genaretor/prottoyon/')) ?>"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#a-file"/></svg>নতুন প্রত্যয়ন</a>
-                <a class="quick-link" href="<?= e(repdoc_url('genaretor/prottoyon/office.php')) ?>"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#a-lock"/></svg>অফিস সেটিংস</a>
+                <a class="quick-link" href="<?= e(repdoc_url('Entrepreneur/panel/office.php')) ?>"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#a-lock"/></svg>অফিস সেটিংস</a>
                 <?php if (has_archive_access()): ?>
                     <a class="quick-link" href="<?= e(repdoc_url('Entrepreneur/panel/landing.php')) ?>"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#a-file"/></svg>ডকুমেন্ট আর্কাইভ</a>
                 <?php endif; ?>

@@ -16,7 +16,7 @@ if (is_udc() && ($me['role'] ?? '') !== 'admin') {
     $profile = office_profile();
     if (($profile['office_name'] ?? '') === '' || ($profile['upazila'] ?? '') === '' || ($profile['district'] ?? '') === '') {
         flash_set('error', 'আগে অফিস সেটিংস সম্পূর্ণ করুন — নিজের অফিস ছাড়া প্রত্যয়ন দেওয়া যাবে না।');
-        redirect(repdoc_url('genaretor/prottoyon/office.php'));
+        redirect(repdoc_url('Entrepreneur/panel/office.php'));
     }
 }
 
