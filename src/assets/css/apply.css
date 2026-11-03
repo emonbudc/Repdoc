@@ -559,6 +559,11 @@
     color: #0E5133;
 }
 
+.apply-body .alert-info {
+    background: var(--g-mint-2);
+    color: var(--g-primary-hover);
+}
+
 .apply-body .submit-panel {
     display: flex;
     align-items: center;
