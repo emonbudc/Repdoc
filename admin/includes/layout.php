@@ -18,7 +18,7 @@ require_admin();
  */
 function admin_nav_items(): array
 {
-    return [
+    $items = [
         'index.php'        => ['label' => 'Dashboard',         'icon' => 'a-grid'],
         'seo-health.php'   => ['label' => 'SEO & Health',      'icon' => 'a-search'],
         'user-management'  => [
@@ -42,13 +42,12 @@ function admin_nav_items(): array
                    'ad-health.php'      => ['label' => 'Health', 'icon' => 'a-search'],
             ],
         ],
-        // Tools opens admin/tools.php on click; the caret shows every tool.
-        'tools.php'        => [
-            'label'    => 'Tools',
-            'icon'     => 'a-layout',
-            'href'     => 'tools.php',
-            'children' => admin_nav_tool_items(),
-        ],
+        'tools.php'        => ['label' => 'All Tools',        'icon' => 'a-layout'],
+    ];
+
+    $items = array_merge($items, admin_nav_tool_groups());
+
+    return array_merge($items, [
         'passport.php'     => ['label' => 'Passport Photo',    'icon' => 'a-camera'],
         'files.php'        => ['label' => 'File Packs',        'icon' => 'a-file'],
         'maps.php'         => ['label' => 'Mouza Maps',        'icon' => 'a-grid'],
@@ -65,7 +64,7 @@ function admin_nav_items(): array
             ],
         ],
         'pricing.php'      => ['label' => 'Tool Prices',       'icon' => 'a-tag'],
-    ];
+    ]);
 }
 
 /** Pending-approval counts for nav badges. Never throws — degrades to zeros. */
@@ -157,17 +156,51 @@ function admin_tool_icon(string $category): string
     return $icons[$category] ?? 'a-grid';
 }
 
-/** Nav sub-items for the Tools group: href => [label, icon] (admin control pages). */
-function admin_nav_tool_items(): array
+/** Top-level folder a registry tool lives in, or '' for local admin pages. */
+function admin_tool_folder(string $url): string
 {
-    $items = [];
+    if (!str_starts_with($url, '../')) return '';
+    $rest = substr($url, 3);
+    $slash = strpos($rest, '/');
+    return $slash === false ? '' : substr($rest, 0, $slash);
+}
+
+/**
+ * Sidebar groups split by the folder each tool lives in, so Genaretor, Tools,
+ * Showcase, Offline Files, Office Files etc. are no longer one flat list.
+ */
+function admin_nav_tool_groups(): array
+{
+    $folders = [
+        'genaretor'      => ['label' => 'Genaretor',      'icon' => 'a-layout'],
+        'tools'          => ['label' => 'Tools',          'icon' => 'a-grid'],
+        'showcase'       => ['label' => 'Showcase',       'icon' => 'a-layout'],
+        'offlinefiles'   => ['label' => 'Offline Files',  'icon' => 'a-file'],
+        'officefiles'    => ['label' => 'Office Files',   'icon' => 'a-file'],
+        'importantlinks' => ['label' => 'Important Links', 'icon' => 'a-link'],
+        'Entrepreneur'   => ['label' => 'Entrepreneur',   'icon' => 'a-id'],
+    ];
+
+    $children = [];
     foreach (admin_tool_registry() as $tool) {
-        $items[admin_tool_page($tool)] = [
+        $folder = admin_tool_folder((string) $tool['url']);
+        if ($folder === '' || !isset($folders[$folder])) continue;
+        $children[$folder][admin_tool_page($tool)] = [
             'label' => (string) $tool['name'],
             'icon'  => admin_tool_icon((string) $tool['cat']),
         ];
     }
-    return $items;
+
+    $groups = [];
+    foreach ($folders as $folder => $meta) {
+        if (empty($children[$folder])) continue;
+        $groups['folder-' . strtolower($folder)] = [
+            'label'    => $meta['label'],
+            'icon'     => $meta['icon'],
+            'children' => $children[$folder],
+        ];
+    }
+    return $groups;
 }
 
 /**

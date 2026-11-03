@@ -66,11 +66,29 @@ function udc_nav_items(): array
 
     $items['prottoyons.php'] = ['label' => 'প্রত্যয়নসমূহ', 'icon' => 'a-award', 'url' => 'Entrepreneur/panel/prottoyons.php'];
 
-    $tools = [];
+    $folders = [
+        'genaretor'    => ['label' => 'জেনারেটর',      'icon' => 'a-layout'],
+        'tools'        => ['label' => 'টুলস',          'icon' => 'a-grid'],
+        'showcase'     => ['label' => 'শোকেস',         'icon' => 'a-layout'],
+        'offlinefiles' => ['label' => 'টেমপ্লেট ফাইল', 'icon' => 'a-file'],
+        'officefiles'  => ['label' => 'অফিস ফাইল',     'icon' => 'a-file'],
+    ];
+
+    $children = [];
     foreach (udc_tools() as $t) {
-        $tools['tool:' . $t['key']] = ['label' => $t['nav'], 'icon' => $t['icon'], 'url' => $t['url']];
+        $folder = strstr($t['url'], '/', true);
+        if ($folder === false || !isset($folders[$folder])) continue;
+        $children[$folder]['tool:' . $t['key']] = ['label' => $t['nav'], 'icon' => $t['icon'], 'url' => $t['url']];
     }
-    $items['tools'] = ['label' => 'টুলস', 'icon' => 'a-layout', 'children' => $tools];
+
+    foreach ($folders as $folder => $meta) {
+        if (empty($children[$folder])) continue;
+        $items['folder-' . $folder] = [
+            'label'    => $meta['label'],
+            'icon'     => $meta['icon'],
+            'children' => $children[$folder],
+        ];
+    }
 
     $items['office.php'] = ['label' => 'অফিস সেটিংস', 'icon' => 'a-lock', 'url' => 'genaretor/prottoyon/office.php'];
 
