@@ -224,7 +224,7 @@ function udc_page_start(string $title, string $active): void
             </nav>
 
             <div class="admin-side-user">
-                <img class="admin-avatar" src="<?= e(repdoc_url('src/assets/image/avatar-udc.png?v=2')) ?>" alt="" aria-hidden="true">
+                <img class="admin-avatar" src="<?= e(repdoc_url('src/assets/image/avatar-udc.png?v=3')) ?>" alt="" aria-hidden="true">
                 <span class="who">
                     <strong><?= e($name) ?></strong>
                     <span><?= e($me['email']) ?></span>
@@ -256,7 +256,7 @@ function udc_page_start(string $title, string $active): void
                 <p class="admin-crumb">UDC <span aria-hidden="true">/</span> <?= e($title) ?></p>
                 <div class="admin-topbar-right">
                     <span class="admin-topbar-user" title="<?= e($me['email']) ?>">
-                        <img class="admin-avatar" src="<?= e(repdoc_url('src/assets/image/avatar-udc.png?v=2')) ?>" alt="" aria-hidden="true">
+                        <img class="admin-avatar" src="<?= e(repdoc_url('src/assets/image/avatar-udc.png?v=3')) ?>" alt="" aria-hidden="true">
                         <span class="who"><strong><?= e($name) ?></strong></span>
                     </span>
                     <a class="icon-btn" href="<?= e(repdoc_url('public/logout.php')) ?>" aria-label="Logout" title="Logout">

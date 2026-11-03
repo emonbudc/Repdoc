@@ -401,7 +401,7 @@ function admin_page_start(string $title, string $active): void
             </nav>
 
             <div class="admin-side-user">
-                <img class="admin-avatar" src="assets/image/avatar.png?v=2" alt="" aria-hidden="true">
+                <img class="admin-avatar" src="assets/image/avatar.png?v=3" alt="" aria-hidden="true">
                 <span class="who">
                     <strong><?= e($me['fullname'] !== '' ? $me['fullname'] : $me['email']) ?></strong>
                     <span><?= e($me['email']) ?></span>
@@ -440,7 +440,7 @@ function admin_page_start(string $title, string $active): void
                         </a>
                     <?php endif; ?>
                     <span class="admin-topbar-user" title="<?= e($me['email']) ?>">
-                        <img class="admin-avatar" src="assets/image/avatar.png?v=2" alt="" aria-hidden="true">
+                        <img class="admin-avatar" src="assets/image/avatar.png?v=3" alt="" aria-hidden="true">
                         <span class="who"><strong><?= e($me['fullname'] !== '' ? $me['fullname'] : $me['email']) ?></strong></span>
                     </span>
                     <a class="icon-btn" href="../public/logout.php" aria-label="Logout" title="Logout">
