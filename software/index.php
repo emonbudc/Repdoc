@@ -191,13 +191,14 @@ $closingActions = [
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tokens.css?v=2')) ?>">
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/shell.css?v=2')) ?>">
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/home.css?v=4')) ?>">
-    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/catalog.css?v=4')) ?>">
+    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/catalog.css?v=5')) ?>">
 </head>
 <body class="catalog-page cat-software">
     <a class="skip-link" href="#library">সফটওয়্যার লাইব্রেরিতে যান</a>
     <?php
     repdoc_catalog_render([
         'active'          => 'software',
+        'ad_banner_page'  => 'software',
         'home'            => $HOME,
         'login'           => $LOGIN_URL,
         'apply'           => $APPLY_URL,

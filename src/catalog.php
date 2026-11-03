@@ -470,6 +470,9 @@ if (!function_exists('repdoc_catalog_render')) {
         $noResultText    = (string) ($args['noresult_text'] ?? 'অন্য নাম, বিবরণ বা ফরম্যাট দিয়ে আবার খুঁজুন।');
         $noResultReset   = (string) ($args['noresult_reset'] ?? 'সব ফাইল দেখুন');
         $resultNoun      = (string) ($args['result_noun'] ?? 'ফাইল');
+        // Page slug for the main-column banner, e.g. 'software'.
+        // Empty = keep the rail Ad Space placeholder (default catalog layout).
+        $adBannerPage    = trim((string) ($args['ad_banner_page'] ?? ''));
 
         $bn          = 'repdoc_catalog_bn_digits';
         $totalFiles  = count($files);
@@ -635,6 +638,21 @@ if (!function_exists('repdoc_catalog_render')) {
                                 </button>
                             </div>
                         </div>
+
+                        <?php
+                        // Main-column ad strip: 468×60 on desktop, 320×50 on
+                        // phones. Shown only for pages that pass ad_banner_page.
+                        if ($adBannerPage !== '') {
+                            $adBannerDevice   = repdoc_detect_device();
+                            $adBannerPosition = $adBannerDevice === 'mobile' ? 'home_mobile_banner' : 'home_middle_banner';
+                            $adBannerHtml     = repdoc_render_ad_slot($adBannerPosition, $adBannerPage, $adBannerDevice);
+                            if ($adBannerHtml !== '') {
+                                echo '<div class="cat-ad-strip" aria-label="বিজ্ঞাপন">' . $adBannerHtml . '</div>';
+                            } else {
+                                echo '<div class="cat-ad-strip cat-ad-strip--empty" aria-label="বিজ্ঞাপনের স্থান"><span>Ad Space</span><small>বিজ্ঞাপনের জন্য যোগাযোগ করুন</small></div>';
+                            }
+                        }
+                        ?>
 
                         <?php if ($files === []): ?>
                             <div class="cat-empty" role="status">
@@ -812,10 +830,16 @@ if (!function_exists('repdoc_catalog_render')) {
                             </div>
                         </div>
 
-                        <div class="cat-side-card cat-ad" aria-label="বিজ্ঞাপনের স্থান">
-                            <span>Ad Space</span>
-                            <small>বিজ্ঞাপনের জন্য যোগাযোগ করুন</small>
-                        </div>
+                        <?php
+                        // One ad zone per page: pages that opt into the banner
+                        // render it above the grid, so the rail placeholder is
+                        // hidden there instead of showing an empty box.
+                        if ($adBannerPage === ''): ?>
+                            <div class="cat-side-card cat-ad" aria-label="বিজ্ঞাপনের স্থান">
+                                <span>Ad Space</span>
+                                <small>বিজ্ঞাপনের জন্য যোগাযোগ করুন</small>
+                            </div>
+                        <?php endif; ?>
 
                         <?php if ($joinCard): ?>
                             <div class="cat-side-card cat-join">

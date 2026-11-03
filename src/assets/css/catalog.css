@@ -656,6 +656,41 @@
     text-transform: uppercase;
 }
 .cat-ad small { font-size: .67rem; color: #A8B8AF; }
+/* Main-column ad strip: 468×60 / 320×50 centred above the file grid. */
+.cat-ad-strip {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 0 var(--space-4);
+    overflow: hidden;
+}
+.cat-ad-strip .repdoc-ad-slot {
+    display: flex;
+    justify-content: center;
+    max-width: 100%;
+    margin-inline: auto;
+    text-align: center;
+}
+.cat-ad-strip iframe,
+.cat-ad-strip img { display: block; max-width: 100%; border: 0; }
+.cat-ad-strip--empty {
+    flex-direction: column;
+    gap: 3px;
+    min-height: 64px;
+    border: 2px dashed var(--border-strong);
+    border-radius: 12px;
+    background: #FCFEFC;
+    color: #9BAFA3;
+    text-align: center;
+}
+.cat-ad-strip--empty span {
+    font-family: var(--font-mono);
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+.cat-ad-strip--empty small { font-size: .67rem; color: #A8B8AF; }
 .cat-join {
     border-color: #CDE8D6;
     background:
