@@ -76,8 +76,6 @@ admin_notice();
     .mq-switch input { width: 18px; height: 18px; accent-color: var(--primary); }
     .mq-switch strong { display: block; font-size: .86rem; }
     .mq-switch small { display: block; margin-top: 2px; color: var(--text-muted); font-size: .74rem; }
-    .mq-note { color: var(--text-muted); font-size: .8rem; line-height: 1.65; }
-    .mq-note code { font-family: var(--font-mono); font-size: .74rem; }
     .mq-preview-stage { padding: 14px; border: 1px dashed var(--border-color); border-radius: 12px; background: var(--bg-base); }
     .mq-preview-top { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border: 1px solid var(--border-color); border-radius: 10px 10px 0 0; background: #fff; color: var(--text-muted); font-size: .74rem; font-weight: 600; }
     .mq-preview-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border-strong); }
@@ -91,10 +89,6 @@ admin_notice();
 <div class="admin-page-head">
     <div>
         <h1 class="admin-title">Panel Marquee</h1>
-        <p class="admin-sub">
-            এন্ট্রাপ্রেনিউর (UDC) প্যানেলের হেডারের ঠিক নিচে স্ক্রলিং নোটিশ।
-            এখানে যা সেভ করবেন, সব UDC অপারেটর প্যানেলে সাথে সাথে দেখবে।
-        </p>
     </div>
 </div>
 
@@ -177,10 +171,6 @@ admin_notice();
                     <?php endif; ?>
                 </div>
             </div>
-            <p class="mq-note" style="margin-top:12px">
-                প্রিভিউটি সেভ করা সেটিংস দেখায়। সেভ করার আগে পরিবর্তন দেখতে চাইলে ফর্ম পূরণ করে সেভ করুন —
-                সেভ হলেই প্যানেলে লাইভ হয়ে যাবে।
-            </p>
         </div>
     </div>
 </div>
