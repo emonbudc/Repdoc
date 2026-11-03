@@ -380,7 +380,7 @@ $repdocIsAdmin = $repdocUser['role'] === 'admin';
             box-shadow: 0 0 0 3px var(--primary-light);
         }
     </style>
-    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tool-form.css?v=1')) ?>">
+    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tool-form.css?v=2')) ?>">
 </head>
 <body class="nid-page">
     <a class="skip-link" href="#nidForm">ফর্মে যান (Skip to form)</a>

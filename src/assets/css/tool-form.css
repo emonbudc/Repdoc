@@ -848,13 +848,34 @@
     cursor: not-allowed;
 }
 
+.tool-body .birth-workspace {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.tool-body .birth-main {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+}
+
+.tool-body .birth-rail {
+    display: flex;
+    justify-content: center;
+    min-width: 0;
+}
+
 .tool-body .birth-ad {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
     min-width: 0;
+    max-width: 100%;
     margin: 0 auto;
+    overflow: hidden;
 }
 
 .tool-body .birth-ad .repdoc-ad-slot {
@@ -872,29 +893,55 @@
 }
 
 .tool-body .birth-ad--top {
+    max-width: 728px;
     min-height: 90px;
+    margin: 0 auto 20px;
 }
 
 .tool-body .birth-ad--band {
+    max-width: 468px;
     min-height: 60px;
 }
 
 .tool-body .birth-ad--native {
-    min-height: 100px;
-    padding: 16px;
-    margin: 16px 0;
-    background: var(--bg-muted);
-    border: 1.5px dashed var(--border-strong);
-    border-radius: 18px;
+    max-width: 100%;
+    min-height: 0;
+    margin: 20px 0;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
 }
 
 .tool-body .birth-ad--rect {
+    width: 300px;
+    max-width: 100%;
     min-height: 250px;
-    padding: 12px;
-    background: var(--bg-surface);
-    border: 1px solid var(--border-color);
-    border-radius: 22px;
-    box-shadow: var(--shadow-sm);
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.tool-body .birth-workspace.has-rail {
+    max-width: 1180px;
+}
+
+@media (min-width: 980px) {
+    .tool-body .birth-workspace.has-rail {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 300px;
+        align-items: start;
+        gap: 24px;
+    }
+
+    .tool-body .birth-rail {
+        position: sticky;
+        top: 92px;
+        justify-content: flex-start;
+        align-self: start;
+    }
 }
 
 @media (max-width: 720px) {
@@ -903,15 +950,7 @@
         min-height: 50px;
     }
 
-    .tool-body .birth-ad--native {
-        min-height: 80px;
-        padding: 10px;
-        border-radius: 14px;
-    }
-
     .tool-body .birth-ad--rect {
-        min-height: 200px;
-        padding: 8px;
-        border-radius: 16px;
+        min-height: 0;
     }
 }

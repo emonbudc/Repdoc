@@ -40,7 +40,7 @@ $birthAdRect = repdoc_render_ad_slot('sidebar_right', 'birth', $birthAdDevice);
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tokens.css?v=2')) ?>">
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/shell.css?v=2')) ?>">
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tool.css?v=3')) ?>">
-    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tool-form.css?v=1')) ?>">
+    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tool-form.css?v=2')) ?>">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
@@ -110,11 +110,12 @@ $birthAdRect = repdoc_render_ad_slot('sidebar_right', 'birth', $birthAdDevice);
     <main class="tool-main" id="mainContent">
         <h1 class="sr-only">জন্ম নিবন্ধন সনদ যাচাই ও ডাউনলোড</h1>
         <div class="container">
-                <div class="tool-workspace">
+                <?php if ($birthAdTop !== ''): ?>
+                    <div class="birth-ad birth-ad--top" aria-label="বিজ্ঞাপন"><?= $birthAdTop ?></div>
+                <?php endif; ?>
 
-                    <?php if ($birthAdTop !== ''): ?>
-                        <div class="birth-ad birth-ad--top" aria-label="বিজ্ঞাপন"><?= $birthAdTop ?></div>
-                    <?php endif; ?>
+                <div class="tool-workspace birth-workspace<?= $birthAdRect !== '' ? ' has-rail' : '' ?>">
+                    <div class="birth-main">
 
                     <!-- Verify (permanent entry point — no hide, no box) -->
                     <section class="verify-card" aria-label="যাচাই">
@@ -340,8 +341,12 @@ $birthAdRect = repdoc_render_ad_slot('sidebar_right', 'birth', $birthAdDevice);
                         </form>
                     </div><!-- /form-card -->
 
+                    </div><!-- /birth-main -->
+
                     <?php if ($birthAdRect !== ''): ?>
-                        <div class="birth-ad birth-ad--rect" aria-label="বিজ্ঞাপন"><?= $birthAdRect ?></div>
+                        <aside class="birth-rail" aria-label="বিজ্ঞাপন">
+                            <div class="birth-ad birth-ad--rect"><?= $birthAdRect ?></div>
+                        </aside>
                     <?php endif; ?>
                 </div>
         </div>
