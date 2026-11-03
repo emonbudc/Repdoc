@@ -20,6 +20,8 @@ $stats = [
 $recentTx    = [];
 $recentUsage = [];
 $topSpenders = [];
+$recentBad   = [];
+$badStats    = ['hits' => 0, 'unique' => 0, 'today' => 0, 'probes' => 0];
 
 if ($db) {
     try {
@@ -43,6 +45,18 @@ if ($db) {
                                    LEFT JOIN transactions t ON t.user_id = u.id
                                    GROUP BY u.id, u.fullname, u.email, u.balance
                                    ORDER BY spent DESC LIMIT 5')->fetchAll();
+
+        try {
+            $badStats['hits']   = (int) $db->query('SELECT COALESCE(SUM(hits), 0) FROM bad_requests')->fetchColumn();
+            $badStats['unique'] = (int) $db->query('SELECT COUNT(*) FROM bad_requests')->fetchColumn();
+            $badStats['probes'] = (int) $db->query('SELECT COUNT(*) FROM bad_requests WHERE probe = 1')->fetchColumn();
+            $st = $db->prepare('SELECT COALESCE(SUM(hits), 0) FROM bad_requests WHERE last_seen >= ?');
+            $st->execute([date('Y-m-d 00:00:00')]);
+            $badStats['today'] = (int) $st->fetchColumn();
+            $recentBad = $db->query('SELECT * FROM bad_requests ORDER BY last_seen DESC, hits DESC LIMIT 8')->fetchAll();
+        } catch (Throwable $e) {
+            $recentBad = [];
+        }
     } catch (Throwable $e) {
         $db = null;
     }
@@ -157,10 +171,6 @@ admin_notice();
                 </tbody>
             </table>
         </div>
-    <?php else: ?>
-        <div class="empty-state-sm">No tool usage yet.</div>
-    <?php endif; ?>
-</div>
     </div><!-- /dash-main -->
 
     <div class="dash-side">
