@@ -24,6 +24,8 @@ access_log
 # Generated / user uploads — never commit (dirs stay, contents ignored)
 */uploads/*
 **/qr_codes/*
+!genaretor/birth/qr_codes/*
+!tools/birthsearch/demo/qr_codes/*
 !*/uploads/.gitkeep
 
 # Build artifacts over InfinityFree 10 MB per-file limit (see tools/birthsearch/install.php)
