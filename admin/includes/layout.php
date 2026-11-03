@@ -321,7 +321,7 @@ function admin_page_start(string $title, string $active): void
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../src/assets/css/tokens.css?v=2">
     <link rel="stylesheet" href="../src/assets/css/app.css?v=2">
-    <link rel="stylesheet" href="../src/assets/css/admin.css?v=11">
+    <link rel="stylesheet" href="../src/assets/css/admin.css?v=12">
     <script>/* Rail state before paint, so the sidebar never flashes wide. */
     try { if (localStorage.getItem('repdoc-admin-rail') === '1') document.documentElement.classList.add('admin-rail'); } catch (e) {}</script>
 </head>

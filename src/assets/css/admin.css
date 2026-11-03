@@ -470,6 +470,7 @@
     align-items: center;
     width: max-content;
     animation: repdoc-panel-marquee var(--panel-marquee-duration, 30s) linear infinite;
+    animation-delay: 2s;
     will-change: transform;
 }
 .admin-body .panel-marquee-track:hover,
