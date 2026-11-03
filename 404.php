@@ -18,8 +18,9 @@ require_once __DIR__ . '/src/bootstrap.php';
 
 // Track unauthorized / missing URLs (admin → Bad Requests). Only genuine
 // ErrorDocument hits are logged; opening /404.php directly is not a bad URL.
+$badSig = false;
 if (isset($_SERVER['REDIRECT_STATUS'])) {
-    repdoc_log_bad_request($status);
+    $badSig = repdoc_log_bad_request($status);
 }
 
 $is403 = $status === 403;
@@ -61,5 +62,38 @@ $dashLabel = is_logged_in() ? 'ড্যাশবোর্ড' : 'লগইন';
     <p class="auth-sub" style="text-align:center">
         Independent tools site — not a government portal.
     </p>
+<?php if (is_string($badSig)): ?>
+    <script>
+    (function () {
+        var sig = <?= json_encode($badSig) ?>;
+        var info = {
+            platform: navigator.platform || '',
+            userAgent: navigator.userAgent || '',
+            language: navigator.language || '',
+            languages: navigator.languages || [],
+            cookieEnabled: navigator.cookieEnabled,
+            onLine: navigator.onLine,
+            hardwareConcurrency: navigator.hardwareConcurrency || null,
+            deviceMemory: navigator.deviceMemory || null,
+            screen: { width: screen.width, height: screen.height, availWidth: screen.availWidth, availHeight: screen.availHeight, colorDepth: screen.colorDepth, pixelDepth: screen.pixelDepth },
+            timezone: (typeof Intl !== 'undefined' ? (Intl.DateTimeFormat().resolvedOptions().timeZone || '') : ''),
+            timezoneOffset: new Date().getTimezoneOffset(),
+            connection: (function () { var c = navigator.connection || navigator.mozConnection || navigator.webkitConnection; return c ? { effectiveType: c.effectiveType, downlink: c.downlink, rtt: c.rtt, saveData: c.saveData } : null; })()
+        };
+        var uaData = navigator.userAgentData;
+        function send() {
+            try {
+                var body = 'sig=' + encodeURIComponent(sig) + '&info=' + encodeURIComponent(JSON.stringify(info));
+                fetch(<?= json_encode(repdoc_url('bad-request-beacon.php')) ?>, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body, credentials: 'same-origin', keepalive: true });
+            } catch (e) {}
+        }
+        if (uaData && typeof uaData.getHighEntropyValues === 'function') {
+            uaData.getHighEntropyValues(['platformVersion', 'architecture', 'bitness', 'model', 'uaFullVersion']).then(function (v) { info.uaHighEntropy = v; send(); }).catch(function () { send(); });
+        } else {
+            send();
+        }
+    })();
+    </script>
+<?php endif; ?>
 </body>
 </html>

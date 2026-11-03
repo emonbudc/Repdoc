@@ -675,14 +675,43 @@ function repdoc_ensure_schema(PDO $db): void
         path VARCHAR(180) NOT NULL DEFAULT '',
         query TEXT NULL,
         ip VARCHAR(45) DEFAULT '',
+        ip_forwarded VARCHAR(255) DEFAULT '',
+        remote_user VARCHAR(120) DEFAULT '',
+        auth_header TEXT NULL,
+        protocol VARCHAR(16) DEFAULT '',
         user_agent TEXT NULL,
+        platform VARCHAR(32) DEFAULT '',
         referer TEXT NULL,
+        cookies TEXT NULL,
+        headers TEXT NULL,
+        hostname VARCHAR(255) DEFAULT '',
+        user_id INT DEFAULT 0,
+        user_fullname VARCHAR(120) DEFAULT '',
+        user_email VARCHAR(180) DEFAULT '',
+        client_info TEXT NULL,
         probe INT NOT NULL DEFAULT 0,
         hits INT NOT NULL DEFAULT 1,
         first_seen DATETIME NULL,
         last_seen DATETIME NULL,
         UNIQUE (sig)
     )$suffix");
+
+    foreach ([
+        'ip_forwarded' => 'VARCHAR(255) DEFAULT ""',
+        'remote_user'  => 'VARCHAR(120) DEFAULT ""',
+        'auth_header'  => 'TEXT NULL',
+        'protocol'     => 'VARCHAR(16) DEFAULT ""',
+        'platform'     => 'VARCHAR(32) DEFAULT ""',
+        'cookies'      => 'TEXT NULL',
+        'headers'      => 'TEXT NULL',
+        'hostname'     => 'VARCHAR(255) DEFAULT ""',
+        'user_id'      => 'INT DEFAULT 0',
+        'user_fullname'=> 'VARCHAR(120) DEFAULT ""',
+        'user_email'   => 'VARCHAR(180) DEFAULT ""',
+        'client_info'  => 'TEXT NULL',
+    ] as $col => $def) {
+        try { $db->exec("ALTER TABLE bad_requests ADD COLUMN $col $def"); } catch (Throwable $e) {}
+    }
 
     $defaultPositions = [
         ['home_top_banner', 'Homepage Top Banner', 'Above the homepage tools section'],
@@ -904,13 +933,26 @@ function repdoc_is_probe(string $path, string $query = ''): bool
     return false;
 }
 
+/** Best-effort OS/platform label parsed from a user agent. */
+function repdoc_client_platform(string $ua): string
+{
+    $low = strtolower($ua);
+    if (str_contains($low, 'android')) return 'Android';
+    if (preg_match('~iphone|ipad|ipod~', $low)) return 'iOS';
+    if (str_contains($low, 'windows')) return 'Windows';
+    if (str_contains($low, 'mac os x') || str_contains($low, 'macintosh')) return 'macOS';
+    if (str_contains($low, 'linux')) return 'Linux';
+    if (str_contains($low, 'cros')) return 'ChromeOS';
+    return $ua === '' ? 'Unknown' : 'Other';
+}
+
 /**
  * Record a 403/404 hit into bad_requests (aggregated by status + path + IP).
  *
  * Served by 404.php, which .htaccess wires to ErrorDocument 403 and 404.
  * $force is for CLI tests only.
  */
-function repdoc_log_bad_request(?int $status = null, ?string $uri = null, bool $force = false): bool
+function repdoc_log_bad_request(?int $status = null, ?string $uri = null, bool $force = false): string|false
 {
     if (PHP_SAPI === 'cli' && !$force) return false;
 
@@ -934,6 +976,65 @@ function repdoc_log_bad_request(?int $status = null, ?string $uri = null, bool $
     if ($method === '' || strlen($method) > 8) $method = 'GET';
     $probe  = repdoc_is_probe($path, $query) ? 1 : 0;
 
+    // ── Collect every available detail ─────────────────────────────
+    $ipForwarded = [];
+    foreach (['HTTP_X_FORWARDED_FOR', 'HTTP_X_REAL_IP', 'HTTP_CF_CONNECTING_IP',
+              'HTTP_TRUE_CLIENT_IP', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED'] as $k) {
+        if (!empty($_SERVER[$k])) $ipForwarded[$k] = (string) $_SERVER[$k];
+    }
+    $ipForwardedStr = mb_substr(json_encode($ipForwarded, JSON_UNESCAPED_SLASHES) ?: '', 0, 255, 'UTF-8');
+    if ($ipForwardedStr === '[]' || $ipForwardedStr === 'null') $ipForwardedStr = '';
+
+    $remoteUser = (string) ($_SERVER['REMOTE_USER'] ?? $_SERVER['AUTH_USER'] ?? $_SERVER['LOGON_USER'] ?? $_SERVER['PHP_AUTH_USER'] ?? '');
+    $authHeader = (string) ($_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? $_SERVER['PHP_AUTH_PW'] ?? '');
+    if ($authHeader !== '' && stripos($authHeader, 'basic') === 0) $authHeader = mb_substr($authHeader, 0, 120, 'UTF-8');
+    else $authHeader = mb_substr($authHeader, 0, 120, 'UTF-8');
+
+    $protocol = mb_substr((string) ($_SERVER['SERVER_PROTOCOL'] ?? ''), 0, 16, 'UTF-8');
+    $platform = repdoc_client_platform($ua);
+
+    $cookies = '';
+    if (!empty($_COOKIE)) {
+        $cookies = mb_substr(json_encode($_COOKIE, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?: '', 0, 4000, 'UTF-8');
+    }
+
+    // All HTTP_* request headers (plus a few transport vars).
+    $headers = [];
+    foreach ($_SERVER as $k => $v) {
+        if (str_starts_with($k, 'HTTP_') || in_array($k, ['CONTENT_TYPE', 'CONTENT_LENGTH', 'REMOTE_PORT', 'SERVER_PORT', 'REQUEST_SCHEME'], true)) {
+            if (is_scalar($v)) $headers[$k] = mb_substr((string) $v, 0, 500, 'UTF-8');
+        }
+    }
+    $headersJson = mb_substr(json_encode($headers, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?: '', 0, 8000, 'UTF-8');
+
+    $hostname = '';
+    if ($ip !== '' && filter_var($ip, FILTER_VALIDATE_IP)) {
+        $hn = @gethostbyaddr($ip);
+        if (is_string($hn) && $hn !== $ip) $hostname = mb_substr($hn, 0, 255, 'UTF-8');
+    }
+
+    // Resolve the logged-in user (if any) so probes by authenticated users
+    // are attributed to a profile name + email.
+    $userId = 0;
+    $userFullname = '';
+    $userEmail = '';
+    if (!empty($_SESSION['repdoc_user_id'])) {
+        $userId = (int) $_SESSION['repdoc_user_id'];
+        $dbTmp = null;
+        try {
+            $dbTmp = repdoc_db();
+            if ($dbTmp) {
+                $st = $dbTmp->prepare('SELECT fullname, email FROM users WHERE id = ?');
+                $st->execute([$userId]);
+                $u = $st->fetch();
+                if ($u) {
+                    $userFullname = mb_substr((string) ($u['fullname'] ?? ''), 0, 120, 'UTF-8');
+                    $userEmail    = mb_substr((string) ($u['email'] ?? ''), 0, 180, 'UTF-8');
+                }
+            }
+        } catch (Throwable $e) {}
+    }
+
     $db = repdoc_db();
     if (!$db) return false;
 
@@ -941,16 +1042,16 @@ function repdoc_log_bad_request(?int $status = null, ?string $uri = null, bool $
     $sig = md5($status . '|' . $path . '|' . $ip);
 
     try {
-        $sql = 'INSERT INTO bad_requests (sig, status, method, path, query, ip, user_agent, referer, probe, hits, first_seen, last_seen)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)';
+        $sql = 'INSERT INTO bad_requests (sig, status, method, path, query, ip, ip_forwarded, remote_user, auth_header, protocol, user_agent, platform, referer, cookies, headers, hostname, user_id, user_fullname, user_email, probe, hits, first_seen, last_seen)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)';
         if ($db->getAttribute(PDO::ATTR_DRIVER_NAME) === 'mysql') {
-            $sql .= ' ON DUPLICATE KEY UPDATE hits = hits + 1, last_seen = VALUES(last_seen), query = VALUES(query), user_agent = VALUES(user_agent), referer = VALUES(referer), probe = VALUES(probe)';
+            $sql .= ' ON DUPLICATE KEY UPDATE hits = hits + 1, last_seen = VALUES(last_seen), query = VALUES(query), user_agent = VALUES(user_agent), referer = VALUES(referer), probe = VALUES(probe), ip_forwarded = VALUES(ip_forwarded), remote_user = VALUES(remote_user), auth_header = VALUES(auth_header), protocol = VALUES(protocol), platform = VALUES(platform), cookies = VALUES(cookies), headers = VALUES(headers), hostname = VALUES(hostname), user_id = VALUES(user_id), user_fullname = VALUES(user_fullname), user_email = VALUES(user_email)';
         } else {
-            $sql .= ' ON CONFLICT(sig) DO UPDATE SET hits = hits + 1, last_seen = excluded.last_seen, query = excluded.query, user_agent = excluded.user_agent, referer = excluded.referer, probe = excluded.probe';
+            $sql .= ' ON CONFLICT(sig) DO UPDATE SET hits = hits + 1, last_seen = excluded.last_seen, query = excluded.query, user_agent = excluded.user_agent, referer = excluded.referer, probe = excluded.probe, ip_forwarded = excluded.ip_forwarded, remote_user = excluded.remote_user, auth_header = excluded.auth_header, protocol = excluded.protocol, platform = excluded.platform, cookies = excluded.cookies, headers = excluded.headers, hostname = excluded.hostname, user_id = excluded.user_id, user_fullname = excluded.user_fullname, user_email = excluded.user_email';
         }
         $st = $db->prepare($sql);
-        $st->execute([$sig, $status, $method, $path, $query, $ip, $ua, $ref, $probe, $now, $now]);
-        return true;
+        $st->execute([$sig, $status, $method, $path, $query, $ip, $ipForwardedStr, $remoteUser, $authHeader, $protocol, $ua, $platform, $ref, $cookies, $headersJson, $hostname, $userId, $userFullname, $userEmail, $probe, $now, $now]);
+        return $sig;
     } catch (Throwable $e) {
         return false;
     }

@@ -5,9 +5,12 @@ declare(strict_types=1);
  * Repdoc — admin: unauthorized / bad request tracker.
  *
  * Rows are written by 404.php (wired as ErrorDocument 403 and 404), so every
- * missing or blocked URL is recorded: path, query, IP, user agent, referer,
- * hit count and first/last seen. Paths that look like automated probing
- * (wp-login, .env, phpmyadmin, /admin/login, …) are tagged `probe`.
+ * missing or blocked URL is recorded with every available detail: path, query,
+ * IP (and forwarded IPs), remote user / auth header, protocol, user agent,
+ * platform, referer, cookies, all request headers, hostname, resolved user
+ * profile (name + email when the probe came from a logged-in session) and
+ * client-side details collected by the beacon. Paths that look like automated
+ * probing (wp-login, .env, phpmyadmin, /admin/login, …) are tagged `probe`.
  */
 
 require_once __DIR__ . '/includes/layout.php';
@@ -68,9 +71,9 @@ if ($db) {
             $params[] = date('Y-m-d 00:00:00', strtotime('-' . ((int) $filterDays - 1) . ' days'));
         }
         if ($search !== '') {
-            $where[] = '(path LIKE ? OR query LIKE ? OR ip LIKE ? OR user_agent LIKE ?)';
+            $where[] = '(path LIKE ? OR query LIKE ? OR ip LIKE ? OR user_agent LIKE ? OR user_fullname LIKE ? OR user_email LIKE ? OR platform LIKE ?)';
             $like = '%' . $search . '%';
-            array_push($params, $like, $like, $like, $like);
+            array_push($params, $like, $like, $like, $like, $like, $like, $like);
         }
 
         $sql = 'SELECT * FROM bad_requests'
@@ -105,6 +108,16 @@ if (!function_exists('badreq_device')) {
     }
 }
 
+/** Pretty-print a JSON blob for the detail view. */
+function badreq_pretty(?string $json): string
+{
+    if ($json === null || $json === '') return '';
+    $d = json_decode($json, true);
+    if (!is_array($d)) return (string) $json;
+    $out = json_encode($d, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    return $out === false ? (string) $json : $out;
+}
+
 admin_page_start('Bad Requests', 'bad-requests.php');
 admin_notice();
 ?>
@@ -113,7 +126,7 @@ admin_notice();
     <div>
         <p class="kicker">Security</p>
         <h1 class="admin-title">Bad request tracker</h1>
-        <p class="admin-sub">Every blocked or missing URL — including debug probes like <code>/admin/login</code>, <code>/wp-login.php</code> and <code>/.env</code>.</p>
+        <p class="admin-sub">Every blocked or missing URL with full request details — including debug probes like <code>/admin/login</code>, <code>/wp-login.php</code> and <code>/.env</code>. Click <strong>details</strong> on a row to expand.</p>
     </div>
     <?php if ($db && $stats['unique'] > 0): ?>
         <form method="post" action="bad-requests.php" onsubmit="return confirm('Clear the whole bad request log?');">
@@ -150,7 +163,7 @@ admin_notice();
 <form class="filter-bar" method="get" action="bad-requests.php">
     <div class="field">
         <label for="q">Search</label>
-        <input type="search" id="q" name="q" value="<?= e($search) ?>" placeholder="path, query, IP or user agent">
+        <input type="search" id="q" name="q" value="<?= e($search) ?>" placeholder="path, query, IP, UA, name or email">
     </div>
     <div class="field" style="flex:0 0 150px">
         <label for="status">Status</label>
@@ -199,6 +212,8 @@ admin_notice();
                             <th>Path</th>
                             <th>Hits</th>
                             <th>IP</th>
+                            <th>Platform</th>
+                            <th>User</th>
                             <th>Device</th>
                             <th>Last seen</th>
                         </tr>
@@ -211,6 +226,19 @@ admin_notice();
                             $path = (string) $row['path'];
                             $query = (string) ($row['query'] ?? '');
                             $ua = (string) ($row['user_agent'] ?? '');
+                            $platform = (string) ($row['platform'] ?? '');
+                            if ($platform === '') $platform = badreq_device($ua);
+                            $fullname = (string) ($row['user_fullname'] ?? '');
+                            $email    = (string) ($row['user_email'] ?? '');
+                            $userId   = (int) ($row['user_id'] ?? 0);
+                            $ipFwd    = (string) ($row['ip_forwarded'] ?? '');
+                            $remoteU   = (string) ($row['remote_user'] ?? '');
+                            $authH     = (string) ($row['auth_header'] ?? '');
+                            $proto     = (string) ($row['protocol'] ?? '');
+                            $hostname  = (string) ($row['hostname'] ?? '');
+                            $cookies   = (string) ($row['cookies'] ?? '');
+                            $headers   = (string) ($row['headers'] ?? '');
+                            $client    = (string) ($row['client_info'] ?? '');
                             ?>
                             <tr>
                                 <td>
@@ -227,9 +255,59 @@ admin_notice();
                                     <?php if ((string) ($row['referer'] ?? '') !== ''): ?>
                                         <span class="cell-sub">ref: <?= e((string) $row['referer']) ?></span>
                                     <?php endif; ?>
+                                    <details class="br-details">
+                                        <summary>details</summary>
+                                        <div class="br-detail">
+                                            <div class="br-detail-grid">
+                                                <div><span>Method</span><strong><?= e((string) $row['method']) ?></strong></div>
+                                                <div><span>Protocol</span><strong><?= e($proto !== '' ? $proto : '—') ?></strong></div>
+                                                <div><span>IP</span><strong><?= e((string) $row['ip']) ?></strong></div>
+                                                <div><span>Forwarded IPs</span><strong><?= e($ipFwd !== '' ? $ipFwd : '—') ?></strong></div>
+                                                <div><span>Hostname (rDNS)</span><strong><?= e($hostname !== '' ? $hostname : '—') ?></strong></div>
+                                                <div><span>Remote user</span><strong><?= e($remoteU !== '' ? $remoteU : '—') ?></strong></div>
+                                                <div><span>Auth header</span><strong><?= e($authH !== '' ? $authH : '—') ?></strong></div>
+                                                <div><span>User agent</span><strong style="word-break:break-all"><?= e($ua) ?></strong></div>
+                                                <div><span>First seen</span><strong><?= e((string) $row['first_seen']) ?></strong></div>
+                                                <div><span>Last seen</span><strong><?= e((string) $row['last_seen']) ?></strong></div>
+                                                <div><span>Hits</span><strong><?= (int) $row['hits'] ?></strong></div>
+                                            </div>
+                                            <?php if ($cookies !== ''): ?>
+                                                <div class="br-block">
+                                                    <div class="br-block-title">Cookies</div>
+                                                    <pre><?= e(badreq_pretty($cookies)) ?></pre>
+                                                </div>
+                                            <?php endif; ?>
+                                            <?php if ($headers !== ''): ?>
+                                                <div class="br-block">
+                                                    <div class="br-block-title">Request headers</div>
+                                                    <pre><?= e(badreq_pretty($headers)) ?></pre>
+                                                </div>
+                                            <?php endif; ?>
+                                            <?php if ($client !== ''): ?>
+                                                <div class="br-block">
+                                                    <div class="br-block-title">Client details (beacon)</div>
+                                                    <pre><?= e(badreq_pretty($client)) ?></pre>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </details>
                                 </td>
                                 <td><span class="balance"><?= (int) $row['hits'] ?></span></td>
                                 <td class="cell-sub" style="font-family:var(--font-mono)"><?= e((string) $row['ip']) ?></td>
+                                <td class="cell-sub"><?= e($platform) ?></td>
+                                <td class="cell-sub">
+                                    <?php if ($fullname !== '' || $email !== ''): ?>
+                                        <span class="cell-name"><?= e($fullname !== '' ? $fullname : '—') ?></span>
+                                        <?php if ($email !== ''): ?>
+                                            <span class="cell-sub" style="font-family:var(--font-mono)"><?= e($email) ?></span>
+                                        <?php endif; ?>
+                                        <?php if ($userId > 0): ?>
+                                            <span class="cell-sub">id <?= $userId ?></span>
+                                        <?php endif; ?>
+                                    <?php else: ?>
+                                        —
+                                    <?php endif; ?>
+                                </td>
                                 <td class="cell-sub" title="<?= e($ua) ?>">
                                     <?= e(badreq_device($ua)) ?>
                                     <?php if ((string) $row['method'] !== 'GET'): ?>
@@ -245,6 +323,22 @@ admin_notice();
         <?php endif; ?>
     </div>
 </div>
+
+<style>
+.br-details { margin-top: 8px; font-size: .78rem; }
+.br-details > summary { cursor: pointer; color: var(--primary); font-weight: 600; list-style: none; }
+.br-details > summary::-webkit-details-marker { display: none; }
+.br-details > summary::before { content: '▸ '; }
+.br-details[open] > summary::before { content: '▾ '; }
+.br-detail { margin-top: 10px; padding: 12px; background: var(--bg-muted); border: 1px solid var(--border-color); border-radius: 8px; }
+.br-detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 6px 14px; }
+.br-detail-grid div { display: flex; flex-direction: column; gap: 2px; }
+.br-detail-grid span { font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); }
+.br-detail-grid strong { font-family: var(--font-mono); font-size: .82rem; font-weight: 600; word-break: break-all; }
+.br-block { margin-top: 12px; }
+.br-block-title { font-size: .7rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+.br-block pre { margin: 0; padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 6px; font-family: var(--font-mono); font-size: .74rem; line-height: 1.5; white-space: pre-wrap; word-break: break-all; max-height: 260px; overflow: auto; }
+</style>
 
 <?php endif; ?>
 
