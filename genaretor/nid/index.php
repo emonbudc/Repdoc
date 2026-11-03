@@ -103,7 +103,10 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     <meta name="robots" content="noindex">
     <title>NID — Repdoc</title>
     <link rel="icon" type="image/png" href="<?= e(repdoc_url('public/favicon.png')) ?>">
-    <link rel="apple-touch-icon" href="<?= e(repdoc_url('public/favicon.png')) ?>">
+    <link rel="apple-touch-icon" sizes="180x180" href="<?= e(repdoc_url('public/apple-touch-icon.png')) ?>">
+    <link rel="icon" type="image/png" sizes="192x192" href="<?= e(repdoc_url('public/icon-192.png')) ?>">
+    <link rel="icon" type="image/png" sizes="512x512" href="<?= e(repdoc_url('public/icon-512.png')) ?>">
+    <link rel="manifest" href="<?= e(repdoc_url('public/manifest.webmanifest')) ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">

@@ -1,0 +1,35 @@
+{
+  "id": "/",
+  "name": "Repdoc — ফ্রি ডকুমেন্ট টেমপ্লেট ও ফরম",
+  "short_name": "Repdoc",
+  "description": "কম্পিউটার অপারেটরদের জন্য ফ্রি ডকুমেন্ট টেমপ্লেট, প্রত্যয়ন, সনদ, CV, চুক্তিপত্র ও অফিস ফরম। Word, Excel, PDF, PSD, AI, PLP।",
+  "lang": "bn",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#FFFEFB",
+  "theme_color": "#FFFEFB",
+  "categories": ["business", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/public/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/public/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/public/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

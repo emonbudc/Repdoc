@@ -194,6 +194,10 @@ function bn_digits(string $v): string
     ]);
     ?>
     <link rel="icon" type="image/png" href="<?= e($FAVICON) ?>">
+    <link rel="apple-touch-icon" sizes="180x180" href="<?= e(repdoc_url('public/apple-touch-icon.png')) ?>">
+    <link rel="icon" type="image/png" sizes="192x192" href="<?= e(repdoc_url('public/icon-192.png')) ?>">
+    <link rel="icon" type="image/png" sizes="512x512" href="<?= e(repdoc_url('public/icon-512.png')) ?>">
+    <link rel="manifest" href="<?= e(repdoc_url('public/manifest.webmanifest')) ?>">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

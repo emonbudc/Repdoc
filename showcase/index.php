@@ -102,6 +102,10 @@ foreach ($files as $i => $file) {
     }
     ?>
     <link rel="icon" type="image/png" href="<?= e(repdoc_url('public/favicon.png')) ?>">
+    <link rel="apple-touch-icon" sizes="180x180" href="<?= e(repdoc_url('public/apple-touch-icon.png')) ?>">
+    <link rel="icon" type="image/png" sizes="192x192" href="<?= e(repdoc_url('public/icon-192.png')) ?>">
+    <link rel="icon" type="image/png" sizes="512x512" href="<?= e(repdoc_url('public/icon-512.png')) ?>">
+    <link rel="manifest" href="<?= e(repdoc_url('public/manifest.webmanifest')) ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" as="image" href="<?= e(repdoc_url('src/assets/image/officefiles-hero.png')) ?>" fetchpriority="high">

@@ -40,8 +40,12 @@ DirectoryIndex index.php index.html
     RewriteRule \.(md|csv)$ - [F,L,NC]
 </IfModule>
 
+<IfModule mod_mime.c>
+    AddType application/manifest+json .webmanifest
+</IfModule>
+
 <IfModule mod_deflate.c>
-    AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml application/xml application/javascript application/json image/svg+xml
+    AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml application/xml application/javascript application/json application/manifest+json image/svg+xml
 </IfModule>
 
 <IfModule mod_expires.c>
@@ -53,6 +57,7 @@ DirectoryIndex index.php index.html
     ExpiresByType text/css "access plus 1 month"
     ExpiresByType application/javascript "access plus 1 month"
     ExpiresByType application/xml "access plus 1 hour"
+    ExpiresByType application/manifest+json "access plus 1 day"
     ExpiresByType text/plain "access plus 1 hour"
     ExpiresByType text/html "access plus 0 seconds"
 </IfModule>
