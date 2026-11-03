@@ -82,7 +82,6 @@ function udc_page_start(string $title, string $active): void
     repdoc_security_headers();
     $me = current_user();
     $name = $me['fullname'] !== '' ? $me['fullname'] : $me['email'];
-    $initial = strtoupper((string) mb_substr($name, 0, 1, 'UTF-8'));
     ?>
 <!DOCTYPE html>
 <html lang="bn">
@@ -96,7 +95,7 @@ function udc_page_start(string $title, string $active): void
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tokens.css?v=2')) ?>">
-    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/app.css?v=1')) ?>">
+    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/app.css?v=2')) ?>">
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/admin.css?v=10')) ?>">
     <script>/* Rail state before paint, so the sidebar never flashes wide. */
     try { if (localStorage.getItem('repdoc-udc-rail') === '1') document.documentElement.classList.add('admin-rail'); } catch (e) {}</script>
@@ -207,7 +206,7 @@ function udc_page_start(string $title, string $active): void
             </nav>
 
             <div class="admin-side-user">
-                <span class="admin-avatar" aria-hidden="true"><?= e($initial !== '' ? $initial : 'U') ?></span>
+                <img class="admin-avatar" src="<?= e(repdoc_url('src/assets/image/avatar-udc.png')) ?>" alt="" aria-hidden="true">
                 <span class="who">
                     <strong><?= e($name) ?></strong>
                     <span><?= e($me['email']) ?></span>
@@ -239,7 +238,7 @@ function udc_page_start(string $title, string $active): void
                 <p class="admin-crumb">UDC <span aria-hidden="true">/</span> <?= e($title) ?></p>
                 <div class="admin-topbar-right">
                     <span class="admin-topbar-user" title="<?= e($me['email']) ?>">
-                        <span class="admin-avatar" aria-hidden="true"><?= e($initial !== '' ? $initial : 'U') ?></span>
+                        <img class="admin-avatar" src="<?= e(repdoc_url('src/assets/image/avatar-udc.png')) ?>" alt="" aria-hidden="true">
                         <span class="who"><strong><?= e($name) ?></strong></span>
                     </span>
                     <a class="icon-btn" href="<?= e(repdoc_url('public/logout.php')) ?>" aria-label="Logout" title="Logout">

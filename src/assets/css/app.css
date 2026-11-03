@@ -382,6 +382,7 @@
     background: var(--primary-light);
     color: var(--primary);
     font-weight: 800; font-size: 1rem;
+    object-fit: cover; padding: 0; border: 0;
 }
 .admin-side-user .who { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
 .admin-side-user .who strong {

@@ -229,7 +229,6 @@ function admin_page_start(string $title, string $active): void
     repdoc_security_headers();
     $me = current_user();
     $badges = admin_pending_counts();
-    $initial = strtoupper((string) mb_substr($me['fullname'] !== '' ? $me['fullname'] : $me['email'], 0, 1, 'UTF-8'));
     ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -247,7 +246,7 @@ function admin_page_start(string $title, string $active): void
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Noto+Sans+Bengali:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../src/assets/css/tokens.css?v=2">
-    <link rel="stylesheet" href="../src/assets/css/app.css?v=1">
+    <link rel="stylesheet" href="../src/assets/css/app.css?v=2">
     <link rel="stylesheet" href="../src/assets/css/admin.css?v=10">
     <script>/* Rail state before paint, so the sidebar never flashes wide. */
     try { if (localStorage.getItem('repdoc-admin-rail') === '1') document.documentElement.classList.add('admin-rail'); } catch (e) {}</script>
@@ -369,7 +368,7 @@ function admin_page_start(string $title, string $active): void
             </nav>
 
             <div class="admin-side-user">
-                <span class="admin-avatar" aria-hidden="true"><?= e($initial !== '' ? $initial : 'A') ?></span>
+                <img class="admin-avatar" src="assets/image/avatar.png" alt="" aria-hidden="true">
                 <span class="who">
                     <strong><?= e($me['fullname'] !== '' ? $me['fullname'] : $me['email']) ?></strong>
                     <span><?= e($me['email']) ?></span>
@@ -408,7 +407,7 @@ function admin_page_start(string $title, string $active): void
                         </a>
                     <?php endif; ?>
                     <span class="admin-topbar-user" title="<?= e($me['email']) ?>">
-                        <span class="admin-avatar" aria-hidden="true"><?= e($initial !== '' ? $initial : 'A') ?></span>
+                        <img class="admin-avatar" src="assets/image/avatar.png" alt="" aria-hidden="true">
                         <span class="who"><strong><?= e($me['fullname'] !== '' ? $me['fullname'] : $me['email']) ?></strong></span>
                     </span>
                     <a class="icon-btn" href="../public/logout.php" aria-label="Logout" title="Logout">
