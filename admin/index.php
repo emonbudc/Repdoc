@@ -171,6 +171,10 @@ admin_notice();
                 </tbody>
             </table>
         </div>
+    <?php else: ?>
+        <div class="empty-state-sm">No tool usage yet.</div>
+    <?php endif; ?>
+</div>
     </div><!-- /dash-main -->
 
     <div class="dash-side">
