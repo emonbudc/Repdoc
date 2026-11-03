@@ -49,7 +49,8 @@ function admin_nav_items(): array
     $groups = admin_nav_tool_groups();
 
     if (isset($groups['folder-tools'])) {
-        $groups['folder-tools']['href'] = 'tools.php';
+        $groups['folder-tools']['children'] = ['tools.php' => ['label' => 'All Tools', 'icon' => 'a-layout']]
+            + $groups['folder-tools']['children'];
         $groups['folder-tools']['children']['files.php']    = ['label' => 'File Packs', 'icon' => 'a-file'];
         $groups['folder-tools']['children']['maps.php']     = ['label' => 'Mouza Maps', 'icon' => 'a-grid'];
         $groups['folder-tools']['children']['passport.php'] = ['label' => 'Passport Photo Reviews', 'icon' => 'a-camera'];
