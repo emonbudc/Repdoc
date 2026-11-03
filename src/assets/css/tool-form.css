@@ -917,11 +917,45 @@
     width: 300px;
     max-width: 100%;
     min-height: 250px;
-    padding: 0;
-    background: transparent;
+}
+
+.tool-body .tool-ad-frame,
+.nid-page .tool-ad-frame {
+    box-sizing: border-box;
+    border: 1.5px solid #BFDCCB;
+    border-radius: 18px;
+    background: var(--bg-surface);
+    box-shadow: 0 12px 28px -24px rgba(21, 114, 74, .52);
+    overflow: hidden;
+}
+
+.tool-body .death-ad-placement.tool-ad-frame {
+    max-width: 480px;
+    margin: 16px auto;
+}
+
+.nid-page .nid-ad-frame {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 480px;
+    margin: 16px auto;
+    text-align: center;
+}
+
+.nid-page .nid-ad-frame .repdoc-ad-slot {
+    max-width: 100%;
+    margin: 0 auto !important;
+    text-align: center;
+}
+
+.nid-page .nid-ad-frame iframe,
+.nid-page .nid-ad-frame img {
+    display: block;
+    max-width: 100%;
+    margin: 0 auto;
     border: 0;
-    border-radius: 0;
-    box-shadow: none;
 }
 
 .tool-body .birth-workspace.has-rail {

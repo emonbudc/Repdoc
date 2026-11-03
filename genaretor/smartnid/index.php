@@ -380,7 +380,7 @@ $repdocIsAdmin = $repdocUser['role'] === 'admin';
             box-shadow: 0 0 0 3px var(--primary-light);
         }
     </style>
-    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tool-form.css?v=2')) ?>">
+    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tool-form.css?v=3')) ?>">
 </head>
 <body class="nid-page">
     <a class="skip-link" href="#nidForm">ফর্মে যান (Skip to form)</a>
@@ -411,9 +411,7 @@ $repdocIsAdmin = $repdocUser['role'] === 'admin';
         $smartNidAd = repdoc_render_ad_slot($smartNidAdPosition, 'smartnid', $smartNidAdDevice);
         ?>
         <?php if ($smartNidAd !== ''): ?>
-        <div style="display:flex !important;justify-content:center;align-items:center;width:100%;margin:12px 0;overflow:hidden;text-align:center;">
-            <div style="max-width:100%;margin:0 auto;text-align:center;"><?= $smartNidAd ?></div>
-        </div>
+        <div class="nid-ad-frame tool-ad-frame" aria-label="বিজ্ঞাপন"><?= $smartNidAd ?></div>
         <?php endif; ?>
         <main>
             <form action="output.php" method="POST" enctype="multipart/form-data" id="nidForm">
@@ -466,9 +464,7 @@ $repdocIsAdmin = $repdocUser['role'] === 'admin';
                 $smartNidAd2 = repdoc_render_ad_slot($smartNidAd2Position, 'smartnid', $smartNidAd2Device);
                 ?>
                 <?php if ($smartNidAd2 !== ''): ?>
-                <div style="display:flex !important;justify-content:center;align-items:center;width:100%;margin:12px 0;overflow:hidden;text-align:center;">
-                    <div style="max-width:100%;margin:0 auto;text-align:center;"><?= $smartNidAd2 ?></div>
-                </div>
+                <div class="nid-ad-frame tool-ad-frame" aria-label="বিজ্ঞাপন"><?= $smartNidAd2 ?></div>
                 <?php endif; ?>
 
                 <section class="nid-card" id="sec-personal" aria-labelledby="t-personal" data-reveal>

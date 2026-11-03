@@ -442,7 +442,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             html { scroll-behavior: auto !important; }
         }
     </style>
-    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tool-form.css?v=2')) ?>">
+    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tool-form.css?v=3')) ?>">
 </head>
 
 <body class="nid-page">
@@ -481,9 +481,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         $nidAd = repdoc_render_ad_slot($nidAdPosition, 'nid', $nidAdDevice);
         ?>
         <?php if ($nidAd !== ''): ?>
-        <div style="display:flex !important;justify-content:center;align-items:center;width:100%;margin:12px 0;overflow:hidden;text-align:center;">
-            <div style="max-width:100%;margin:0 auto;text-align:center;"><?= $nidAd ?></div>
-        </div>
+        <div class="nid-ad-frame tool-ad-frame" aria-label="বিজ্ঞাপন"><?= $nidAd ?></div>
         <?php endif; ?>
 
         <main>
@@ -535,9 +533,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                 $nidAd2 = repdoc_render_ad_slot($nidAd2Position, 'nid', $nidAd2Device);
                 ?>
                 <?php if ($nidAd2 !== ''): ?>
-                <div style="display:flex !important;justify-content:center;align-items:center;width:100%;margin:12px 0;overflow:hidden;text-align:center;">
-                    <div style="max-width:100%;margin:0 auto;text-align:center;"><?= $nidAd2 ?></div>
-                </div>
+                <div class="nid-ad-frame tool-ad-frame" aria-label="বিজ্ঞাপন"><?= $nidAd2 ?></div>
                 <?php endif; ?>
 
                 <section class="nid-card" id="sec-personal" aria-labelledby="t-personal" data-reveal>

@@ -59,7 +59,7 @@ $repdocDemoRecord = [
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tokens.css?v=2')) ?>">
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/shell.css?v=2')) ?>">
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tool.css?v=3')) ?>">
-    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tool-form.css?v=2')) ?>">
+    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tool-form.css?v=3')) ?>">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
@@ -164,7 +164,7 @@ $repdocDemoRecord = [
                     $deathAd = repdoc_render_ad_slot($deathAdPosition, 'death', $deathAdDevice);
                     ?>
                     <?php if ($deathAd !== ''): ?>
-                        <div class="death-ad-placement" aria-label="বিজ্ঞাপন"><?= $deathAd ?></div>
+                        <div class="death-ad-placement tool-ad-frame" aria-label="বিজ্ঞাপন"><?= $deathAd ?></div>
                     <?php endif; ?>
 
                     <!-- Form card (hidden until verify-and-fill succeeds) -->
