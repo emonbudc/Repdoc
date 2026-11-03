@@ -19,17 +19,8 @@ require_admin();
 function admin_nav_items(): array
 {
     $items = [
-        'index.php'        => ['label' => 'Dashboard',         'icon' => 'a-grid'],
-        'seo-health.php'   => ['label' => 'SEO & Health',      'icon' => 'a-search'],
-        'user-management'  => [
-            'label'    => 'User Management',
-            'icon'     => 'a-users',
-            'children' => [
-                'users.php'        => ['label' => 'Users & Balance',   'icon' => 'a-users', 'badge' => 'users'],
-                'entrepreneur.php' => ['label' => 'Entrepreneur Apps', 'icon' => 'a-id',    'badge' => 'entrepreneur'],
-            ],
-        ],
-        'document-archive.php' => ['label' => 'Document Archive', 'icon' => 'a-file'],
+        'index.php'        => ['label' => 'Dashboard',          'icon' => 'a-grid'],
+        'seo-health.php'   => ['label' => 'SEO & Health',       'icon' => 'a-search'],
         'ads'              => [
             'label'    => 'Adsterra Ads',
             'icon'     => 'a-tag',
@@ -37,34 +28,69 @@ function admin_nav_items(): array
                 'ads.php'            => ['label' => 'Ads', 'icon' => 'a-tag'],
                 'ad-positions.php'   => ['label' => 'Positions', 'icon' => 'a-layout'],
                 'ad-assignments.php' => ['label' => 'Assignments', 'icon' => 'a-grid'],
-                'ad-settings.php'   => ['label' => 'Settings', 'icon' => 'a-lock'],
+                'ad-settings.php'    => ['label' => 'Settings', 'icon' => 'a-lock'],
                 'ad-logs.php'        => ['label' => 'Logs', 'icon' => 'a-log'],
-                   'ad-health.php'      => ['label' => 'Health', 'icon' => 'a-search'],
+                'ad-health.php'      => ['label' => 'Health', 'icon' => 'a-search'],
             ],
         ],
-        'tools.php'        => ['label' => 'All Tools',        'icon' => 'a-layout'],
+        'important-links'  => [
+            'label'    => 'Important Links',
+            'icon'     => 'a-link',
+            'children' => [
+                'important-links.php'      => ['label' => 'Edit Links', 'icon' => 'a-link'],
+                'tool-important-links.php' => ['label' => 'Tool Settings', 'icon' => 'a-tag'],
+            ],
+        ],
+        'software.php'     => ['label' => 'Software Downloads', 'icon' => 'a-download'],
+        'pricing.php'      => ['label' => 'Tool Prices',        'icon' => 'a-tag'],
+        'document-archive.php' => ['label' => 'Document Archive', 'icon' => 'a-file'],
     ];
 
-    $items = array_merge($items, admin_nav_tool_groups());
+    $groups = admin_nav_tool_groups();
 
-    return array_merge($items, [
-        'passport.php'     => ['label' => 'Passport Photo',    'icon' => 'a-camera'],
-        'files.php'        => ['label' => 'File Packs',        'icon' => 'a-file'],
-        'maps.php'         => ['label' => 'Mouza Maps',        'icon' => 'a-grid'],
-        'software.php'     => ['label' => 'Software Downloads', 'icon' => 'a-download'],
-        'important-links.php' => ['label' => 'Important Links', 'icon' => 'a-link'],
-        'logs'             => [
-            'label'    => 'Logs',
-            'icon'     => 'a-log',
-            'children' => [
-                'documents.php'    => ['label' => 'Document Log',   'icon' => 'a-id'],
-                'prottoyon.php'    => ['label' => 'Prottoyon Log',  'icon' => 'a-file'],
-                'transactions.php' => ['label' => 'Transactions',   'icon' => 'a-wallet'],
-                'bad-requests.php' => ['label' => 'Bad Requests',   'icon' => 'a-shield'],
-            ],
+    if (isset($groups['folder-tools'])) {
+        $groups['folder-tools']['href'] = 'tools.php';
+        $groups['folder-tools']['children']['files.php']    = ['label' => 'File Packs', 'icon' => 'a-file'];
+        $groups['folder-tools']['children']['maps.php']     = ['label' => 'Mouza Maps', 'icon' => 'a-grid'];
+        $groups['folder-tools']['children']['passport.php'] = ['label' => 'Passport Photo Reviews', 'icon' => 'a-camera'];
+        if (isset($groups['folder-tools']['children']['tool-passport-photo.php'])) {
+            $groups['folder-tools']['children']['tool-passport-photo.php']['label'] = 'Passport Tool Settings';
+        }
+    }
+
+    foreach ($groups as $key => $group) {
+        $items[$key] = $group;
+    }
+
+    $items['logs'] = [
+        'label'    => 'Logs',
+        'icon'     => 'a-log',
+        'children' => [
+            'documents.php'    => ['label' => 'Document Log',   'icon' => 'a-id'],
+            'prottoyon.php'    => ['label' => 'Prottoyon Log',  'icon' => 'a-file'],
+            'transactions.php' => ['label' => 'Transactions',   'icon' => 'a-wallet'],
+            'bad-requests.php' => ['label' => 'Bad Requests',   'icon' => 'a-shield'],
         ],
-        'pricing.php'      => ['label' => 'Tool Prices',       'icon' => 'a-tag'],
-    ]);
+    ];
+
+    $items['user-management'] = [
+        'label'    => 'User Management',
+        'icon'     => 'a-users',
+        'children' => [
+            'users.php'        => ['label' => 'Users & Balance',   'icon' => 'a-users', 'badge' => 'users'],
+            'entrepreneur.php' => ['label' => 'Entrepreneur Apps', 'icon' => 'a-id',    'badge' => 'entrepreneur'],
+        ],
+    ];
+
+    $items['folder-entrepreneur'] = [
+        'label'    => 'Entrepreneur',
+        'icon'     => 'a-id',
+        'children' => [
+            'tool-entrepreneur-apply.php' => ['label' => 'Application Form', 'icon' => 'a-id'],
+        ],
+    ];
+
+    return $items;
 }
 
 /** Pending-approval counts for nav badges. Never throws — degrades to zeros. */
@@ -177,8 +203,6 @@ function admin_nav_tool_groups(): array
         'showcase'       => ['label' => 'Showcase',       'icon' => 'a-layout'],
         'offlinefiles'   => ['label' => 'Offline Files',  'icon' => 'a-file'],
         'officefiles'    => ['label' => 'Office Files',   'icon' => 'a-file'],
-        'importantlinks' => ['label' => 'Important Links', 'icon' => 'a-link'],
-        'Entrepreneur'   => ['label' => 'Entrepreneur',   'icon' => 'a-id'],
     ];
 
     $children = [];
