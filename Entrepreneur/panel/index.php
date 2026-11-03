@@ -29,9 +29,9 @@ if ($db) {
 }
 
 $lastLogin = $stats['last_login'] !== '' && strtotime($stats['last_login'])
-    ? prottoyon_bn_digits(date('d/m/Y H:i', (int) strtotime($stats['last_login'])))
+    ? prottoyon_bn_digits(date('d/m/Y h:i A', (int) strtotime($stats['last_login'])))
     : '—';
-$username = $me['email'] !== '' ? $me['email'] : $me['fullname'];
+$displayName = $me['fullname'] !== '' ? $me['fullname'] : $me['email'];
 $ip = (string) ($_SERVER['REMOTE_ADDR'] ?? '');
 if ($ip === '') $ip = '—';
 
@@ -69,8 +69,8 @@ udc_notice();
     <div class="stat-card stat-user">
         <span class="stat-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><use href="#a-user"/></svg></span>
         <span class="stat-text">
-            <span class="k">ইউজারনেম</span>
-            <span class="v"><?= e($username) ?></span>
+            <span class="k">নাম</span>
+            <span class="v"><?= e($displayName) ?></span>
             <span class="s">সর্বশেষ লগইন - <?= e($lastLogin) ?></span>
             <span class="s">আইপি - <?= e($ip) ?></span>
         </span>
@@ -144,12 +144,12 @@ udc_notice();
 
     function tick() {
         var now = new Date();
-        var time = new Intl.DateTimeFormat('en-GB', {
+        var time = new Intl.DateTimeFormat('en-US', {
             timeZone: 'Asia/Dhaka',
             hour: '2-digit',
             minute: '2-digit',
             second: '2-digit',
-            hour12: false
+            hour12: true
         }).format(now);
         var date = new Intl.DateTimeFormat('en-GB', {
             timeZone: 'Asia/Dhaka',
