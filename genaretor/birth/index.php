@@ -33,6 +33,7 @@ $repdocIsAdmin = $repdocUser['role'] === 'admin';
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tokens.css?v=2')) ?>">
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/shell.css?v=2')) ?>">
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tool.css?v=3')) ?>">
+    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tool-form.css?v=1')) ?>">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
@@ -97,51 +98,7 @@ $repdocIsAdmin = $repdocUser['role'] === 'admin';
     </svg>
 
     <!-- ─── Header ─── -->
-    <header class="site-header">
-        <div class="container header-inner">
-            <a class="brand" href="<?= e(repdoc_url('/')) ?>" aria-label="Repdoc — হোম">
-                <img class="brand-logo" src="<?= e(repdoc_url('src/assets/image/logo.png')) ?>" alt="" width="34" height="34">
-                <span class="brand-text">
-                    <strong>Repdoc</strong>
-                    <small>জন্ম নিবন্ধন সনদ</small>
-                </span>
-            </a>
-
-            <?php repdoc_render_site_nav('birth'); ?>
-
-            <div class="header-actions">
-                <button type="button" class="icon-btn theme-toggle" id="themeToggle" onclick="toggleTheme()"
-                        aria-label="থিম পরিবর্তন" title="থিম পরিবর্তন">
-                    <svg class="icon icon-sun" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-sun"/></svg>
-                    <svg class="icon icon-moon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-moon"/></svg>
-                    <span class="sr-only" id="themeToggleLabel">Dark</span>
-                </button>
-
-                <span class="user-chip" title="ক্রেডিট ব্যালেন্স">
-                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-wallet"/></svg>
-                    <span class="balance"><?= (int) $repdocBalance ?></span>
-                </span>
-
-                <?php if ($repdocIsAdmin): ?>
-                    <a class="btn btn-secondary btn-login" href="<?= e(repdoc_url('admin/')) ?>">
-                        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-settings"/></svg>
-                        <span>অ্যাডমিন</span>
-                    </a>
-                <?php endif; ?>
-
-                <a class="btn btn-primary btn-login" href="<?= e(repdoc_url('public/logout.php')) ?>" aria-label="লগআউট">
-                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-logout"/></svg>
-                    <span>লগআউট</span>
-                </a>
-
-                <button type="button" class="icon-btn nav-toggle" onclick="toggleNav()"
-                        aria-label="মেনু খুলুন" aria-expanded="false" aria-controls="siteNav">
-                    <svg class="icon nav-toggle-open" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-menu"/></svg>
-                    <svg class="icon nav-toggle-close" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-x"/></svg>
-                </button>
-            </div>
-        </div>
-    </header>
+    <?php repdoc_render_tool_header('birth', 'জন্ম নিবন্ধন সনদ', (int) $repdocBalance, $repdocIsAdmin); ?>
 
     <main class="tool-main" id="mainContent">
         <h1 class="sr-only">জন্ম নিবন্ধন সনদ যাচাই ও ডাউনলোড</h1>

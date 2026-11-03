@@ -51,6 +51,59 @@ if (!function_exists('repdoc_nav_tool_groups')) {
     }
 }
 
+if (!function_exists('repdoc_render_tool_header')) {
+    function repdoc_render_tool_header(string $current, string $subtitle, int $balance, bool $isAdmin, string $balanceTitle = 'ক্রেডিট ব্যালেন্স'): void
+    {
+        ?>
+        <header class="site-header">
+            <div class="container header-inner">
+                <a class="brand" href="<?= e(repdoc_url('/')) ?>" aria-label="Repdoc — হোম">
+                    <img class="brand-logo" src="<?= e(repdoc_url('src/assets/image/logo.png')) ?>" alt="" width="34" height="34">
+                    <span class="brand-text">
+                        <strong>Repdoc</strong>
+                        <small><?= e($subtitle) ?></small>
+                    </span>
+                </a>
+
+                <?php repdoc_render_site_nav($current); ?>
+
+                <div class="header-actions">
+                    <button type="button" class="icon-btn theme-toggle" id="themeToggle" onclick="toggleTheme()"
+                            aria-label="থিম পরিবর্তন" title="থিম পরিবর্তন">
+                        <svg class="icon icon-sun" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-sun"/></svg>
+                        <svg class="icon icon-moon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-moon"/></svg>
+                        <span class="sr-only" id="themeToggleLabel">Dark</span>
+                    </button>
+
+                    <span class="user-chip" title="<?= e($balanceTitle) ?>">
+                        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-wallet"/></svg>
+                        <span class="balance"><?= (int) $balance ?></span>
+                    </span>
+
+                    <?php if ($isAdmin): ?>
+                        <a class="btn btn-secondary btn-login" href="<?= e(repdoc_url('admin/')) ?>">
+                            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-settings"/></svg>
+                            <span>অ্যাডমিন</span>
+                        </a>
+                    <?php endif; ?>
+
+                    <a class="btn btn-primary btn-login" href="<?= e(repdoc_url('public/logout.php')) ?>" aria-label="লগআউট">
+                        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-logout"/></svg>
+                        <span>লগআউট</span>
+                    </a>
+
+                    <button type="button" class="icon-btn nav-toggle" onclick="toggleNav()"
+                            aria-label="মেনু খুলুন" aria-expanded="false" aria-controls="siteNav">
+                        <svg class="icon nav-toggle-open" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-menu"/></svg>
+                        <svg class="icon nav-toggle-close" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-x"/></svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+        <?php
+    }
+}
+
 if (!function_exists('repdoc_render_site_nav')) {
     function repdoc_render_site_nav(string $current = '', string $lang = 'bn'): void
     {

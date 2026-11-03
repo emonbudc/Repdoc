@@ -442,6 +442,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             html { scroll-behavior: auto !important; }
         }
     </style>
+    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tool-form.css?v=1')) ?>">
 </head>
 
 <body class="nid-page">
@@ -465,51 +466,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     </svg>
 
     <!-- ─── Header (genaretor/birth পেজের same) ─── -->
-    <header class="site-header">
-        <div class="container header-inner">
-            <a class="brand" href="<?= e(repdoc_url('/')) ?>" aria-label="Repdoc — হোম">
-                <img class="brand-logo" src="<?= e(repdoc_url('src/assets/image/logo.png')) ?>" alt="" width="34" height="34">
-                <span class="brand-text">
-                    <strong>Repdoc</strong>
-                    <small>জাতীয় পরিচয়পত্র</small>
-                </span>
-            </a>
-
-            <?php repdoc_render_site_nav('nid'); ?>
-
-            <div class="header-actions">
-                <button type="button" class="icon-btn theme-toggle" id="themeToggle" onclick="toggleTheme()"
-                        aria-label="থিম পরিবর্তন" title="থিম পরিবর্তন">
-                    <svg class="icon icon-sun" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-sun"/></svg>
-                    <svg class="icon icon-moon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-moon"/></svg>
-                    <span class="sr-only" id="themeToggleLabel">Dark</span>
-                </button>
-
-                <span class="user-chip" title="ক্রেডিট ব্যালেন্স — <?= e($repdocUser['fullname'] !== '' ? $repdocUser['fullname'] : $repdocUser['email']) ?>">
-                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-wallet"/></svg>
-                    <span class="balance"><?= (int) $repdocBalance ?></span>
-                </span>
-
-                <?php if ($repdocIsAdmin): ?>
-                    <a class="btn btn-secondary btn-login" href="<?= e(repdoc_url('admin/')) ?>">
-                        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-settings"/></svg>
-                        <span>অ্যাডমিন</span>
-                    </a>
-                <?php endif; ?>
-
-                <a class="btn btn-primary btn-login" href="<?= e(repdoc_url('public/logout.php')) ?>" aria-label="লগআউট">
-                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-logout"/></svg>
-                    <span>লগআউট</span>
-                </a>
-
-                <button type="button" class="icon-btn nav-toggle" onclick="toggleNav()"
-                        aria-label="মেনু খুলুন" aria-expanded="false" aria-controls="siteNav">
-                    <svg class="icon nav-toggle-open" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-menu"/></svg>
-                    <svg class="icon nav-toggle-close" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-x"/></svg>
-                </button>
-            </div>
-        </div>
-    </header>
+    <?php repdoc_render_tool_header('nid', 'জাতীয় পরিচয়পত্র', (int) $repdocBalance, $repdocIsAdmin, 'ক্রেডিট ব্যালেন্স — ' . ($repdocUser['fullname'] !== '' ? $repdocUser['fullname'] : $repdocUser['email'])); ?>
 
     <div class="nid-wrap">
         <?php if ($formError !== '') { ?>
