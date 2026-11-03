@@ -140,10 +140,6 @@ admin_notice();
                     <button type="submit" class="btn btn-secondary" name="action" value="reset" formnovalidate>রিসেট</button>
                 </div>
 
-                <p class="mq-note">
-                    লিংকে পূর্ণ <code>https://</code> ঠিকানা অথবা সাইট-রুট-relative পাথ (<code>/...</code>) দিন।
-                    অন্য স্কিম (যেমন <code>javascript:</code>) সেভ হবে না। মেসেজ প্লেইন টেক্সট — HTML দেখাবে না।
-                </p>
             </form>
         </div>
     </div>
