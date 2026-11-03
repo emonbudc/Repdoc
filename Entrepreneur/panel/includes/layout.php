@@ -10,6 +10,7 @@ declare(strict_types=1);
  */
 
 require_once dirname(__DIR__, 3) . '/src/bootstrap.php';
+require_once dirname(__DIR__, 3) . '/src/panel_marquee.php';
 require_login();
 
 if (!is_udc() && !is_admin()) {
@@ -129,7 +130,7 @@ function udc_page_start(string $title, string $active): void
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tokens.css?v=2')) ?>">
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/app.css?v=2')) ?>">
-    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/admin.css?v=10')) ?>">
+    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/admin.css?v=11')) ?>">
     <script>/* Rail state before paint, so the sidebar never flashes wide. */
     try { if (localStorage.getItem('repdoc-udc-rail') === '1') document.documentElement.classList.add('admin-rail'); } catch (e) {}</script>
 </head>
@@ -279,6 +280,28 @@ function udc_page_start(string $title, string $active): void
                     </a>
                 </div>
             </header>
+
+            <?php $panelMarquee = repdoc_marquee_settings(); ?>
+            <?php if ($panelMarquee['enabled'] && $panelMarquee['text'] !== ''): ?>
+                <div class="panel-marquee" role="status" aria-label="নোটিশ">
+                    <span class="panel-marquee-badge">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 8a5 5 0 0 1 0 8"/><path d="M18 5a9 9 0 0 1 0 14"/></svg>
+                        নোটিশ
+                    </span>
+                    <div class="panel-marquee-viewport">
+                        <div class="panel-marquee-track" style="--panel-marquee-duration:<?= (int) $panelMarquee['speed'] ?>s">
+                            <?php for ($mqCopy = 0; $mqCopy < 2; $mqCopy++): ?>
+                                <span class="panel-marquee-copy"<?= $mqCopy === 1 ? ' aria-hidden="true"' : '' ?>>
+                                    <span><?= e((string) $panelMarquee['text']) ?></span>
+                                    <?php if ($panelMarquee['link'] !== ''): ?>
+                                        <a href="<?= e((string) $panelMarquee['link']) ?>"><?= e($panelMarquee['link_label'] !== '' ? (string) $panelMarquee['link_label'] : 'বিস্তারিত') ?></a>
+                                    <?php endif; ?>
+                                </span>
+                            <?php endfor; ?>
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?>
 
             <main class="admin-main">
                 <div class="container">
