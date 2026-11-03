@@ -908,6 +908,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         })();
     </script>
 
+<?php if (!is_admin()): ?>
 <div id="adblockWall" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.92);color:#fff;align-items:center;justify-content:center;text-align:center;padding:24px;">
   <div style="max-width:420px;">
     <h2 style="margin:0 0 12px;font-size:1.5rem;">বিজ্ঞাপন ব্লকার বন্ধ করুন</h2>
@@ -931,6 +932,7 @@ setTimeout(function(){
   }
 }, 6000);
 </script>
+<?php endif; ?>
 
 </body>
 
