@@ -160,6 +160,11 @@ function formatNID($nid) {
     <title><?php echo htmlspecialchars((string) $document_title, ENT_QUOTES, 'UTF-8'); ?></title>
     <meta name="robots" content="noindex">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="icon" type="image/png" href="<?= e(repdoc_url('public/favicon.png')) ?>">
+    <link rel="apple-touch-icon" sizes="180x180" href="<?= e(repdoc_url('public/apple-touch-icon.png')) ?>">
+    <link rel="icon" type="image/png" sizes="192x192" href="<?= e(repdoc_url('public/icon-192.png')) ?>">
+    <link rel="icon" type="image/png" sizes="512x512" href="<?= e(repdoc_url('public/icon-512.png')) ?>">
+    <link rel="manifest" href="<?= e(repdoc_url('public/manifest.webmanifest')) ?>">
     <style type="text/css">
         /* Define the @font-face rule for Kalpurush */
         @font-face {

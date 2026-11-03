@@ -95,6 +95,13 @@ if ($html === false) {
 // Drop the client-side data-entry panel and its script — this page is the print view.
 $html = preg_replace('/<!-- ===== DATA ENTRY FORM PANEL ===== -->.*?<\/script>\s*/s', '', $html);
 
+$iconLinks = '<link rel="icon" type="image/png" href="' . e(repdoc_url('public/favicon.png')) . '">' . "\n"
+    . '<link rel="apple-touch-icon" sizes="180x180" href="' . e(repdoc_url('public/apple-touch-icon.png')) . '">' . "\n"
+    . '<link rel="icon" type="image/png" sizes="192x192" href="' . e(repdoc_url('public/icon-192.png')) . '">' . "\n"
+    . '<link rel="icon" type="image/png" sizes="512x512" href="' . e(repdoc_url('public/icon-512.png')) . '">' . "\n"
+    . '<link rel="manifest" href="' . e(repdoc_url('public/manifest.webmanifest')) . '">';
+$html = str_replace('</head>', $iconLinks . "\n" . '</head>', $html);
+
 $html = str_replace(
     '<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />',
     '<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />' . "\n    " . '<meta name="robots" content="noindex">',

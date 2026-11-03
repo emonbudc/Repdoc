@@ -156,6 +156,11 @@ $docTitle = 'CV - ' . $fullName;
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?= e($docTitle) ?></title>
 <meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="<?= e(repdoc_url('public/favicon.png')) ?>">
+<link rel="apple-touch-icon" sizes="180x180" href="<?= e(repdoc_url('public/apple-touch-icon.png')) ?>">
+<link rel="icon" type="image/png" sizes="192x192" href="<?= e(repdoc_url('public/icon-192.png')) ?>">
+<link rel="icon" type="image/png" sizes="512x512" href="<?= e(repdoc_url('public/icon-512.png')) ?>">
+<link rel="manifest" href="<?= e(repdoc_url('public/manifest.webmanifest')) ?>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
