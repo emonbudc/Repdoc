@@ -1,8 +1,13 @@
-# UDC Document Archive
+# UDC panel
 
-`landing.php` is the Counter-Glass archive page for UDC operators. It uses
-`tokens.css`, `shell.css` and `home.css` from the public homepage, so it
-follows the same theme as the rest of the site.
+The entrepreneur panel (`index.php`, `prottoyons.php`, `landing.php`) uses the
+same shell as the admin panel: `tokens.css`, `app.css` and `admin.css`, the
+`admin-sidebar` / `admin-topbar` markup and the collapsible icon rail. Change
+`includes/layout.php` and both panels move together.
+
+`landing.php` is the document archive for UDC operators. Its cards come from
+`love/archive_items.json` (Admin → Document Archive), so titles, tags, icons
+and links are edited there — not in this file.
 
 ## Who can open it
 
@@ -30,6 +35,6 @@ location ^~ /Entrepreneur/data/ {
 }
 ```
 
-To add a template, add the file to `Entrepreneur/data/`, add a card to
-`$cards` in `landing.php`, and add its exact filename to `$allowed` in
+To add a template, add the file to `Entrepreneur/data/`, add a card in
+**Admin → Document Archive**, and add its exact filename to `$allowed` in
 `download.php`.

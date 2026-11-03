@@ -57,29 +57,51 @@ udc_notice();
 
 <div class="stat-grid">
     <div class="stat-card">
+        <span class="stat-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><use href="#a-award"/></svg></span>
         <span class="stat-text"><span class="k">মোট প্রত্যয়ন</span><span class="v"><?= number_format($stats['total']) ?></span><span class="s"><?= number_format($stats['valid']) ?> বৈধ</span></span>
     </div>
     <div class="stat-card">
+        <span class="stat-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><use href="#a-lock"/></svg></span>
         <span class="stat-text"><span class="k">বাতিল</span><span class="v"><?= number_format($stats['revoked']) ?></span><span class="s">admin কর্তৃক</span></span>
     </div>
     <div class="stat-card">
+        <span class="stat-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><use href="#a-wallet"/></svg></span>
         <span class="stat-text"><span class="k">ব্যালেন্স</span><span class="v"><?= number_format($stats['balance']) ?></span><span class="s">ক্রেডিট</span></span>
     </div>
     <div class="stat-card">
+        <span class="stat-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><use href="#a-id"/></svg></span>
         <span class="stat-text"><span class="k">অফিস</span><span class="v" style="font-size:1rem"><?= e($office['office_name'] !== '' ? $office['office_name'] : 'সেট হয়নি') ?></span><span class="s"><a href="<?= e(repdoc_url('genaretor/prottoyon/office.php')) ?>">সেটিংস</a></span></span>
     </div>
 </div>
 
-<div class="panel">
-    <div class="panel-head">সব টুলস <span class="count"><?= count($udcTools) ?>টি</span></div>
-    <div class="panel-body tools-grid">
-        <?php foreach ($udcTools as $t): ?>
-            <a class="tool-card" href="<?= e(repdoc_url($t['url'])) ?>">
-                <span class="tool-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#<?= e($t['icon']) ?>"/></svg></span>
-                <span class="tool-name"><?= e($t['name']) ?></span>
-                <span class="tool-cat"><?= e($t['cat']) ?></span>
-            </a>
-        <?php endforeach; ?>
+<div class="dash-grid">
+    <div class="dash-main">
+        <div class="panel">
+            <div class="panel-head">সব টুলস <span class="count"><?= count($udcTools) ?>টি</span></div>
+            <div class="panel-body tools-grid">
+                <?php foreach ($udcTools as $t): ?>
+                    <a class="tool-card" href="<?= e(repdoc_url($t['url'])) ?>">
+                        <span class="tool-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#<?= e($t['icon']) ?>"/></svg></span>
+                        <span class="tool-name"><?= e($t['name']) ?></span>
+                        <span class="tool-cat"><?= e($t['cat']) ?></span>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="dash-side">
+        <div class="panel">
+            <div class="panel-head">দ্রুত লিংক</div>
+            <div class="panel-body quick-grid">
+                <a class="quick-link" href="<?= e(repdoc_url('Entrepreneur/panel/prottoyons.php')) ?>"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#a-award"/></svg>প্রত্যয়নসমূহ</a>
+                <a class="quick-link" href="<?= e(repdoc_url('genaretor/prottoyon/')) ?>"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#a-file"/></svg>নতুন প্রত্যয়ন</a>
+                <a class="quick-link" href="<?= e(repdoc_url('genaretor/prottoyon/office.php')) ?>"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#a-lock"/></svg>অফিস সেটিংস</a>
+                <?php if (has_archive_access()): ?>
+                    <a class="quick-link" href="<?= e(repdoc_url('Entrepreneur/panel/landing.php')) ?>"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#a-file"/></svg>ডকুমেন্ট আর্কাইভ</a>
+                <?php endif; ?>
+            </div>
+        </div>
     </div>
 </div>
 
