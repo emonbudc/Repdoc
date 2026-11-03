@@ -11,6 +11,13 @@ $repdocUser    = current_user();
 $repdocBalance = user_balance($repdocUser['id']);
 $repdocPrice   = tool_price('birth_generator');
 $repdocIsAdmin = $repdocUser['role'] === 'admin';
+
+$birthAdDevice = repdoc_detect_device();
+$birthAdIsMobile = $birthAdDevice === 'mobile';
+$birthAdTop = repdoc_render_ad_slot($birthAdIsMobile ? 'home_mobile_banner' : 'home_top_banner', 'birth', $birthAdDevice);
+$birthAdBand = repdoc_render_ad_slot($birthAdIsMobile ? 'home_native_banner' : 'home_middle_banner', 'birth', $birthAdDevice);
+$birthAdNative = $birthAdIsMobile ? '' : repdoc_render_ad_slot('home_native_banner', 'birth', $birthAdDevice);
+$birthAdRect = repdoc_render_ad_slot('sidebar_right', 'birth', $birthAdDevice);
 ?>
 <!DOCTYPE html>
 <html lang="bn">
@@ -105,6 +112,10 @@ $repdocIsAdmin = $repdocUser['role'] === 'admin';
         <div class="container">
                 <div class="tool-workspace">
 
+                    <?php if ($birthAdTop !== ''): ?>
+                        <div class="birth-ad birth-ad--top" aria-label="বিজ্ঞাপন"><?= $birthAdTop ?></div>
+                    <?php endif; ?>
+
                     <!-- Verify (permanent entry point — no hide, no box) -->
                     <section class="verify-card" aria-label="যাচাই">
                         <div class="verify-grid">
@@ -142,13 +153,8 @@ $repdocIsAdmin = $repdocUser['role'] === 'admin';
                                 <div class="bulk-status" id="fetchStatus" role="status" aria-live="polite"></div>
                     </section>
 
-                    <?php
-                    $birthAdDevice = repdoc_detect_device();
-                    $birthAdPosition = $birthAdDevice === 'mobile' ? 'home_mobile_banner' : 'home_middle_banner';
-                    $birthAd = repdoc_render_ad_slot($birthAdPosition, 'birth', $birthAdDevice);
-                    ?>
-                    <?php if ($birthAd !== ''): ?>
-                        <div class="birth-ad-placement" aria-label="বিজ্ঞাপন"><?= $birthAd ?></div>
+                    <?php if ($birthAdBand !== ''): ?>
+                        <div class="birth-ad birth-ad--band" aria-label="বিজ্ঞাপন"><?= $birthAdBand ?></div>
                     <?php endif; ?>
 
                     <!-- Form card (hidden until verify-and-fill succeeds) -->
@@ -266,6 +272,10 @@ $repdocIsAdmin = $repdocUser['role'] === 'admin';
                                 </div>
                             </div>
 
+                            <?php if ($birthAdNative !== ''): ?>
+                                <div class="birth-ad birth-ad--native" aria-label="বিজ্ঞাপন"><?= $birthAdNative ?></div>
+                            <?php endif; ?>
+
                             <!-- ৪ · পিতা-মাতা -->
                             <div class="form-section" data-section="3">
                                 <p class="form-section-title"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-users"/></svg> পিতা-মাতার তথ্য</p>
@@ -329,6 +339,10 @@ $repdocIsAdmin = $repdocUser['role'] === 'admin';
                             </div>
                         </form>
                     </div><!-- /form-card -->
+
+                    <?php if ($birthAdRect !== ''): ?>
+                        <div class="birth-ad birth-ad--rect" aria-label="বিজ্ঞাপন"><?= $birthAdRect ?></div>
+                    <?php endif; ?>
                 </div>
         </div>
     </main>
