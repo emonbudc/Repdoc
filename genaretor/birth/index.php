@@ -40,7 +40,7 @@ $birthAdRect = repdoc_render_ad_slot('sidebar_right', 'birth', $birthAdDevice);
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tokens.css?v=2')) ?>">
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/shell.css?v=2')) ?>">
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tool.css?v=3')) ?>">
-    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tool-form.css?v=3')) ?>">
+    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tool-form.css?v=4')) ?>">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
@@ -111,11 +111,11 @@ $birthAdRect = repdoc_render_ad_slot('sidebar_right', 'birth', $birthAdDevice);
         <h1 class="sr-only">জন্ম নিবন্ধন সনদ যাচাই ও ডাউনলোড</h1>
         <div class="container">
                 <?php if ($birthAdTop !== ''): ?>
-                    <div class="birth-ad birth-ad--top tool-ad-frame" aria-label="বিজ্ঞাপন"><?= $birthAdTop ?></div>
+                    <div class="tool-ad-slot tool-ad-slot--top tool-ad-frame" aria-label="বিজ্ঞাপন"><?= $birthAdTop ?></div>
                 <?php endif; ?>
 
-                <div class="tool-workspace birth-workspace<?= $birthAdRect !== '' ? ' has-rail' : '' ?>">
-                    <div class="birth-main">
+                <div class="tool-workspace tool-ad-workspace<?= $birthAdRect !== '' ? ' has-rail' : '' ?>">
+                    <div class="tool-ad-main">
 
                     <!-- Verify (permanent entry point — no hide, no box) -->
                     <section class="verify-card" aria-label="যাচাই">
@@ -155,7 +155,7 @@ $birthAdRect = repdoc_render_ad_slot('sidebar_right', 'birth', $birthAdDevice);
                     </section>
 
                     <?php if ($birthAdBand !== ''): ?>
-                        <div class="birth-ad birth-ad--band tool-ad-frame" aria-label="বিজ্ঞাপন"><?= $birthAdBand ?></div>
+                        <div class="tool-ad-slot tool-ad-slot--band tool-ad-frame" aria-label="বিজ্ঞাপন"><?= $birthAdBand ?></div>
                     <?php endif; ?>
 
                     <!-- Form card (hidden until verify-and-fill succeeds) -->
@@ -274,7 +274,7 @@ $birthAdRect = repdoc_render_ad_slot('sidebar_right', 'birth', $birthAdDevice);
                             </div>
 
                             <?php if ($birthAdNative !== ''): ?>
-                                <div class="birth-ad birth-ad--native tool-ad-frame" aria-label="বিজ্ঞাপন"><?= $birthAdNative ?></div>
+                                <div class="tool-ad-slot tool-ad-slot--native tool-ad-frame" aria-label="বিজ্ঞাপন"><?= $birthAdNative ?></div>
                             <?php endif; ?>
 
                             <!-- ৪ · পিতা-মাতা -->
@@ -341,11 +341,11 @@ $birthAdRect = repdoc_render_ad_slot('sidebar_right', 'birth', $birthAdDevice);
                         </form>
                     </div><!-- /form-card -->
 
-                    </div><!-- /birth-main -->
+                    </div><!-- /tool-ad-main -->
 
                     <?php if ($birthAdRect !== ''): ?>
-                        <aside class="birth-rail" aria-label="বিজ্ঞাপন">
-                            <div class="birth-ad birth-ad--rect tool-ad-frame"><?= $birthAdRect ?></div>
+                        <aside class="tool-ad-rail" aria-label="বিজ্ঞাপন">
+                            <div class="tool-ad-slot tool-ad-slot--rect tool-ad-frame"><?= $birthAdRect ?></div>
                         </aside>
                     <?php endif; ?>
                 </div>

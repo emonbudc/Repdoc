@@ -12,6 +12,13 @@ $repdocBalance = user_balance($repdocUser['id']);
 $repdocPrice   = tool_price('death_generator');
 $repdocIsAdmin = $repdocUser['role'] === 'admin';
 
+$deathAdDevice   = repdoc_detect_device();
+$deathAdIsMobile = $deathAdDevice === 'mobile';
+$deathAdTop      = repdoc_render_ad_slot($deathAdIsMobile ? 'home_mobile_banner' : 'home_top_banner', 'death', $deathAdDevice);
+$deathAdBand     = repdoc_render_ad_slot($deathAdIsMobile ? 'home_native_banner' : 'home_middle_banner', 'death', $deathAdDevice);
+$deathAdNative   = $deathAdIsMobile ? '' : repdoc_render_ad_slot('home_native_banner', 'death', $deathAdDevice);
+$deathAdRect     = repdoc_render_ad_slot('sidebar_right', 'death', $deathAdDevice);
+
 // Admin-only preview record. Open /genaretor/death/?demo=1 to load it.
 $repdocDemoMode = $repdocIsAdmin && (($_GET['demo'] ?? '') === '1');
 $repdocDemoRecord = [
@@ -59,7 +66,7 @@ $repdocDemoRecord = [
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tokens.css?v=2')) ?>">
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/shell.css?v=2')) ?>">
     <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tool.css?v=3')) ?>">
-    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tool-form.css?v=3')) ?>">
+    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tool-form.css?v=4')) ?>">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
@@ -119,7 +126,12 @@ $repdocDemoRecord = [
     <main class="tool-main" id="mainContent">
         <h1 class="sr-only">মৃত্যু নিবন্ধন সনদ যাচাই ও ডাউনলোড</h1>
         <div class="container">
-                <div class="tool-workspace">
+                <?php if ($deathAdTop !== ''): ?>
+                    <div class="tool-ad-slot tool-ad-slot--top tool-ad-frame" aria-label="বিজ্ঞাপন"><?= $deathAdTop ?></div>
+                <?php endif; ?>
+
+                <div class="tool-workspace tool-ad-workspace<?= $deathAdRect !== '' ? ' has-rail' : '' ?>">
+                    <div class="tool-ad-main">
 
                     <!-- Verify (permanent entry point — no hide, no box) -->
                     <section class="verify-card" aria-label="যাচাই"<?= $repdocDemoMode ? ' hidden' : '' ?>>
@@ -158,13 +170,8 @@ $repdocDemoRecord = [
                                 <div class="bulk-status" id="fetchStatus" role="status" aria-live="polite"></div>
                     </section>
 
-                    <?php
-                    $deathAdDevice = repdoc_detect_device();
-                    $deathAdPosition = $deathAdDevice === 'mobile' ? 'home_mobile_banner' : 'home_middle_banner';
-                    $deathAd = repdoc_render_ad_slot($deathAdPosition, 'death', $deathAdDevice);
-                    ?>
-                    <?php if ($deathAd !== ''): ?>
-                        <div class="death-ad-placement tool-ad-frame" aria-label="বিজ্ঞাপন"><?= $deathAd ?></div>
+                    <?php if ($deathAdBand !== ''): ?>
+                        <div class="tool-ad-slot tool-ad-slot--band tool-ad-frame" aria-label="বিজ্ঞাপন"><?= $deathAdBand ?></div>
                     <?php endif; ?>
 
                     <!-- Form card (hidden until verify-and-fill succeeds) -->
@@ -272,6 +279,10 @@ $repdocDemoRecord = [
                                 </div>
                             </div>
 
+                            <?php if ($deathAdNative !== ''): ?>
+                                <div class="tool-ad-slot tool-ad-slot--native tool-ad-frame" aria-label="বিজ্ঞাপন"><?= $deathAdNative ?></div>
+                            <?php endif; ?>
+
                             <!-- ৪ · পিতা-মাতা -->
                             <div class="form-section" data-section="3">
                                 <p class="form-section-title"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-users"/></svg> পিতা-মাতার তথ্য</p>
@@ -371,6 +382,14 @@ $repdocDemoRecord = [
                             </div>
                         </form>
                     </div><!-- /form-card -->
+
+                    </div><!-- /tool-ad-main -->
+
+                    <?php if ($deathAdRect !== ''): ?>
+                        <aside class="tool-ad-rail" aria-label="বিজ্ঞাপন">
+                            <div class="tool-ad-slot tool-ad-slot--rect tool-ad-frame"><?= $deathAdRect ?></div>
+                        </aside>
+                    <?php endif; ?>
                 </div>
         </div>
     </main>

@@ -442,7 +442,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             html { scroll-behavior: auto !important; }
         }
     </style>
-    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tool-form.css?v=3')) ?>">
+    <link rel="stylesheet" href="<?= e(repdoc_url('src/assets/css/tool-form.css?v=4')) ?>">
 </head>
 
 <body class="nid-page">

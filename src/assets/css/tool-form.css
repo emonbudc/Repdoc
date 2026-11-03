@@ -848,26 +848,26 @@
     cursor: not-allowed;
 }
 
-.tool-body .birth-workspace {
+.tool-body .tool-ad-workspace {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-.tool-body .birth-main {
+.tool-body .tool-ad-main {
     display: flex;
     flex-direction: column;
     gap: 20px;
     min-width: 0;
 }
 
-.tool-body .birth-rail {
+.tool-body .tool-ad-rail {
     display: flex;
     justify-content: center;
     min-width: 0;
 }
 
-.tool-body .birth-ad {
+.tool-body .tool-ad-slot {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -878,32 +878,32 @@
     overflow: hidden;
 }
 
-.tool-body .birth-ad .repdoc-ad-slot {
+.tool-body .tool-ad-slot .repdoc-ad-slot {
     max-width: 100%;
     margin: 0 auto !important;
     text-align: center;
 }
 
-.tool-body .birth-ad iframe,
-.tool-body .birth-ad img {
+.tool-body .tool-ad-slot iframe,
+.tool-body .tool-ad-slot img {
     display: block;
     max-width: 100%;
     margin: 0 auto;
     border: 0;
 }
 
-.tool-body .birth-ad--top {
+.tool-body .tool-ad-slot--top {
     max-width: 728px;
     min-height: 90px;
     margin: 0 auto 20px;
 }
 
-.tool-body .birth-ad--band {
+.tool-body .tool-ad-slot--band {
     max-width: 468px;
     min-height: 60px;
 }
 
-.tool-body .birth-ad--native {
+.tool-body .tool-ad-slot--native {
     max-width: 100%;
     min-height: 0;
     margin: 20px 0;
@@ -913,7 +913,7 @@
     border-radius: 0;
 }
 
-.tool-body .birth-ad--rect {
+.tool-body .tool-ad-slot--rect {
     width: 300px;
     max-width: 100%;
     min-height: 250px;
@@ -927,11 +927,6 @@
     background: var(--bg-surface);
     box-shadow: 0 12px 28px -24px rgba(21, 114, 74, .52);
     overflow: hidden;
-}
-
-.tool-body .death-ad-placement.tool-ad-frame {
-    max-width: 480px;
-    margin: 16px auto;
 }
 
 .nid-page .nid-ad-frame {
@@ -958,19 +953,19 @@
     border: 0;
 }
 
-.tool-body .birth-workspace.has-rail {
+.tool-body .tool-ad-workspace.has-rail {
     max-width: 1180px;
 }
 
 @media (min-width: 980px) {
-    .tool-body .birth-workspace.has-rail {
+    .tool-body .tool-ad-workspace.has-rail {
         display: grid;
         grid-template-columns: minmax(0, 1fr) 300px;
         align-items: start;
         gap: 24px;
     }
 
-    .tool-body .birth-rail {
+    .tool-body .tool-ad-rail {
         position: sticky;
         top: 92px;
         justify-content: flex-start;
@@ -979,12 +974,12 @@
 }
 
 @media (max-width: 720px) {
-    .tool-body .birth-ad--top,
-    .tool-body .birth-ad--band {
+    .tool-body .tool-ad-slot--top,
+    .tool-body .tool-ad-slot--band {
         min-height: 50px;
     }
 
-    .tool-body .birth-ad--rect {
+    .tool-body .tool-ad-slot--rect {
         min-height: 0;
     }
 }
