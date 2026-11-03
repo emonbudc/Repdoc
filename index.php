@@ -201,7 +201,7 @@ function bn_digits(string $v): string
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="src/assets/css/tokens.css?v=2">
     <link rel="stylesheet" href="src/assets/css/shell.css?v=2">
-    <link rel="stylesheet" href="src/assets/css/home.css?v=7">
+    <link rel="stylesheet" href="src/assets/css/home.css?v=8">
 
     <!-- Homepage renders one look only (no theme switching here). -->
     <?php
@@ -293,6 +293,15 @@ function bn_digits(string $v): string
                 <span class="brand-word"><strong>Repdoc</strong><small><?= e($DOMAIN) ?> · অপারেটর টুলকিট</small></span>
             </a>
 
+            <span class="header-view-count" aria-label="সাইট ভিউ">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-eye"/></svg>
+                <span class="hvc-label">মোট ভিউ</span>
+                <strong class="hvc-value"><?= e(bn_digits(number_format($viewStats['total']))) ?></strong>
+                <span class="hvc-sep" aria-hidden="true">·</span>
+                <span class="hvc-label">আজ</span>
+                <strong class="hvc-value"><?= e(bn_digits(number_format($viewStats['today']))) ?></strong>
+            </span>
+
             <nav class="site-nav" id="siteNav" aria-label="প্রধান নেভিগেশন">
                 <a class="nav-link" href="#tools">সকল টুলস</a>
                 <a class="nav-link" href="#featured">জনপ্রিয় টুলস</a>
@@ -354,23 +363,6 @@ function bn_digits(string $v): string
                         <span>ফ্রি অ্যাকাউন্ট খুলুন</span>
                         <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow"/></svg>
                     </a>
-                    <button type="button" class="btn btn-ledger-outline view-count" id="viewCountBtn"
-                            aria-expanded="false" aria-controls="viewCountPanel">
-                        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-eye"/></svg>
-                        <span>মোট ভিউ</span>
-                        <strong class="view-count-value"><?= e(bn_digits(number_format($viewStats['total']))) ?></strong>
-                    </button>
-                </div>
-
-                <div class="view-count-panel" id="viewCountPanel" hidden>
-                    <p class="view-count-title">সাইট ভিউ</p>
-                    <ul class="view-count-list">
-                        <li><span>মোট ভিউ</span><strong><?= e(bn_digits(number_format($viewStats['total']))) ?></strong></li>
-                        <li><span>আজ</span><strong><?= e(bn_digits(number_format($viewStats['today']))) ?></strong></li>
-                        <?php if ($viewStats['since'] !== ''): ?>
-                            <li><span>গণনা শুরু</span><strong><?= e(bn_digits(date('d/m/Y', (int) strtotime($viewStats['since'])))) ?></strong></li>
-                        <?php endif; ?>
-                    </ul>
                 </div>
                 <p class="hero-sub reg-sub">
                     প্রত্যয়ন ও দরকারি সব ডকুমেন্ট,
@@ -706,6 +698,6 @@ function bn_digits(string $v): string
         </div>
     </footer>
 
-    <script src="src/assets/js/home.js?v=2" defer></script>
+    <script src="src/assets/js/home.js?v=3" defer></script>
 </body>
 </html>
