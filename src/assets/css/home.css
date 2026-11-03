@@ -227,6 +227,33 @@ body::before, body::after {
     gap: 12px; margin-top: var(--space-6);
 }
 
+/* ── Total view counter ──────────────────────────────────────── */
+.view-count { gap: 8px; font-variant-numeric: tabular-nums; }
+.view-count .icon { width: 18px; height: 18px; }
+.view-count-value { font-family: var(--font-mono); font-weight: 700; }
+.view-count-panel {
+    max-width: 340px;
+    margin: 14px auto 0;
+    padding: 14px 16px;
+    background: var(--bg-surface);
+    border: 2px solid var(--text-primary);
+    border-radius: 10px;
+    box-shadow: 4px 4px 0 var(--text-primary);
+    text-align: left;
+}
+.view-count-panel[hidden] { display: none; }
+.view-count-title {
+    margin: 0 0 8px;
+    font-family: var(--font-mono);
+    font-size: .68rem; font-weight: 700;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--text-muted);
+}
+.view-count-list { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.view-count-list li { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; font-size: .88rem; }
+.view-count-list span { color: var(--text-muted); }
+.view-count-list strong { font-family: var(--font-mono); font-weight: 700; }
+
 /* ── Sections ────────────────────────────────────────────────── */
 .section { padding: var(--space-8) 0; }
 .section-alt { background: var(--bg-surface); border-block: 1px solid var(--border-color); }

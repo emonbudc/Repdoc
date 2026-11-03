@@ -301,6 +301,10 @@ if (!function_exists('repdoc_session')) {
 }
 repdoc_session();
 
+// Count public page views for the homepage counter. No-op for CLI, admin
+// panels, bots and non-GET requests (see repdoc_track_view()).
+repdoc_track_view();
+
 // ── Database connections ─────────────────────────────────────────
 /** Shared PDO options for every connection. */
 function repdoc_pdo_options(): array
@@ -656,6 +660,12 @@ function repdoc_ensure_schema(PDO $db): void
         FOREIGN KEY (position_id) REFERENCES ad_positions(id) ON DELETE CASCADE
     )" . ($mysql ? ' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci' : ''));
 
+    $db->exec("CREATE TABLE IF NOT EXISTS site_views (
+        view_day VARCHAR(10) NOT NULL PRIMARY KEY,
+        views INTEGER NOT NULL DEFAULT 0,
+        updated_at DATETIME NULL
+    )" . $suffix);
+
     $defaultPositions = [
         ['home_top_banner', 'Homepage Top Banner', 'Above the homepage tools section'],
         ['home_middle_banner', 'Homepage Middle Banner', 'Inside the homepage content flow'],
@@ -773,6 +783,77 @@ function repdoc_ensure_schema(PDO $db): void
     // Mark complete only after everything above succeeded, so a partial
     // failure is retried on the next request instead of skipped forever.
     $done = true;
+}
+
+// ── Site view counter ────────────────────────────────────────────
+/**
+ * Record one public page view (one row per day, incremented).
+ *
+ * Skipped for CLI, non-GET requests, admin/panel/auth routes, bots and
+ * prefetches, and for signed-in admins so the public counter stays honest.
+ * $force is for CLI tests only.
+ */
+function repdoc_track_view(bool $force = false): bool
+{
+    static $done = false;
+    if ($done && !$force) return false;
+    $done = true;
+
+    if (!$force) {
+        if (PHP_SAPI === 'cli') return false;
+        if (strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET')) !== 'GET') return false;
+
+        $path = '/' . ltrim((string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? '/'), PHP_URL_PATH), '/');
+        foreach (['/admin', '/Entrepreneur/panel', '/public', '/api', '/src', '/love', '/vendor'] as $prefix) {
+            if (str_starts_with($path, $prefix)) return false;
+        }
+
+        $ua = strtolower((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''));
+        if ($ua === '' || preg_match('~(bot|crawl|spider|slurp|bingpreview|facebookexternalhit|headless|curl|wget|python-requests|uptime|monitor)~', $ua)) {
+            return false;
+        }
+        if (isset($_SERVER['HTTP_SEC_PURPOSE']) || isset($_SERVER['HTTP_X_PURPOSE']) || isset($_SERVER['HTTP_X_MOZ_PREFETCH'])) {
+            return false;
+        }
+
+        $user = current_user();
+        if ($user !== null && ($user['role'] ?? '') === 'admin') return false;
+    }
+
+    $db = repdoc_db();
+    if (!$db) return false;
+
+    $today = date('Y-m-d');
+    $now   = date('Y-m-d H:i:s');
+    try {
+        if ($db->getAttribute(PDO::ATTR_DRIVER_NAME) === 'mysql') {
+            $st = $db->prepare('INSERT INTO site_views (view_day, views, updated_at) VALUES (?, 1, ?) ON DUPLICATE KEY UPDATE views = views + 1, updated_at = VALUES(updated_at)');
+        } else {
+            $st = $db->prepare('INSERT INTO site_views (view_day, views, updated_at) VALUES (?, 1, ?) ON CONFLICT(view_day) DO UPDATE SET views = views + 1, updated_at = excluded.updated_at');
+        }
+        $st->execute([$today, $now]);
+        return true;
+    } catch (Throwable $e) {
+        return false;
+    }
+}
+
+/** Totals for the homepage view counter. */
+function repdoc_view_stats(): array
+{
+    $stats = ['total' => 0, 'today' => 0, 'since' => ''];
+    $db = repdoc_db();
+    if (!$db) return $stats;
+
+    try {
+        $stats['total'] = (int) $db->query('SELECT COALESCE(SUM(views), 0) FROM site_views')->fetchColumn();
+        $st = $db->prepare('SELECT COALESCE(views, 0) FROM site_views WHERE view_day = ?');
+        $st->execute([date('Y-m-d')]);
+        $stats['today'] = (int) $st->fetchColumn();
+        $stats['since'] = (string) ($db->query('SELECT MIN(view_day) FROM site_views')->fetchColumn() ?: '');
+    } catch (Throwable $e) {}
+
+    return $stats;
 }
 
 /** Ad configuration helpers used by the public pages and admin panel. */

@@ -156,6 +156,9 @@ $trust = [
 
 $featured = array_values(array_filter($tools, static fn(array $t): bool => !empty($t['featured'])));
 
+/** Public view totals for the hero counter. */
+$viewStats = repdoc_view_stats();
+
 /** Lower-cased haystack used by the client-side filter. */
 function searchIndex(array $t, array $categories): string
 {
@@ -198,7 +201,7 @@ function bn_digits(string $v): string
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="src/assets/css/tokens.css?v=2">
     <link rel="stylesheet" href="src/assets/css/shell.css?v=2">
-    <link rel="stylesheet" href="src/assets/css/home.css?v=6">
+    <link rel="stylesheet" href="src/assets/css/home.css?v=7">
 
     <!-- Homepage renders one look only (no theme switching here). -->
     <?php
@@ -278,6 +281,7 @@ function bn_digits(string $v): string
             <g id="i-wallet"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5h11A2.5 2.5 0 0 1 19 7.5"/><rect x="3" y="7.5" width="18" height="12" rx="2"/><circle cx="16.5" cy="13.5" r="1.2"/></g>
             <g id="i-external"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></g>
             <g id="i-link"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></g>
+            <g id="i-eye"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></g>
             <g id="i-send"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></g>
         </defs>
     </svg>
@@ -350,6 +354,23 @@ function bn_digits(string $v): string
                         <span>ফ্রি অ্যাকাউন্ট খুলুন</span>
                         <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow"/></svg>
                     </a>
+                    <button type="button" class="btn btn-ledger-outline view-count" id="viewCountBtn"
+                            aria-expanded="false" aria-controls="viewCountPanel">
+                        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-eye"/></svg>
+                        <span>মোট ভিউ</span>
+                        <strong class="view-count-value"><?= e(bn_digits(number_format($viewStats['total']))) ?></strong>
+                    </button>
+                </div>
+
+                <div class="view-count-panel" id="viewCountPanel" hidden>
+                    <p class="view-count-title">সাইট ভিউ</p>
+                    <ul class="view-count-list">
+                        <li><span>মোট ভিউ</span><strong><?= e(bn_digits(number_format($viewStats['total']))) ?></strong></li>
+                        <li><span>আজ</span><strong><?= e(bn_digits(number_format($viewStats['today']))) ?></strong></li>
+                        <?php if ($viewStats['since'] !== ''): ?>
+                            <li><span>গণনা শুরু</span><strong><?= e(bn_digits(date('d/m/Y', (int) strtotime($viewStats['since'])))) ?></strong></li>
+                        <?php endif; ?>
+                    </ul>
                 </div>
                 <p class="hero-sub reg-sub">
                     প্রত্যয়ন ও দরকারি সব ডকুমেন্ট,
@@ -685,6 +706,6 @@ function bn_digits(string $v): string
         </div>
     </footer>
 
-    <script src="src/assets/js/home.js?v=1" defer></script>
+    <script src="src/assets/js/home.js?v=2" defer></script>
 </body>
 </html>

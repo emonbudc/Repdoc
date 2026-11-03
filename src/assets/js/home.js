@@ -79,4 +79,27 @@
 
         apply();
     }
+
+    /* ── Total view counter panel ──────────────────────────────── */
+    var viewBtn = document.getElementById('viewCountBtn');
+    var viewPanel = document.getElementById('viewCountPanel');
+
+    if (viewBtn && viewPanel) {
+        function setViews(open) {
+            viewPanel.hidden = !open;
+            viewBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        }
+
+        viewBtn.addEventListener('click', function () {
+            setViews(viewPanel.hidden);
+        });
+        document.addEventListener('click', function (ev) {
+            if (viewPanel.hidden) return;
+            if (viewBtn.contains(ev.target) || viewPanel.contains(ev.target)) return;
+            setViews(false);
+        });
+        document.addEventListener('keydown', function (ev) {
+            if (ev.key === 'Escape') setViews(false);
+        });
+    }
 })();
