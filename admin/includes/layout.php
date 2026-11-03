@@ -25,12 +25,9 @@ function admin_nav_items(): array
             'label'    => 'Adsterra Ads',
             'icon'     => 'a-tag',
             'children' => [
-                'ads.php'            => ['label' => 'Ads', 'icon' => 'a-tag'],
-                'ad-positions.php'   => ['label' => 'Positions', 'icon' => 'a-layout'],
-                'ad-assignments.php' => ['label' => 'Assignments', 'icon' => 'a-grid'],
-                'ad-settings.php'    => ['label' => 'Settings', 'icon' => 'a-lock'],
+                'ads.php'            => ['label' => 'Ad Manager', 'icon' => 'a-tag'],
+                'ad-positions.php'   => ['label' => 'Placements', 'icon' => 'a-layout'],
                 'ad-logs.php'        => ['label' => 'Logs', 'icon' => 'a-log'],
-                'ad-health.php'      => ['label' => 'Health', 'icon' => 'a-search'],
             ],
         ],
         'important-links'  => [
@@ -322,6 +319,9 @@ function admin_page_start(string $title, string $active): void
     <link rel="stylesheet" href="../src/assets/css/tokens.css?v=2">
     <link rel="stylesheet" href="../src/assets/css/app.css?v=2">
     <link rel="stylesheet" href="../src/assets/css/admin.css?v=12">
+    <?php if (in_array($active, ['ads.php', 'ad-positions.php', 'ad-assignments.php', 'ad-settings.php', 'ad-logs.php', 'ad-health.php'], true)): ?>
+        <link rel="stylesheet" href="../src/assets/css/admin-ads.css?v=1">
+    <?php endif; ?>
     <script>/* Rail state before paint, so the sidebar never flashes wide. */
     try { if (localStorage.getItem('repdoc-admin-rail') === '1') document.documentElement.classList.add('admin-rail'); } catch (e) {}</script>
 </head>

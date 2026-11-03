@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $db) {
         redirect('ad-settings.php');
     }
 
-    $keys = ['ads_enabled', 'default_rotation_mode', 'allow_popunder', 'ads_debug_mode'];
+    $keys = ['default_rotation_mode', 'allow_popunder', 'ads_debug_mode'];
     foreach ($keys as $key) {
         $val = isset($_POST[$key]) ? '1' : '0';
         if ($key === 'default_rotation_mode') {
@@ -44,18 +44,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $db) {
     redirect('ad-settings.php');
 }
 
-admin_page_start('Ad Settings', 'ad-settings.php');
+admin_page_start('Advanced Ad Settings', 'ad-settings.php');
 admin_notice();
 ?>
 
 <div class="admin-page-head">
     <div>
         <p class="kicker">Monetization</p>
-        <h1 class="admin-title">Ad Settings</h1>
-        <p class="admin-sub">Control global rules for your Adsterra placements.</p>
+        <h1 class="admin-title">Advanced Ad Settings</h1>
+        <p class="admin-sub">Rotation and popunder rules. The site-wide on/off switch lives in Ad Manager.</p>
     </div>
     <div style="display:flex;gap:8px">
-        <a class="btn btn-secondary btn-sm" href="ads.php">Ad manager</a>
+        <a class="btn btn-secondary btn-sm" href="ads.php">Back to Ad Manager</a>
     </div>
 </div>
 
@@ -64,14 +64,10 @@ admin_notice();
 <?php else: ?>
 
 <form class="panel" method="post" action="ad-settings.php">
-    <div class="panel-head">Global ad configuration</div>
+    <div class="panel-head">Advanced configuration</div>
     <div class="panel-body">
         <?= csrf_field() ?>
         <div class="field-row">
-            <label class="field checkbox-inline" style="min-width:220px;">
-                <input type="checkbox" name="ads_enabled" value="1" <?= ((string) ($settings['ads_enabled'] ?? '1')) === '1' ? 'checked' : '' ?>>
-                Ads enabled globally
-            </label>
             <label class="field checkbox-inline" style="min-width:220px;">
                 <input type="checkbox" name="allow_popunder" value="1" <?= ((string) ($settings['allow_popunder'] ?? '0')) === '1' ? 'checked' : '' ?>>
                 Allow popunder ads
