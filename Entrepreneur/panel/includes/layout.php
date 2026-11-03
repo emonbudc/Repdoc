@@ -34,7 +34,6 @@ function udc_tools(): array
         ['key' => 'showcase',   'name' => 'Template Showcase', 'nav' => 'টেমপ্লেট শোকেস', 'cat' => 'Templates', 'icon' => 'a-layout', 'url' => 'showcase/', 'check' => 'showcase/index.php'],
         ['key' => 'offlinefiles', 'name' => 'PSD / AI / PLP Files', 'nav' => 'PSD / AI / PLP ফাইল', 'cat' => 'Templates', 'icon' => 'a-file', 'url' => 'offlinefiles/', 'check' => 'offlinefiles/index.php'],
         ['key' => 'officefiles', 'name' => 'Word / Excel Files', 'nav' => 'Word / Excel ফাইল', 'cat' => 'Templates', 'icon' => 'a-file', 'url' => 'officefiles/', 'check' => 'officefiles/index.php'],
-        ['key' => 'apply',      'name' => 'Entrepreneur Application Form', 'nav' => 'উদ্যোক্তা আবেদন', 'cat' => 'Applications', 'icon' => 'a-id', 'url' => 'Entrepreneur/apply/', 'check' => 'Entrepreneur/apply/index.php'],
     ];
 
     $siteRoot = dirname(__DIR__, 3);
