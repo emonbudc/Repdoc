@@ -44,8 +44,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $db) {
                 $union    = trim((string) ($_POST['union_parishad'] ?? ''));
                 $upazila  = trim((string) ($_POST['upazila'] ?? ''));
                 $district = trim((string) ($_POST['district'] ?? ''));
+                $identity = entrepreneur_identity_clean($_POST);
                 if ($fullname === '' || $mobile === '' || $email === '' || $union === '' || $upazila === '' || $district === '') {
                     flash_set('error', 'সব ঘর পূরণ করুন।');
+                    break;
+                }
+                if (($identityError = entrepreneur_identity_error($identity)) !== '') {
+                    flash_set('error', $identityError);
+                    break;
+                }
+                $docFile = $_FILES['id_doc'] ?? null;
+                if (!is_array($docFile) || ($docFile['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+                    flash_set('error', 'আইডি কার্ড / ট্রেড লাইসেন্সের ছবি দিন।');
+                    break;
+                }
+                if (repdoc_validate_image_upload($docFile) === '') {
+                    flash_set('error', 'ছবিটি JPG বা PNG হতে হবে (সর্বোচ্চ ২ MB)।');
                     break;
                 }
                 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -63,21 +77,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $db) {
                     break;
                 }
                 $newAppId = 0;
+                $stored = ['path' => ''];
                 $db->beginTransaction();
                 try {
                     $db->prepare("INSERT INTO users (fullname, email, phone, password, role, status, balance, created_at)
                                   VALUES (?, ?, ?, ?, 'user', 'approved', 0, ?)")
                        ->execute([$fullname, $email, $mobile, password_hash($password, PASSWORD_DEFAULT), date('Y-m-d H:i:s')]);
                     $newUid = (int) $db->lastInsertId();
-                    $db->prepare("INSERT INTO entrepreneur_apps (fullname, mobile, email, union_parishad, upazila, district, message, status, chairman_name_bn, chairman_name_en, leader_title, created_at)
-                                  VALUES (?, ?, ?, ?, ?, ?, ?, 'approved', ?, ?, ?, ?)")
+                    $db->prepare("INSERT INTO entrepreneur_apps (fullname, mobile, email, union_parishad, upazila, district, message, status, chairman_name_bn, chairman_name_en, leader_title, identity_type, org_name, applicant_role, id_address, created_at)
+                                  VALUES (?, ?, ?, ?, ?, ?, ?, 'approved', ?, ?, ?, ?, ?, ?, ?, ?)")
                        ->execute([$fullname, $mobile, $email, $union, $upazila, $district, 'Created by admin',
                            trim((string) ($_POST['chairman_name_bn'] ?? '')), trim((string) ($_POST['chairman_name_en'] ?? '')),
-                           trim((string) ($_POST['leader_title'] ?? 'chairman')), date('Y-m-d H:i:s')]);
+                           trim((string) ($_POST['leader_title'] ?? 'chairman')),
+                           $identity['identity_type'], $identity['org_name'], $identity['applicant_role'], $identity['id_address'],
+                           date('Y-m-d H:i:s')]);
                     $newAppId = (int) $db->lastInsertId();
+                    $stored = entrepreneur_store_identity_doc($docFile, $newAppId);
+                    if (!$stored['ok']) {
+                        throw new RuntimeException((string) $stored['message']);
+                    }
+                    $db->prepare('UPDATE entrepreneur_apps SET id_doc_path = ? WHERE id = ?')->execute([$stored['path'], $newAppId]);
                     $db->commit();
                 } catch (Throwable $ex) {
                     if ($db->inTransaction()) $db->rollBack();
+                    if (($stored['path'] ?? '') !== '') entrepreneur_remove_identity_doc((string) $stored['path']);
+                    if ($ex instanceof RuntimeException) {
+                        flash_set('error', $ex->getMessage());
+                        break;
+                    }
                     throw $ex;
                 }
                 $chairBn = trim((string) ($_POST['chairman_name_bn'] ?? ''));
@@ -177,10 +204,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $db) {
                         break;
                     }
                 }
+
+                $identity = entrepreneur_identity_clean($_POST);
+                $docFile = $_FILES['id_doc'] ?? null;
+                $hasNewDoc = is_array($docFile) && ($docFile['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE;
+                $existingType = (string) ($app['identity_type'] ?? '');
+                $identityTouched = $identity['identity_type'] !== '' || $identity['org_name'] !== ''
+                    || $identity['applicant_role'] !== '' || $identity['id_address'] !== '' || $hasNewDoc;
+                $identityActive = $identityTouched || $existingType !== '';
+                $oldDocPath = (string) ($app['id_doc_path'] ?? '');
+                $newDocPath = $oldDocPath;
+                if ($identityActive) {
+                    if (($identityError = entrepreneur_identity_error($identity)) !== '') {
+                        flash_set('error', $identityError);
+                        break;
+                    }
+                    if ($hasNewDoc && repdoc_validate_image_upload($docFile) === '') {
+                        flash_set('error', 'ছবিটি JPG বা PNG হতে হবে (সর্বোচ্চ ২ MB)।');
+                        break;
+                    }
+                    if ($oldDocPath === '' && !$hasNewDoc && $identity['identity_type'] !== '') {
+                        flash_set('error', 'আইডি কার্ড / ট্রেড লাইসেন্সের ছবি দিন।');
+                        break;
+                    }
+                }
+
+                $stored = ['path' => ''];
                 $db->beginTransaction();
                 try {
-                    $db->prepare('UPDATE entrepreneur_apps SET fullname = ?, mobile = ?, email = ?, union_parishad = ?, upazila = ?, district = ?, message = ?, chairman_name_bn = ?, chairman_name_en = ?, leader_title = ? WHERE id = ?')
-                       ->execute([$fullname, $mobile, $email, $union, $upazila, $district, $message, $chairBn, $chairEn, $leader, $appId]);
+                    if ($hasNewDoc) {
+                        $stored = entrepreneur_store_identity_doc($docFile, $appId);
+                        if (!$stored['ok']) {
+                            throw new RuntimeException((string) $stored['message']);
+                        }
+                        $newDocPath = (string) $stored['path'];
+                    }
+                    $db->prepare('UPDATE entrepreneur_apps SET fullname = ?, mobile = ?, email = ?, union_parishad = ?, upazila = ?, district = ?, message = ?, chairman_name_bn = ?, chairman_name_en = ?, leader_title = ?, identity_type = ?, org_name = ?, applicant_role = ?, id_address = ?, id_doc_path = ? WHERE id = ?')
+                       ->execute([$fullname, $mobile, $email, $union, $upazila, $district, $message, $chairBn, $chairEn, $leader,
+                           $identity['identity_type'], $identity['org_name'], $identity['applicant_role'], $identity['id_address'], $newDocPath, $appId]);
                     // Keep the linked login account in sync.
                     if ($oldEmail !== '') {
                         $db->prepare('UPDATE users SET fullname = ?, email = ?, phone = ? WHERE email = ?')
@@ -189,8 +250,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $db) {
                     $db->commit();
                 } catch (Throwable $ex) {
                     if ($db->inTransaction()) $db->rollBack();
+                    if (($stored['path'] ?? '') !== '') entrepreneur_remove_identity_doc((string) $stored['path']);
+                    if ($ex instanceof RuntimeException) {
+                        flash_set('error', $ex->getMessage());
+                        break;
+                    }
                     throw $ex;
                 }
+                if ($oldDocPath !== '' && $oldDocPath !== $newDocPath) entrepreneur_remove_identity_doc($oldDocPath);
                 // Keep the office profile in sync when the account exists.
                 if ($email !== '') {
                     $st = $db->prepare('SELECT id FROM users WHERE email = ?');
@@ -334,6 +401,24 @@ function admin_app_row(array $a, array $accountByEmail, string $q, string $statu
             <?php if (!empty($a['chairman_name_bn']) || !empty($a['chairman_name_en'])): ?>
                 <span class="cell-sub">Chairman: <?= e(trim((($a['chairman_name_bn'] ?? '') . ' ' . ($a['chairman_name_en'] ?? '')))) ?><?= !empty($a['leader_title']) ? ' (' . e($a['leader_title']) . ')' : '' ?></span>
             <?php endif; ?>
+            <?php
+            $appIdentity = (string) ($a['identity_type'] ?? '');
+            $identityLabels = entrepreneur_identity_types();
+            if ($appIdentity !== ''):
+            ?>
+                <span class="cell-sub">
+                    <span class="pill <?= $appIdentity === 'office_staff' ? 'pill-approved' : 'pill-pending' ?>"><?= e($identityLabels[$appIdentity] ?? $appIdentity) ?></span>
+                    <?= e((string) ($a['org_name'] ?? '')) ?><?= !empty($a['applicant_role']) ? ' · ' . e((string) $a['applicant_role']) : '' ?>
+                </span>
+                <?php if (!empty($a['id_address'])): ?>
+                    <span class="cell-sub">Address: <?= e((string) $a['id_address']) ?></span>
+                <?php endif; ?>
+                <?php if (!empty($a['id_doc_path'])): ?>
+                    <span class="cell-sub"><a href="entrepreneur-doc.php?id=<?= $aid ?>" target="_blank" rel="noopener">View ID document</a></span>
+                <?php endif; ?>
+            <?php elseif (!empty($a['org_name'])): ?>
+                <span class="cell-sub"><?= e((string) $a['org_name']) ?><?= !empty($a['applicant_role']) ? ' · ' . e((string) $a['applicant_role']) : '' ?></span>
+            <?php endif; ?>
             <span class="cell-sub">Date: <?= e((string) $a['created_at']) ?></span>
         </td>
         <td>
@@ -349,12 +434,25 @@ function admin_app_row(array $a, array $accountByEmail, string $q, string $statu
             <div class="cell-actions">
                 <details>
                     <summary style="cursor:pointer;color:var(--primary);font-weight:600;font-size:13px">Edit all info</summary>
-                    <form method="post" action="entrepreneur.php" data-live style="margin-top:8px;display:grid;gap:6px;min-width:220px">
+                    <form method="post" action="entrepreneur.php" enctype="multipart/form-data" data-live style="margin-top:8px;display:grid;gap:6px;min-width:220px">
                         <?= csrf_field() ?>
                         <input type="hidden" name="action" value="edit_app">
                         <input type="hidden" name="app_id" value="<?= $aid ?>">
                         <input type="hidden" name="return_q" value="<?= e($q) ?>">
                         <input type="hidden" name="return_status" value="<?= e($status) ?>">
+                        <select name="identity_type">
+                            <option value="">Legacy / not set</option>
+                            <?php foreach (entrepreneur_identity_types() as $v => $l): ?>
+                                <option value="<?= e($v) ?>"<?= ($a['identity_type'] ?? '') === $v ? ' selected' : '' ?>><?= e($l) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <input name="org_name" value="<?= e($a['org_name'] ?? '') ?>" placeholder="Office / shop name" maxlength="190">
+                        <input name="applicant_role" value="<?= e($a['applicant_role'] ?? '') ?>" placeholder="Designation (office staff)" maxlength="100">
+                        <input name="id_address" value="<?= e($a['id_address'] ?? '') ?>" placeholder="Address" maxlength="255">
+                        <input type="file" name="id_doc" accept="image/jpeg,image/png">
+                        <?php if (!empty($a['id_doc_path'])): ?>
+                            <a href="entrepreneur-doc.php?id=<?= $aid ?>" target="_blank" rel="noopener" style="font-size:12px">View current document</a>
+                        <?php endif; ?>
                         <input name="fullname" value="<?= e($a['fullname']) ?>" required placeholder="Full name" maxlength="100">
                         <input name="mobile" value="<?= e($a['mobile']) ?>" required placeholder="Mobile" maxlength="20">
                         <input type="email" name="email" value="<?= e($a['email']) ?>" placeholder="Email" maxlength="100">
@@ -638,11 +736,16 @@ admin_notice();
     <div class="panel">
         <div class="panel-head">Create UDC account <span class="count">Admin</span></div>
         <div class="panel-body">
-            <form method="post" action="entrepreneur.php" id="createUdcForm" data-live>
+            <form method="post" action="entrepreneur.php" id="createUdcForm" enctype="multipart/form-data" data-live>
                 <?= csrf_field() ?>
                 <input type="hidden" name="action" value="create_udc">
                 <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">
-                    <div class="field"><label for="nu_fullname">Full name *</label><input id="nu_fullname" name="fullname" required maxlength="100"></div>
+                    <div class="field"><label for="nu_identity">Identity type *</label><select id="nu_identity" name="identity_type" required><option value="">Select type</option><?php foreach (entrepreneur_identity_types() as $v => $l): ?><option value="<?= e($v) ?>"><?= e($l) ?></option><?php endforeach; ?></select></div>
+                    <div class="field"><label for="nu_org" id="nu_orgLabel">Office / shop name *</label><input id="nu_org" name="org_name" maxlength="190" required></div>
+                    <div class="field" id="nu_roleWrap"><label for="nu_role">Designation *</label><input id="nu_role" name="applicant_role" maxlength="100"></div>
+                    <div class="field"><label for="nu_address">Address *</label><input id="nu_address" name="id_address" maxlength="255" required></div>
+                    <div class="field"><label for="nu_doc" id="nu_docLabel">Identity document *</label><input id="nu_doc" type="file" name="id_doc" accept="image/jpeg,image/png" required><span class="cell-sub">JPG/PNG, max 2 MB</span></div>
+                    <div class="field"><label for="nu_fullname" id="nu_nameLabel">Full name *</label><input id="nu_fullname" name="fullname" required maxlength="100"></div>
                     <div class="field"><label for="nu_mobile">Mobile *</label><input id="nu_mobile" name="mobile" required maxlength="20"></div>
                     <div class="field"><label for="nu_email">Email (login) *</label><input id="nu_email" type="email" name="email" required maxlength="100"></div>
                     <div class="field"><label for="nu_password">Password (min 6) *</label><input id="nu_password" type="password" name="password" required minlength="6"></div>
@@ -661,6 +764,28 @@ admin_notice();
                 <p style="margin-top:14px"><button type="submit" class="btn btn-primary btn-sm">Create UDC account</button>
                 <span class="cell-sub">Account is approved instantly with office profile.</span></p>
             </form>
+            <script>
+            (function () {
+                var type = document.getElementById('nu_identity');
+                if (!type) return;
+                var orgLabel = document.getElementById('nu_orgLabel');
+                var roleWrap = document.getElementById('nu_roleWrap');
+                var roleInput = document.getElementById('nu_role');
+                var docLabel = document.getElementById('nu_docLabel');
+                var nameLabel = document.getElementById('nu_nameLabel');
+                function update() {
+                    var office = type.value === 'office_staff';
+                    var shop = type.value === 'shop_owner';
+                    if (orgLabel) orgLabel.textContent = shop ? 'Shop name *' : 'Office / shop name *';
+                    if (docLabel) docLabel.textContent = shop ? 'Trade licence *' : 'Office ID card *';
+                    if (nameLabel) nameLabel.textContent = shop ? 'Owner name *' : (office ? 'User name *' : 'Full name *');
+                    if (roleWrap) roleWrap.hidden = !office;
+                    if (roleInput) roleInput.required = office;
+                }
+                type.addEventListener('change', update);
+                update();
+            })();
+            </script>
             <script>
             (function () {
                 var GEO = <?= json_encode(repdoc_url('genaretor/prottoyon/api/geo.php')) ?>;

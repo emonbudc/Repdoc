@@ -173,6 +173,78 @@ if (!function_exists('repdoc_validate_image_upload')) {
     }
 }
 
+/** Entrepreneur identity kinds: key => Bengali label. */
+function entrepreneur_identity_types(): array
+{
+    return [
+        'office_staff' => 'অফিস স্টাফ',
+        'shop_owner'   => 'দোকান মালিক',
+    ];
+}
+
+/** Normalise the identity fields posted by the application / admin forms. */
+function entrepreneur_identity_clean(array $post): array
+{
+    $type = (string) ($post['identity_type'] ?? '');
+    if (!isset(entrepreneur_identity_types()[$type])) $type = '';
+    return [
+        'identity_type'  => $type,
+        'org_name'       => trim((string) ($post['org_name'] ?? '')),
+        'applicant_role' => $type === 'office_staff' ? trim((string) ($post['applicant_role'] ?? '')) : '',
+        'id_address'     => trim((string) ($post['id_address'] ?? '')),
+    ];
+}
+
+/** First validation error for the identity block, or '' when valid. */
+function entrepreneur_identity_error(array $identity): string
+{
+    if ($identity['identity_type'] === '') return 'আইডেন্টিটির ধরন বেছে নিন।';
+    if ($identity['org_name'] === '') {
+        return $identity['identity_type'] === 'office_staff' ? 'অফিসের নাম দিন।' : 'দোকানের নাম দিন।';
+    }
+    if ($identity['identity_type'] === 'office_staff' && $identity['applicant_role'] === '') {
+        return 'আপনার পদ/রোল লিখুন।';
+    }
+    if ($identity['id_address'] === '') return 'ঠিকানা লিখুন।';
+    return '';
+}
+
+/** Store the office ID / trade licence in the private uploads tree. */
+function entrepreneur_store_identity_doc(array $file, int $appId): array
+{
+    $name = repdoc_validate_image_upload($file, 2 * 1024 * 1024);
+    if ($name === '') {
+        return ['ok' => false, 'path' => '', 'message' => 'আইডি কার্ড / ট্রেড লাইসেন্সের ছবি JPG বা PNG হতে হবে (সর্বোচ্চ ২ MB)।'];
+    }
+    $rel = 'love/uploads/entrepreneur/' . $appId;
+    $dir = REPDOC_ROOT . '/' . $rel;
+    if (!is_dir($dir) && !mkdir($dir, 0755, true) && !is_dir($dir)) {
+        return ['ok' => false, 'path' => '', 'message' => 'আপলোড ফোল্ডার তৈরি হয়নি।'];
+    }
+    if (!move_uploaded_file((string) ($file['tmp_name'] ?? ''), $dir . '/' . $name)) {
+        return ['ok' => false, 'path' => '', 'message' => 'ছবি সংরক্ষণ হয়নি — আবার চেষ্টা করুন।'];
+    }
+    return ['ok' => true, 'path' => $rel . '/' . $name, 'message' => ''];
+}
+
+/** Delete a previously stored identity document (rollbacks / replacements). */
+function entrepreneur_remove_identity_doc(string $path): void
+{
+    $full = entrepreneur_identity_doc_full_path($path);
+    if ($full !== '' && is_file($full)) @unlink($full);
+}
+
+/** Absolute path of a stored identity document, or '' when outside the allowed tree. */
+function entrepreneur_identity_doc_full_path(string $path): string
+{
+    if ($path === '') return '';
+    $root = realpath(REPDOC_ROOT . '/love/uploads/entrepreneur');
+    if ($root === false) return '';
+    $full = realpath(REPDOC_ROOT . '/' . ltrim($path, '/'));
+    if ($full === false || !str_starts_with($full, $root . DIRECTORY_SEPARATOR) || !is_file($full)) return '';
+    return $full;
+}
+
 /** True on a development machine: CLI, localhost/127.0.0.1/[::1], *.local, *.test. */
 function repdoc_is_local_request(): bool
 {
@@ -464,6 +536,11 @@ function repdoc_ensure_schema(PDO $db): void
         district $text NOT NULL,
         message TEXT,
         status VARCHAR(32) NOT NULL DEFAULT 'pending',
+        identity_type VARCHAR(16) NOT NULL DEFAULT '',
+        org_name VARCHAR(190) NOT NULL DEFAULT '',
+        applicant_role VARCHAR(100) NOT NULL DEFAULT '',
+        id_address TEXT,
+        id_doc_path VARCHAR(255) NOT NULL DEFAULT '',
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )$suffix");
 
@@ -563,6 +640,11 @@ function repdoc_ensure_schema(PDO $db): void
         ['entrepreneur_apps', 'chairman_name_en', 'ALTER TABLE entrepreneur_apps ADD COLUMN chairman_name_en ' . ($mysql ? 'VARCHAR(255)' : 'TEXT')],
         ['entrepreneur_apps', 'leader_title', 'ALTER TABLE entrepreneur_apps ADD COLUMN leader_title VARCHAR(32)'],
         ['entrepreneur_apps', 'archive_access', 'ALTER TABLE entrepreneur_apps ADD COLUMN archive_access INT NOT NULL DEFAULT 0'],
+        ['entrepreneur_apps', 'identity_type', "ALTER TABLE entrepreneur_apps ADD COLUMN identity_type VARCHAR(16) NOT NULL DEFAULT ''"],
+        ['entrepreneur_apps', 'org_name', "ALTER TABLE entrepreneur_apps ADD COLUMN org_name VARCHAR(190) NOT NULL DEFAULT ''"],
+        ['entrepreneur_apps', 'applicant_role', "ALTER TABLE entrepreneur_apps ADD COLUMN applicant_role VARCHAR(100) NOT NULL DEFAULT ''"],
+        ['entrepreneur_apps', 'id_address', 'ALTER TABLE entrepreneur_apps ADD COLUMN id_address TEXT'],
+        ['entrepreneur_apps', 'id_doc_path', "ALTER TABLE entrepreneur_apps ADD COLUMN id_doc_path VARCHAR(255) NOT NULL DEFAULT ''"],
         ['office_profiles', 'union_code', 'ALTER TABLE office_profiles ADD COLUMN union_code VARCHAR(7) NOT NULL DEFAULT \'\''],
         ['office_profiles', 'postcode', 'ALTER TABLE office_profiles ADD COLUMN postcode ' . ($mysql ? 'VARCHAR(16)' : 'TEXT')],
         ['office_profiles', 'phone', 'ALTER TABLE office_profiles ADD COLUMN phone ' . ($mysql ? 'VARCHAR(32)' : 'TEXT')],

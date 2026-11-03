@@ -28,6 +28,10 @@ $union    = '';
 $upazila  = '';
 $district = '';
 $message  = '';
+$identityType = '';
+$orgName      = '';
+$applicantRole = '';
+$idAddress    = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fullname = trim((string) ($_POST['fullname'] ?? ''));
@@ -41,25 +45,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $district = trim((string) ($_POST['district'] ?? ''));
     $message  = trim((string) ($_POST['message'] ?? ''));
 
+    $identity = entrepreneur_identity_clean($_POST);
+    $identityType  = $identity['identity_type'];
+    $orgName       = $identity['org_name'];
+    $applicantRole = $identity['applicant_role'];
+    $idAddress     = $identity['id_address'];
+
+    $docFile = $_FILES['id_doc'] ?? null;
+    $docMissing = !is_array($docFile) || ($docFile['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE;
+
     $db = repdoc_db();
 
     if (!csrf_verify($_POST['csrf_token'] ?? null)) {
         $error = 'নিরাপত্তা টোকেন মিলেনি — পেজটি রিফ্রেশ করে আবার চেষ্টা করুন।';
     } elseif ($fullname === '' || $mobile === '' || $union === '' || $upazila === '' || $district === '' || $chairBn === '') {
         $error = 'সব আবশ্যক ঘর পূরণ করুন।';
+    } elseif (($identityError = entrepreneur_identity_error($identity)) !== '') {
+        $error = $identityError;
+    } elseif ($docMissing) {
+        $error = $identityType === 'office_staff' ? 'অফিস আইডি কার্ডের ছবি দিন।' : 'ট্রেড লাইসেন্সের ছবি দিন।';
+    } elseif (repdoc_validate_image_upload($docFile) === '') {
+        $error = 'ছবিটি JPG বা PNG হতে হবে (সর্বোচ্চ ২ MB)।';
     } elseif ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = 'ইমেইল ঠিকানাটি সঠিক নয়।';
     } elseif (!$db) {
         $error = 'ডেটাবেস পাওয়া যায়নি — একবার /src/setup.php চালান।';
     } else {
+        $stored = ['path' => ''];
         try {
+            $db->beginTransaction();
             $db->prepare("INSERT INTO entrepreneur_apps
-                          (fullname, mobile, email, union_parishad, upazila, district, message, status, chairman_name_bn, chairman_name_en, leader_title, created_at)
-                          VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?)")
-               ->execute([$fullname, $mobile, $email, $union, $upazila, $district, $message, $chairBn, $chairEn, $leader, date('Y-m-d H:i:s')]);
+                          (fullname, mobile, email, union_parishad, upazila, district, message, status, chairman_name_bn, chairman_name_en, leader_title, identity_type, org_name, applicant_role, id_address, created_at)
+                          VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, ?)")
+               ->execute([$fullname, $mobile, $email, $union, $upazila, $district, $message, $chairBn, $chairEn, $leader, $identityType, $orgName, $applicantRole, $idAddress, date('Y-m-d H:i:s')]);
+            $newAppId = (int) $db->lastInsertId();
+            $stored = entrepreneur_store_identity_doc($docFile, $newAppId);
+            if (!$stored['ok']) {
+                throw new RuntimeException((string) $stored['message']);
+            }
+            $db->prepare('UPDATE entrepreneur_apps SET id_doc_path = ? WHERE id = ?')->execute([$stored['path'], $newAppId]);
+            $db->commit();
             $success = true;
         } catch (Throwable $ex) {
-            $error = 'আবেদন জমা হয়নি — আবার চেষ্টা করুন।';
+            if ($db->inTransaction()) $db->rollBack();
+            if (($stored['path'] ?? '') !== '') entrepreneur_remove_identity_doc((string) $stored['path']);
+            $error = $ex instanceof RuntimeException ? $ex->getMessage() : 'আবেদন জমা হয়নি — আবার চেষ্টা করুন।';
         }
     }
 }
@@ -117,11 +147,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="alert alert-error" role="alert"><?= e($error) ?></div>
             <?php endif; ?>
 
-            <form method="post" novalidate>
+            <form method="post" enctype="multipart/form-data" novalidate>
                 <?= csrf_field() ?>
 
                 <div class="field">
-                    <label for="fullname">পুরো নাম *</label>
+                    <label for="identity_type">আইডেন্টিটির ধরন *</label>
+                    <select id="identity_type" name="identity_type" required>
+                        <option value="">ধরন বেছে নিন</option>
+                        <?php foreach (entrepreneur_identity_types() as $v => $l): ?>
+                            <option value="<?= e($v) ?>"<?= $identityType === $v ? ' selected' : '' ?>><?= e($l) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="org_name" id="orgLabel">প্রতিষ্ঠানের নাম *</label>
+                    <input type="text" id="org_name" name="org_name" value="<?= e($orgName) ?>" maxlength="190" required>
+                </div>
+
+                <div class="field" id="roleWrap">
+                    <label for="applicant_role">আপনার পদ / রোল *</label>
+                    <input type="text" id="applicant_role" name="applicant_role" value="<?= e($applicantRole) ?>" maxlength="100">
+                </div>
+
+                <div class="field">
+                    <label for="id_address">ঠিকানা *</label>
+                    <textarea id="id_address" name="id_address" rows="2" required><?= e($idAddress) ?></textarea>
+                </div>
+
+                <div class="field">
+                    <label for="id_doc" id="docLabel">আইডেন্টিটির ছবি *</label>
+                    <input type="file" id="id_doc" name="id_doc" accept="image/jpeg,image/png" required>
+                    <p class="cell-sub" style="margin:6px 0 0;color:var(--text-muted);font-size:.85rem">JPG বা PNG, সর্বোচ্চ ২ MB</p>
+                </div>
+
+                <div class="field">
+                    <label for="fullname" id="nameLabel">আপনার নাম *</label>
                     <input type="text" id="fullname" name="fullname" value="<?= e($fullname) ?>"
                            autocomplete="name" required autofocus>
                 </div>
@@ -221,6 +282,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <a class="btn btn-secondary" href="<?= e(repdoc_url('/')) ?>">হোমপেজ</a>
                 </div>
             </form>
+            <script>
+            (function () {
+                var type = document.getElementById('identity_type');
+                if (!type) return;
+                var orgLabel = document.getElementById('orgLabel');
+                var roleWrap = document.getElementById('roleWrap');
+                var roleInput = document.getElementById('applicant_role');
+                var docLabel = document.getElementById('docLabel');
+                var nameLabel = document.getElementById('nameLabel');
+                function update() {
+                    var office = type.value === 'office_staff';
+                    var shop = type.value === 'shop_owner';
+                    if (orgLabel) orgLabel.textContent = shop ? 'দোকানের নাম *' : 'অফিসের নাম *';
+                    if (docLabel) docLabel.textContent = shop ? 'ট্রেড লাইসেন্সের ছবি *' : 'অফিস আইডি কার্ডের ছবি *';
+                    if (nameLabel) nameLabel.textContent = shop ? 'মালিকের নাম *' : (office ? 'কর্মীর নাম *' : 'আপনার নাম *');
+                    if (roleWrap) roleWrap.hidden = !office;
+                    if (roleInput) roleInput.required = office;
+                }
+                type.addEventListener('change', update);
+                update();
+            })();
+            </script>
             <script>
             (function () {
                 var GEO = <?= json_encode(repdoc_url('genaretor/prottoyon/api/geo.php')) ?>;
