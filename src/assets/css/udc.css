@@ -103,6 +103,25 @@
     background: #DCEFE4;
 }
 
+.udc-body .stat-clock .v {
+    font-size: 1.8rem;
+    line-height: 1.15;
+    letter-spacing: .02em;
+}
+
+.udc-body .stat-clock .s {
+    font-size: .8rem;
+}
+
+.udc-body .stat-user .v {
+    margin-top: 4px;
+    font-family: var(--font-sans);
+    font-size: .95rem;
+    font-weight: 700;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
 .udc-body table.data tbody tr:hover td {
     background: #F4FAF6;
 }

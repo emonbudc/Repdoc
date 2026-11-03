@@ -11,27 +11,29 @@ require_once __DIR__ . '/includes/layout.php';
 $me = current_user();
 $db = repdoc_db();
 
-$stats = ['total' => 0, 'valid' => 0, 'revoked' => 0, 'balance' => 0];
+$stats = ['balance' => 0, 'last_login' => ''];
 $office = office_profile();
 
-/** All openable tools — single registry shared with the sidebar (layout.php). */
 $udcTools = udc_tools();
 
 if ($db) {
     try {
-        $st = $db->prepare('SELECT COUNT(*) FROM document_logs WHERE user_id = ? AND tool_key LIKE \'prottoyon!_%\' ESCAPE \'!\'');
-        $st->execute([$me['id']]);
-        $stats['total'] = (int) $st->fetchColumn();
-        $st = $db->prepare('SELECT COUNT(*) FROM document_logs WHERE user_id = ? AND tool_key LIKE \'prottoyon!_%\' ESCAPE \'!\' AND status = \'revoked\'');
-        $st->execute([$me['id']]);
-        $stats['revoked'] = (int) $st->fetchColumn();
-        $stats['valid'] = $stats['total'] - $stats['revoked'];
         $stats['balance'] = user_balance($me['id']);
+        $st = $db->prepare('SELECT last_login_at FROM users WHERE id = ?');
+        $st->execute([$me['id']]);
+        $stats['last_login'] = (string) ($st->fetchColumn() ?: '');
     } catch (Throwable $e) {
         $dbErr = $e->getMessage();
         $db = null;
     }
 }
+
+$lastLogin = $stats['last_login'] !== '' && strtotime($stats['last_login'])
+    ? prottoyon_bn_digits(date('d/m/Y H:i', (int) strtotime($stats['last_login'])))
+    : '—';
+$username = $me['email'] !== '' ? $me['email'] : $me['fullname'];
+$ip = (string) ($_SERVER['REMOTE_ADDR'] ?? '');
+if ($ip === '') $ip = '—';
 
 udc_page_start('ড্যাশবোর্ড', 'index.php');
 udc_notice();
@@ -56,13 +58,22 @@ udc_notice();
 <?php else: ?>
 
 <div class="stat-grid">
-    <div class="stat-card">
-        <span class="stat-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><use href="#a-award"/></svg></span>
-        <span class="stat-text"><span class="k">মোট প্রত্যয়ন</span><span class="v"><?= number_format($stats['total']) ?></span><span class="s"><?= number_format($stats['valid']) ?> বৈধ</span></span>
+    <div class="stat-card stat-clock">
+        <span class="stat-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><use href="#a-clock"/></svg></span>
+        <span class="stat-text">
+            <span class="v" id="dashClockTime">--:--:--</span>
+            <span class="s" id="dashClockDate">--/--/----</span>
+            <span class="s" id="dashClockDay">আজকে —</span>
+        </span>
     </div>
-    <div class="stat-card">
-        <span class="stat-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><use href="#a-lock"/></svg></span>
-        <span class="stat-text"><span class="k">বাতিল</span><span class="v"><?= number_format($stats['revoked']) ?></span><span class="s">admin কর্তৃক</span></span>
+    <div class="stat-card stat-user">
+        <span class="stat-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><use href="#a-user"/></svg></span>
+        <span class="stat-text">
+            <span class="k">ইউজারনেম</span>
+            <span class="v"><?= e($username) ?></span>
+            <span class="s">সর্বশেষ লগইন - <?= e($lastLogin) ?></span>
+            <span class="s">আইপি - <?= e($ip) ?></span>
+        </span>
     </div>
     <div class="stat-card">
         <span class="stat-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><use href="#a-wallet"/></svg></span>
@@ -106,4 +117,58 @@ udc_notice();
 </div>
 
 <?php endif; ?>
+
+<script>
+(function () {
+    var timeEl = document.getElementById('dashClockTime');
+    var dateEl = document.getElementById('dashClockDate');
+    var dayEl = document.getElementById('dashClockDay');
+    if (!timeEl || !dateEl || !dayEl) return;
+
+    var bnDigits = '০১২৩৪৫৬৭৮৯';
+    var weekdays = {
+        Sunday: 'রবিবার',
+        Monday: 'সোমবার',
+        Tuesday: 'মঙ্গলবার',
+        Wednesday: 'বুধবার',
+        Thursday: 'বৃহস্পতিবার',
+        Friday: 'শুক্রবার',
+        Saturday: 'শনিবার'
+    };
+
+    function toBn(value) {
+        return String(value).replace(/[0-9]/g, function (digit) {
+            return bnDigits.charAt(parseInt(digit, 10));
+        });
+    }
+
+    function tick() {
+        var now = new Date();
+        var time = new Intl.DateTimeFormat('en-GB', {
+            timeZone: 'Asia/Dhaka',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        }).format(now);
+        var date = new Intl.DateTimeFormat('en-GB', {
+            timeZone: 'Asia/Dhaka',
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        }).format(now);
+        var weekday = new Intl.DateTimeFormat('en-US', {
+            timeZone: 'Asia/Dhaka',
+            weekday: 'long'
+        }).format(now);
+
+        timeEl.textContent = toBn(time);
+        dateEl.textContent = toBn(date);
+        dayEl.textContent = 'আজকে ' + (weekdays[weekday] || weekday);
+    }
+
+    tick();
+    setInterval(tick, 1000);
+})();
+</script>
 <?php udc_page_end(); ?>
