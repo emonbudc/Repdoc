@@ -20,6 +20,7 @@ function admin_nav_items(): array
 {
     $items = [
         'index.php'        => ['label' => 'Dashboard',          'icon' => 'a-grid'],
+        'changelog.php'    => ['label' => 'Changelog',          'icon' => 'a-log'],
         'seo-health.php'   => ['label' => 'SEO & Health',       'icon' => 'a-search'],
         'ads'              => [
             'label'    => 'Adsterra Ads',
