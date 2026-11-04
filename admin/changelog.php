@@ -438,8 +438,8 @@ admin_notice();
     .cl-plan-title { margin: 0 0 4px; font-size: 1rem; font-weight: 700; color: var(--text-primary, #1f2937); }
     .cl-plan-summary { margin: 0 0 6px; font-size: .86rem; color: var(--text-muted, #6b7280); }
     .cl-todo-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
-    .cl-todo-item { display: grid; grid-template-columns: auto 1fr auto; gap: 4px 10px; align-items: center; padding: 8px 10px; border: 1px solid var(--border-color, #e2e4e9); border-radius: 8px; background: var(--bg-surface, #fff); }
-    .cl-todo-item.is-done { opacity: .6; }
+    .cl-todo-item { display: grid; grid-template-columns: auto 1fr auto; gap: 4px 10px; align-items: center; padding: 10px 12px; border: 2px solid var(--primary, #2f7d5a); border-left: 6px solid var(--primary, #2f7d5a); border-radius: 10px; background: linear-gradient(135deg, #f0faf4, #ffffff); box-shadow: 0 2px 6px rgba(47,125,90,.12); }
+    .cl-todo-item.is-done { opacity: .6; border-color: #9ca3af; border-left-color: #9ca3af; background: #f3f4f6; }
     .cl-todo-item.is-done .cl-todo-task { text-decoration: line-through; }
     .cl-todo-status {
         align-self: center;
