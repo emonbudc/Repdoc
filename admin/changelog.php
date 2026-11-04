@@ -424,13 +424,46 @@ admin_notice();
         font: inherit;
         font-size: .84rem;
     }
+    .todo-modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, .45);
+        display: grid;
+        place-items: center;
+        z-index: 9999;
+    }
+    .todo-modal-backdrop[hidden] { display: none; }
+    .todo-modal {
+        width: min(420px, 92vw);
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px 22px;
+        box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    }
+    .todo-modal h3 { margin: 0 0 8px; font-size: 1.05rem; color: var(--text-primary, #1f2937); }
+    .todo-modal p { margin: 0 0 16px; font-size: .88rem; color: var(--text-muted, #6b7280); }
+    .todo-modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
 </style>
+<div class="todo-modal-backdrop" id="todoModalBackdrop" hidden>
+    <div class="todo-modal" role="dialog" aria-modal="true" aria-labelledby="todoModalTitle">
+        <h3 id="todoModalTitle">Delete TODO?</h3>
+        <p>Are you sure you want to delete this task? This cannot be undone.</p>
+        <div class="todo-modal-actions">
+            <button type="button" class="btn btn-secondary btn-sm" id="todoModalCancel">Cancel</button>
+            <button type="button" class="btn btn-primary btn-sm" id="todoModalConfirm">Delete</button>
+        </div>
+    </div>
+</div>
 
 <script>
 (function () {
     var list = document.getElementById('todoList');
     var empty = document.getElementById('todoEmpty');
     var addForm = document.querySelector('.todo-form');
+    var backdrop = document.getElementById('todoModalBackdrop');
+    var cancelBtn = document.getElementById('todoModalCancel');
+    var confirmBtn = document.getElementById('todoModalConfirm');
+    var pendingDeleteForm = null;
 
     function ensureList() {
         if (list) return list;
@@ -492,6 +525,27 @@ admin_notice();
         });
     }
 
+    function showModal(form) {
+        pendingDeleteForm = form;
+        if (backdrop) backdrop.hidden = false;
+    }
+    function hideModal() {
+        pendingDeleteForm = null;
+        if (backdrop) backdrop.hidden = true;
+    }
+
+    if (cancelBtn) cancelBtn.addEventListener('click', hideModal);
+    if (backdrop) backdrop.addEventListener('click', function (e) {
+        if (e.target === backdrop) hideModal();
+    });
+    if (confirmBtn) confirmBtn.addEventListener('click', function () {
+        if (pendingDeleteForm) {
+            var f = pendingDeleteForm;
+            hideModal();
+            submitForm(f);
+        }
+    });
+
     if (addForm) {
         addForm.addEventListener('submit', function (e) {
             e.preventDefault();
@@ -506,7 +560,11 @@ admin_notice();
         if (!li) return;
         if (!list || !list.contains(li)) return;
         e.preventDefault();
-        submitForm(form);
+        if (form.classList.contains('todo-delete-form')) {
+            showModal(form);
+        } else {
+            submitForm(form);
+        }
     });
 })();
 </script>
