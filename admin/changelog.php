@@ -8,8 +8,50 @@ declare(strict_types=1);
  */
 
 require_once __DIR__ . '/includes/layout.php';
+require_once dirname(__DIR__) . '/src/todo.php';
 
-$root = dirname(__DIR__);
+// Seed defaults on first run.
+repdoc_todo_seed_defaults();
+
+// ── POST: add / toggle done / delete ────────────────────────────────
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    if (!csrf_verify($_POST['csrf_token'] ?? null)) {
+        flash_set('error', 'Session expired — please try again.');
+        redirect('changelog.php');
+    }
+    $action = (string) ($_POST['action'] ?? '');
+    if ($action === 'add') {
+        $task = (string) ($_POST['task'] ?? '');
+        $detail = (string) ($_POST['detail'] ?? '');
+        if (repdoc_todo_add($task, $detail)) {
+            flash_set('ok', 'TODO added.');
+        } else {
+            flash_set('error', 'Task text is required.');
+        }
+        redirect('changelog.php');
+    }
+    $id = (string) ($_POST['id'] ?? '');
+    if ($action === 'toggle') {
+        if (repdoc_todo_toggle_done($id)) {
+            flash_set('ok', 'TODO updated.');
+        } else {
+            flash_set('error', 'Could not update TODO.');
+        }
+        redirect('changelog.php');
+    }
+    if ($action === 'delete') {
+        if (repdoc_todo_delete($id)) {
+            flash_set('ok', 'TODO deleted.');
+        } else {
+            flash_set('error', 'Could not delete TODO.');
+        }
+        redirect('changelog.php');
+    }
+    flash_set('error', 'Unknown action.');
+    redirect('changelog.php');
+}
+
+$todoItems = repdoc_todo_load_all();
 
 /**
  * Changelog entries, newest first.
@@ -274,21 +316,52 @@ admin_notice();
         <div class="panel">
             <div class="panel-head">
                 TODO
-                <span class="count"><?= array_sum(array_map('count', $todoGroups)) ?> tasks</span>
+                <span class="count"><?= count($todoItems) ?> tasks</span>
             </div>
             <div class="panel-body">
-                <?php foreach ($todoGroups as $group => $tasks): ?>
-                    <h4 class="cl-todo-group"><?= e($group) ?></h4>
+                <form method="post" action="changelog.php" class="todo-form">
+                    <?= csrf_field() ?>
+                    <input type="hidden" name="action" value="add">
+                    <input type="text" name="task" required maxlength="200" placeholder="New task…" class="todo-input">
+                    <input type="text" name="detail" maxlength="500" placeholder="Details (optional)" class="todo-input">
+                    <button type="submit" class="btn btn-primary btn-sm">Add</button>
+                </form>
+
+                <?php if ($todoItems === []): ?>
+                    <div class="empty-state-sm">No TODO items yet.</div>
+                <?php else: ?>
                     <ul class="cl-todo-list">
-                        <?php foreach ($tasks as $t): ?>
-                            <li class="cl-todo-item">
-                                <span class="cl-todo-status cl-status-<?= e(strtolower($t['status'])) ?>"><?= e($t['status']) ?></span>
-                                <span class="cl-todo-task"><?= e($t['task']) ?></span>
-                                <span class="cl-todo-detail"><?= e($t['detail']) ?></span>
+                        <?php foreach ($todoItems as $t): ?>
+                            <li class="cl-todo-item<?= $t['status'] === 'done' ? ' is-done' : '' ?>">
+                                <span class="cl-todo-status cl-status-<?= e($t['status']) ?>"><?= e($t['status']) ?></span>
+                                <div class="cl-todo-body">
+                                    <span class="cl-todo-task"><?= e($t['task']) ?></span>
+                                    <?php if ($t['detail'] !== ''): ?>
+                                        <span class="cl-todo-detail"><?= e($t['detail']) ?></span>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="cl-todo-actions">
+                                    <form method="post" action="changelog.php" style="margin:0">
+                                        <?= csrf_field() ?>
+                                        <input type="hidden" name="action" value="toggle">
+                                        <input type="hidden" name="id" value="<?= e($t['id']) ?>">
+                                        <button type="submit" class="btn btn-secondary btn-sm">
+                                            <?= $t['status'] === 'done' ? 'Undo' : 'Mark done' ?>
+                                        </button>
+                                    </form>
+                                    <form method="post" action="changelog.php" style="margin:0" onsubmit="return confirm('Delete this TODO?');">
+                                        <?= csrf_field() ?>
+                                        <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="id" value="<?= e($t['id']) ?>">
+                                        <button type="submit" class="btn btn-secondary btn-sm" aria-label="Delete">
+                                            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#a-trash"/></svg>
+                                        </button>
+                                    </form>
+                                </div>
                             </li>
                         <?php endforeach; ?>
                     </ul>
-                <?php endforeach; ?>
+                <?php endif; ?>
             </div>
         </div>
 
@@ -357,6 +430,22 @@ admin_notice();
     .cl-status-done { background: #dcfce7; color: #166534; }
     .cl-todo-task { font-weight: 600; font-size: .86rem; color: var(--text-primary, #1f2937); }
     .cl-todo-detail { font-size: .78rem; color: var(--text-muted, #6b7280); }
+    .cl-todo-item.is-done { opacity: .6; }
+    .cl-todo-item.is-done .cl-todo-task { text-decoration: line-through; }
+    .cl-todo-body { display: flex; flex-direction: column; gap: 2px; }
+    .cl-todo-actions { grid-column: 2; display: flex; gap: 6px; margin-top: 4px; }
+    .todo-form { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    .todo-input {
+        flex: 1 1 160px;
+        min-height: 36px;
+        padding: 6px 10px;
+        border: 1px solid var(--border-color, #e2e4e9);
+        border-radius: 8px;
+        background: #fff;
+        color: var(--text-primary, #1f2937);
+        font: inherit;
+        font-size: .84rem;
+    }
 </style>
 
 <?php admin_page_end(); ?>
