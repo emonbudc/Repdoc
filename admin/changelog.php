@@ -10,9 +10,11 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/includes/layout.php';
 require_once dirname(__DIR__) . '/src/todo.php';
+require_once dirname(__DIR__) . '/src/plan.php';
 
 // Seed defaults on first run.
 repdoc_todo_seed_defaults();
+repdoc_plan_seed_defaults();
 
 // ── POST: add / toggle done / delete ────────────────────────────────
 $isAjax = (($_POST['_ajax'] ?? '') === '1');
@@ -73,20 +75,45 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         } else {
             $response = ['ok' => false, 'message' => 'Could not update sub-task.', 'action' => 'toggle_subtask'];
         }
-    } elseif ($action === 'delete_subtask') {
-        $parentId = (string) ($_POST['parent_id'] ?? '');
-        $subId = (string) ($_POST['subtask_id'] ?? '');
-        if (repdoc_todo_delete_subtask($parentId, $subId)) {
-            $updated = repdoc_todo_find($parentId);
+    } elseif ($action === 'add_plan') {
+        $title = (string) ($_POST['title'] ?? '');
+        $summary = (string) ($_POST['summary'] ?? '');
+        $details = (string) ($_POST['details'] ?? '');
+        if (repdoc_plan_add($title, $summary, $details)) {
+            $items = repdoc_plan_load_all();
+            $newItem = $items[0] ?? null;
             $response = [
                 'ok' => true,
-                'message' => 'Sub-task deleted.',
-                'action' => 'update_item',
-                'parent_id' => $parentId,
-                'html' => $updated ? repdoc_todo_render_item($updated) : '',
+                'message' => 'Plan added.',
+                'action' => 'add_plan',
+                'html' => $newItem ? repdoc_plan_render_item($newItem) : '',
             ];
         } else {
-            $response = ['ok' => false, 'message' => 'Could not delete sub-task.', 'action' => 'delete_subtask'];
+            $response = ['ok' => false, 'message' => 'Plan title is required.', 'action' => 'add_plan'];
+        }
+    } elseif ($action === 'update_plan') {
+        $id = (string) ($_POST['id'] ?? '');
+        $title = (string) ($_POST['title'] ?? '');
+        $summary = (string) ($_POST['summary'] ?? '');
+        $details = (string) ($_POST['details'] ?? '');
+        if (repdoc_plan_update($id, $title, $summary, $details)) {
+            $updated = repdoc_plan_find($id);
+            $response = [
+                'ok' => true,
+                'message' => 'Plan updated.',
+                'action' => 'update_plan',
+                'id' => $id,
+                'html' => $updated ? repdoc_plan_render_item($updated) : '',
+            ];
+        } else {
+            $response = ['ok' => false, 'message' => 'Could not update plan.', 'action' => 'update_plan'];
+        }
+    } elseif ($action === 'delete_plan') {
+        $id = (string) ($_POST['id'] ?? '');
+        if (repdoc_plan_delete($id)) {
+            $response = ['ok' => true, 'message' => 'Plan deleted.', 'action' => 'delete_plan', 'id' => $id];
+        } else {
+            $response = ['ok' => false, 'message' => 'Could not delete plan.', 'action' => 'delete_plan'];
         }
     } else {
         $id = (string) ($_POST['id'] ?? '');
@@ -255,41 +282,7 @@ $changelog = [
     ],
 ];
 
-/**
- * Notable plan items.
- */
-$plan = [
-    [
-        'title' => 'Prottoyon v2 port',
-        'summary' => 'Replace the 41-type prottoyon generator with a 23-type digital-union-style application module.',
-        'details' => [
-            'Keep Repdoc login, wallet, admin and UDC access; issue immediately (no approval queue).',
-            'Print-only output: no external PDF library, no download button (window.print()).',
-            'New 17-digit certificate numbers; legacy 11-digit stay valid.',
-            'Reuse document_logs as the application ledger; no second application table.',
-            'Public verification by certificate number; revoked certs show a "বাতিল" watermark.',
-            'Application screens follow the Repdoc homepage design system; printed cert stays digital-union-style.',
-            'Both present and permanent addresses, Bangla + English print variants.',
-        ],
-        'links' => [
-            'Full plan' => '../Plan/plan.MD',
-            'Prottoyon (admin)' => 'prottoyon.php',
-        ],
-    ],
-    [
-        'title' => 'Ad & generator theming',
-        'summary' => 'Unify generator headers/forms in the green theme and standardize ad placements.',
-        'details' => [
-            'Green-bordered ad frames across generator tools.',
-            'Responsive birth form ads with desktop rail.',
-            'Shared placement examples in admin ad manager.',
-        ],
-        'links' => [
-            'Ad manager' => 'ads.php',
-            'Placements' => 'ad-positions.php',
-        ],
-    ],
-];
+$planItems = repdoc_plan_load_all();
 
 admin_page_start('Changelog', 'changelog.php');
 admin_notice();
@@ -334,27 +327,27 @@ admin_notice();
         <div class="panel">
             <div class="panel-head">
                 Notable plan
-                <span class="count"><?= count($plan) ?> items</span>
+                <span class="count"><?= count($planItems) ?> items</span>
             </div>
             <div class="panel-body">
-                <?php foreach ($plan as $p): ?>
-                    <div class="cl-plan">
-                        <h3 class="cl-plan-title"><?= e($p['title']) ?></h3>
-                        <p class="cl-plan-summary"><?= e($p['summary']) ?></p>
-                        <ul class="cl-details">
-                            <?php foreach ($p['details'] as $d): ?>
-                                <li><?= e($d) ?></li>
-                            <?php endforeach; ?>
-                        </ul>
-                        <?php if (!empty($p['links'])): ?>
-                            <div class="cl-links">
-                                <?php foreach ($p['links'] as $label => $url): ?>
-                                    <a class="cl-link" href="<?= e($url) ?>"><?= e($label) ?> ↗</a>
-                                <?php endforeach; ?>
-                            </div>
-                        <?php endif; ?>
+                <form method="post" action="changelog.php" class="plan-add-form">
+                    <?= csrf_field() ?>
+                    <input type="hidden" name="action" value="add_plan">
+                    <input type="text" name="title" required maxlength="200" placeholder="Plan title…" class="todo-input">
+                    <input type="text" name="summary" maxlength="500" placeholder="Summary (optional)" class="todo-input">
+                    <textarea name="details" rows="3" class="todo-input" placeholder="One detail per line (optional)"></textarea>
+                    <button type="submit" class="btn btn-primary btn-sm">Add plan</button>
+                </form>
+
+                <?php if ($planItems === []): ?>
+                    <div class="empty-state-sm" id="planEmpty">No plans yet.</div>
+                <?php else: ?>
+                    <div id="planList">
+                        <?php foreach ($planItems as $p): ?>
+                            <?= repdoc_plan_render_item($p) ?>
+                        <?php endforeach; ?>
                     </div>
-                <?php endforeach; ?>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -537,9 +530,22 @@ admin_notice();
 
 <script>
 (function () {
-    var list = document.getElementById('todoList');
-    var empty = document.getElementById('todoEmpty');
-    var addForm = document.querySelector('.todo-form');
+    var planList = document.getElementById('planList');
+    var planEmpty = document.getElementById('planEmpty');
+    var planAddForm = document.querySelector('.plan-add-form');
+
+    function ensurePlanList() {
+        if (planList) return planList;
+        planList = document.createElement('div');
+        planList.id = 'planList';
+        if (planEmpty && planEmpty.parentNode) {
+            planEmpty.parentNode.replaceChild(planList, planEmpty);
+            planEmpty = null;
+        } else if (planAddForm && planAddForm.parentNode) {
+            planAddForm.parentNode.insertBefore(planList, planAddForm.nextSibling);
+        }
+        return planList;
+    }
     var backdrop = document.getElementById('todoModalBackdrop');
     var cancelBtn = document.getElementById('todoModalCancel');
     var confirmBtn = document.getElementById('todoModalConfirm');
@@ -578,11 +584,20 @@ admin_notice();
                 ensureList();
                 if (res.html && list) list.insertAdjacentHTML('afterbegin', res.html);
                 if (addForm) addForm.reset();
+            } else if (res.action === 'add_plan') {
+                ensurePlanList();
+                if (res.html && planList) planList.insertAdjacentHTML('afterbegin', res.html);
+                if (planAddForm) planAddForm.reset();
             } else if (res.action === 'toggle' || res.action === 'update_item') {
                 var targetId = res.id || res.parent_id;
                 if (list && targetId) {
                     var item = list.querySelector('li[data-id="' + targetId + '"]');
                     if (item && res.html) item.outerHTML = res.html;
+                }
+            } else if (res.action === 'update_plan') {
+                if (planList) {
+                    var card = planList.querySelector('[data-plan="' + res.id + '"]');
+                    if (card && res.html) card.outerHTML = res.html;
                 }
             } else if (res.action === 'delete') {
                 if (list) {
@@ -596,6 +611,20 @@ admin_notice();
                         list.parentNode.replaceChild(ph, list);
                         list = null;
                         empty = ph;
+                    }
+                }
+            } else if (res.action === 'delete_plan') {
+                if (planList) {
+                    var card = planList.querySelector('[data-plan="' + res.id + '"]');
+                    if (card) card.remove();
+                    if (planList.children.length === 0) {
+                        var ph2 = document.createElement('div');
+                        ph2.className = 'empty-state-sm';
+                        ph2.id = 'planEmpty';
+                        ph2.textContent = 'No plans yet.';
+                        planList.parentNode.replaceChild(ph2, planList);
+                        planList = null;
+                        planEmpty = ph2;
                     }
                 }
             }
@@ -613,6 +642,9 @@ admin_notice();
         if (form.classList.contains('subtask-delete-form')) {
             if (title) title.textContent = 'Delete sub-task?';
             if (msg) msg.textContent = 'Are you sure you want to delete this sub-task?';
+        } else if (form.classList.contains('plan-delete-form')) {
+            if (title) title.textContent = 'Delete plan?';
+            if (msg) msg.textContent = 'Are you sure you want to delete this plan?';
         } else {
             if (title) title.textContent = 'Delete TODO?';
             if (msg) msg.textContent = 'Are you sure you want to delete this task? This cannot be undone.';
@@ -649,6 +681,7 @@ admin_notice();
         var count = (wrap.querySelector('.cl-subtask-list') ? wrap.querySelector('.cl-subtask-list').children.length : 0);
         btn.textContent = 'Sub-tasks (' + count + ') ' + (expanded ? '▾' : '▸');
     });
+    // Todo submit delegation
     document.addEventListener('submit', function (e) {
         var form = e.target;
         if (!form || !form.matches || !form.matches('form')) return;
@@ -663,5 +696,55 @@ admin_notice();
             submitForm(form);
         }
     });
+    // Plan add form
+    if (planAddForm) {
+        planAddForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            submitForm(planAddForm);
+        });
+    }
+    // Plan edit toggle + cancel + submit + delete delegation
+    document.addEventListener('click', function (e) {
+        var editBtn = e.target && e.target.closest ? e.target.closest('.plan-edit-btn') : null;
+        if (editBtn) {
+            var id = editBtn.getAttribute('data-id');
+            var card = planList ? planList.querySelector('[data-plan="' + id + '"]') : null;
+            if (card) {
+                var view = card.querySelector('.cl-plan-view');
+                var form = card.querySelector('.plan-edit-form');
+                if (view) view.hidden = true;
+                if (form) form.hidden = false;
+            }
+            return;
+        }
+        var cancelBtn2 = e.target && e.target.closest ? e.target.closest('.plan-edit-cancel') : null;
+        if (cancelBtn2) {
+            var id2 = cancelBtn2.getAttribute('data-id');
+            var card2 = planList ? planList.querySelector('[data-plan="' + id2 + '"]') : null;
+            if (card2) {
+                var view2 = card2.querySelector('.cl-plan-view');
+                var form2 = card2.querySelector('.plan-edit-form');
+                if (view2) view2.hidden = false;
+                if (form2) form2.hidden = true;
+            }
+        }
+    });
+    document.addEventListener('submit', function (e) {
+        var form = e.target;
+        if (!form || !form.matches || !form.matches('form')) return;
+        if (form === planAddForm) return;
+        if (form.classList.contains('plan-edit-form')) {
+            e.preventDefault();
+            submitForm(form);
+            return;
+        }
+        if (form.classList.contains('plan-delete-form')) {
+            var li2 = form.closest ? form.closest('[data-plan]') : null;
+            if (!li2) return;
+            e.preventDefault();
+            showModal(form);
+        }
+    });
+
 })();
 </script>
