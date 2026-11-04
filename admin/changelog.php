@@ -15,40 +15,70 @@ require_once dirname(__DIR__) . '/src/todo.php';
 repdoc_todo_seed_defaults();
 
 // ── POST: add / toggle done / delete ────────────────────────────────
+$isAjax = (($_POST['_ajax'] ?? '') === '1');
 if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     if (!csrf_verify($_POST['csrf_token'] ?? null)) {
+        if ($isAjax) {
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['ok' => false, 'message' => 'Session expired — please try again.']);
+            exit;
+        }
         flash_set('error', 'Session expired — please try again.');
         redirect('changelog.php');
     }
     $action = (string) ($_POST['action'] ?? '');
+    $response = ['ok' => false, 'message' => 'Unknown action.', 'action' => $action];
     if ($action === 'add') {
         $task = (string) ($_POST['task'] ?? '');
         $detail = (string) ($_POST['detail'] ?? '');
         if (repdoc_todo_add($task, $detail)) {
-            flash_set('ok', 'TODO added.');
+            $items = repdoc_todo_load_all();
+            $newItem = $items[0] ?? null;
+            $response = [
+                'ok' => true,
+                'message' => 'TODO added.',
+                'action' => 'add',
+                'html' => $newItem ? repdoc_todo_render_item($newItem) : '',
+            ];
         } else {
-            flash_set('error', 'Task text is required.');
+            $response = ['ok' => false, 'message' => 'Task text is required.', 'action' => 'add'];
         }
-        redirect('changelog.php');
-    }
-    $id = (string) ($_POST['id'] ?? '');
-    if ($action === 'toggle') {
-        if (repdoc_todo_toggle_done($id)) {
-            flash_set('ok', 'TODO updated.');
-        } else {
-            flash_set('error', 'Could not update TODO.');
+    } else {
+        $id = (string) ($_POST['id'] ?? '');
+        if ($action === 'toggle') {
+            if (repdoc_todo_toggle_done($id)) {
+                $updated = null;
+                foreach (repdoc_todo_load_all() as $it) {
+                    if ($it['id'] === $id) { $updated = $it; break; }
+                }
+                $response = [
+                    'ok' => true,
+                    'message' => 'TODO updated.',
+                    'action' => 'toggle',
+                    'id' => $id,
+                    'html' => $updated ? repdoc_todo_render_item($updated) : '',
+                ];
+            } else {
+                $response = ['ok' => false, 'message' => 'Could not update TODO.', 'action' => 'toggle'];
+            }
+        } elseif ($action === 'delete') {
+            if (repdoc_todo_delete($id)) {
+                $response = ['ok' => true, 'message' => 'TODO deleted.', 'action' => 'delete', 'id' => $id];
+            } else {
+                $response = ['ok' => false, 'message' => 'Could not delete TODO.', 'action' => 'delete'];
+            }
         }
-        redirect('changelog.php');
     }
-    if ($action === 'delete') {
-        if (repdoc_todo_delete($id)) {
-            flash_set('ok', 'TODO deleted.');
-        } else {
-            flash_set('error', 'Could not delete TODO.');
-        }
-        redirect('changelog.php');
+    if ($isAjax) {
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($response, JSON_UNESCAPED_UNICODE);
+        exit;
     }
-    flash_set('error', 'Unknown action.');
+    if (!empty($response['ok'])) {
+        flash_set('ok', (string) $response['message']);
+    } else {
+        flash_set('error', (string) $response['message']);
+    }
     redirect('changelog.php');
 }
 
@@ -245,37 +275,11 @@ admin_notice();
                 </form>
 
                 <?php if ($todoItems === []): ?>
-                    <div class="empty-state-sm">No TODO items yet.</div>
+                    <div class="empty-state-sm" id="todoEmpty">No TODO items yet.</div>
                 <?php else: ?>
-                    <ul class="cl-todo-list">
+                    <ul class="cl-todo-list" id="todoList">
                         <?php foreach ($todoItems as $t): ?>
-                            <li class="cl-todo-item<?= $t['status'] === 'done' ? ' is-done' : '' ?>">
-                                <span class="cl-todo-status cl-status-<?= e($t['status']) ?>"><?= e($t['status']) ?></span>
-                                <div class="cl-todo-body">
-                                    <span class="cl-todo-task"><?= e($t['task']) ?></span>
-                                    <?php if ($t['detail'] !== ''): ?>
-                                        <span class="cl-todo-detail"><?= e($t['detail']) ?></span>
-                                    <?php endif; ?>
-                                </div>
-                                <div class="cl-todo-actions">
-                                    <form method="post" action="changelog.php" style="margin:0">
-                                        <?= csrf_field() ?>
-                                        <input type="hidden" name="action" value="toggle">
-                                        <input type="hidden" name="id" value="<?= e($t['id']) ?>">
-                                        <button type="submit" class="btn btn-secondary btn-sm">
-                                            <?= $t['status'] === 'done' ? 'Undo' : 'Mark done' ?>
-                                        </button>
-                                    </form>
-                                    <form method="post" action="changelog.php" style="margin:0" onsubmit="return confirm('Delete this TODO?');">
-                                        <?= csrf_field() ?>
-                                        <input type="hidden" name="action" value="delete">
-                                        <input type="hidden" name="id" value="<?= e($t['id']) ?>">
-                                        <button type="submit" class="btn btn-secondary btn-sm" aria-label="Delete">
-                                            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#a-trash"/></svg>
-                                        </button>
-                                    </form>
-                                </div>
-                            </li>
+                            <?= repdoc_todo_render_item($t) ?>
                         <?php endforeach; ?>
                     </ul>
                 <?php endif; ?>
@@ -423,4 +427,87 @@ admin_notice();
     }
 </style>
 
-<?php admin_page_end(); ?>
+<script>
+(function () {
+    var list = document.getElementById('todoList');
+    var empty = document.getElementById('todoEmpty');
+    var addForm = document.querySelector('.todo-form');
+
+    function ensureList() {
+        if (list) return list;
+        list = document.createElement('ul');
+        list.className = 'cl-todo-list';
+        list.id = 'todoList';
+        if (empty && empty.parentNode) {
+            empty.parentNode.replaceChild(list, empty);
+            empty = null;
+        } else if (addForm && addForm.parentNode) {
+            addForm.parentNode.insertBefore(list, addForm.nextSibling);
+        }
+        return list;
+    }
+
+    function submitForm(form) {
+        var data = new FormData(form);
+        data.set('_ajax', '1');
+        var submitter = form.querySelector('[type="submit"]');
+        if (submitter) submitter.disabled = true;
+        fetch(form.getAttribute('action') || 'changelog.php', {
+            method: 'POST',
+            body: data,
+            credentials: 'same-origin',
+            headers: { 'Accept': 'application/json' }
+        }).then(function (r) { return r.json(); }).then(function (res) {
+            if (!res || !res.ok) {
+                alert((res && res.message) || 'Request failed.');
+                return;
+            }
+            if (res.action === 'add') {
+                ensureList();
+                if (res.html && list) list.insertAdjacentHTML('afterbegin', res.html);
+                if (addForm) addForm.reset();
+            } else if (res.action === 'toggle') {
+                if (list) {
+                    var item = list.querySelector('li[data-id="' + res.id + '"]');
+                    if (item && res.html) item.outerHTML = res.html;
+                }
+            } else if (res.action === 'delete') {
+                if (list) {
+                    var item = list.querySelector('li[data-id="' + res.id + '"]');
+                    if (item) item.remove();
+                    if (list.children.length === 0) {
+                        var ph = document.createElement('div');
+                        ph.className = 'empty-state-sm';
+                        ph.id = 'todoEmpty';
+                        ph.textContent = 'No TODO items yet.';
+                        list.parentNode.replaceChild(ph, list);
+                        list = null;
+                        empty = ph;
+                    }
+                }
+            }
+        }).catch(function () {
+            alert('Connection problem.');
+        }).finally(function () {
+            if (submitter) submitter.disabled = false;
+        });
+    }
+
+    if (addForm) {
+        addForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            submitForm(addForm);
+        });
+    }
+    document.addEventListener('submit', function (e) {
+        var form = e.target;
+        if (!form || !form.matches || !form.matches('form')) return;
+        if (form === addForm) return;
+        var li = form.closest ? form.closest('li.cl-todo-item') : null;
+        if (!li) return;
+        if (!list || !list.contains(li)) return;
+        e.preventDefault();
+        submitForm(form);
+    });
+})();
+</script>

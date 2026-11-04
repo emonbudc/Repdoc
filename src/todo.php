@@ -189,6 +189,42 @@ if (!function_exists('repdoc_todo_toggle_done')) {
     }
 }
 
+if (!function_exists('repdoc_todo_render_item')) {
+    function repdoc_todo_render_item(array $t): string
+    {
+        $id = e((string) $t['id']);
+        $status = e((string) $t['status']);
+        $task = e((string) $t['task']);
+        $detail = $t['detail'] !== '' ? '<span class="cl-todo-detail">' . e((string) $t['detail']) . '</span>' : '';
+        $doneClass = $t['status'] === 'done' ? ' is-done' : '';
+        $toggleLabel = $t['status'] === 'done' ? 'Undo' : 'Mark done';
+        $csrf = e(csrf_token());
+        return '<li class="cl-todo-item' . $doneClass . '" data-id="' . $id . '">'
+            . '<span class="cl-todo-status cl-status-' . $status . '">' . $status . '</span>'
+            . '<div class="cl-todo-body">'
+            . '<span class="cl-todo-task">' . $task . '</span>'
+            . $detail
+            . '</div>'
+            . '<div class="cl-todo-actions">'
+            . '<form method="post" action="changelog.php" style="margin:0">'
+            . '<input type="hidden" name="csrf_token" value="' . $csrf . '">'
+            . '<input type="hidden" name="action" value="toggle">'
+            . '<input type="hidden" name="id" value="' . $id . '">'
+            . '<button type="submit" class="btn btn-secondary btn-sm">' . $toggleLabel . '</button>'
+            . '</form>'
+            . '<form method="post" action="changelog.php" style="margin:0" onsubmit="return confirm(\'Delete this TODO?\');">'
+            . '<input type="hidden" name="csrf_token" value="' . $csrf . '">'
+            . '<input type="hidden" name="action" value="delete">'
+            . '<input type="hidden" name="id" value="' . $id . '">'
+            . '<button type="submit" class="btn btn-secondary btn-sm" aria-label="Delete">'
+            . '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#a-trash"/></svg>'
+            . '</button>'
+            . '</form>'
+            . '</div>'
+            . '</li>';
+    }
+}
+
 if (!function_exists('repdoc_todo_delete')) {
     function repdoc_todo_delete(string $id): bool
     {
