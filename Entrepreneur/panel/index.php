@@ -40,10 +40,6 @@ udc_notice();
 
 <div class="admin-page-head dash-head">
     <div>
-        <p class="kicker">UDC Panel</p>
-        <h1 class="admin-title">ড্যাশবোর্ড</h1>
-        <p class="admin-sub">আপনার প্রত্যয়ন ও ব্যালেন্স এক নজরে।</p>
-    </div>
     <div style="display:flex; flex-wrap:wrap; gap:8px">
         <?php if (has_archive_access()): ?>
             <a class="btn btn-secondary btn-sm" href="<?= e(repdoc_url('Entrepreneur/panel/landing.php')) ?>">ডকুমেন্ট আর্কাইভ</a>
