@@ -402,7 +402,13 @@ if (!function_exists('repdoc_todo_render_item')) {
         $html .= '<div class="cl-progress-bar"><div class="cl-progress-fill" style="width:' . $pct . '%"></div></div>';
         $html .= '<span class="cl-progress-text">' . $done . '/' . $total . ' (' . $pct . '%)</span>';
         $html .= '</div>';
-        // subtasks
+        // subtasks toggle
+        $subCount = count($t['subtasks'] ?? []);
+        $html .= '<button type="button" class="cl-subtask-toggle-btn" data-parent="' . $id . '" aria-expanded="false">';
+        $html .= 'Sub-tasks (' . $subCount . ') ▸';
+        $html .= '</button>';
+        // subtasks (hidden by default)
+        $html .= '<div class="cl-subtask-wrap" data-parent="' . $id . '" hidden>';
         $html .= '<ul class="cl-subtask-list" data-parent="' . $id . '">';
         foreach (($t['subtasks'] ?? []) as $s) {
             $sid = e((string) $s['id']);

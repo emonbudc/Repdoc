@@ -619,12 +619,19 @@ admin_notice();
         }
     });
 
-    if (addForm) {
-        addForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            submitForm(addForm);
-        });
-    }
+    // Expand/collapse sub-tasks
+    document.addEventListener('click', function (e) {
+        var btn = e.target && e.target.closest ? e.target.closest('.cl-subtask-toggle-btn') : null;
+        if (!btn) return;
+        var parent = btn.getAttribute('data-parent');
+        var wrap = document.querySelector('.cl-subtask-wrap[data-parent="' + parent + '"]');
+        if (!wrap) return;
+        var expanded = wrap.hidden;
+        wrap.hidden = !expanded;
+        btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        var count = (wrap.querySelector('.cl-subtask-list') ? wrap.querySelector('.cl-subtask-list').children.length : 0);
+        btn.textContent = 'Sub-tasks (' + count + ') ' + (expanded ? '▾' : '▸');
+    });
     document.addEventListener('submit', function (e) {
         var form = e.target;
         if (!form || !form.matches || !form.matches('form')) return;
