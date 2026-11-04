@@ -393,11 +393,10 @@ admin_notice();
     .cl-plan-title { margin: 0 0 4px; font-size: 1rem; font-weight: 700; color: var(--text-primary, #1f2937); }
     .cl-plan-summary { margin: 0 0 6px; font-size: .86rem; color: var(--text-muted, #6b7280); }
     .cl-todo-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
-    .cl-todo-item { display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; align-items: baseline; padding: 8px 10px; border: 1px solid var(--border-color, #e2e4e9); border-radius: 8px; background: var(--bg-surface, #fff); }
+    .cl-todo-item { display: grid; grid-template-columns: auto 1fr auto; gap: 4px 10px; align-items: center; padding: 8px 10px; border: 1px solid var(--border-color, #e2e4e9); border-radius: 8px; background: var(--bg-surface, #fff); }
     .cl-todo-item.is-done { opacity: .6; }
     .cl-todo-item.is-done .cl-todo-task { text-decoration: line-through; }
     .cl-todo-status {
-        grid-row: 1 / 3;
         align-self: center;
         font-size: .68rem;
         font-weight: 700;
@@ -412,7 +411,7 @@ admin_notice();
     .cl-todo-body { display: flex; flex-direction: column; gap: 2px; }
     .cl-todo-task { font-weight: 600; font-size: .86rem; color: var(--text-primary, #1f2937); }
     .cl-todo-detail { font-size: .78rem; color: var(--text-muted, #6b7280); }
-    .cl-todo-actions { grid-column: 2; display: flex; gap: 6px; margin-top: 4px; }
+    .cl-todo-actions { display: flex; gap: 6px; align-self: center; }
     .todo-form { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
     .todo-input {
         flex: 1 1 160px;
