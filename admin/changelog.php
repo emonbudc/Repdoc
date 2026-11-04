@@ -5,6 +5,7 @@ declare(strict_types=1);
  * Repdoc — admin: changelog, notable plan and TODO.
  *
  * Visual list with details and resource links (not markdown files).
+ * TODO is the main content; Changelog is placed in the side column.
  */
 
 require_once __DIR__ . '/includes/layout.php';
@@ -55,7 +56,6 @@ $todoItems = repdoc_todo_load_all();
 
 /**
  * Changelog entries, newest first.
- * Each: date, title, details (string[]), links (label => url relative to admin/ or absolute).
  */
 $changelog = [
     [
@@ -216,29 +216,6 @@ $plan = [
     ],
 ];
 
-/**
- * TODO items, grouped.
- */
-$todoGroups = [
-    'Prottoyon v2' => [
-        ['task' => 'Schema & helpers', 'detail' => 'number_sequences table, indexes, office columns, canonical type registry.', 'status' => 'Pending'],
-        ['task' => 'Pricing & labels', 'detail' => '23 prottoyon types, aliases, homepage/nav/UDC copy.', 'status' => 'Pending'],
-        ['task' => 'Frontend shell', 'detail' => 'Homepage header/nav/footer, tokens, type picker, form/list/verify styles.', 'status' => 'Pending'],
-        ['task' => 'Form & submission', 'detail' => 'Validation, uploads, 17-digit number, wallet charge, log insert.', 'status' => 'Pending'],
-        ['task' => 'Renderer', 'detail' => 'v2 templates, both addresses, Bangla/English, print CSS, QR.', 'status' => 'Pending'],
-        ['task' => 'Applicant pages', 'detail' => 'List, view, reapply, ownership.', 'status' => 'Pending'],
-        ['task' => 'Admin & UDC pages', 'detail' => 'Filters, view, print, revoke/restore.', 'status' => 'Pending'],
-        ['task' => 'Public verification', 'detail' => 'verify/index.php by certificate number.', 'status' => 'Pending'],
-        ['task' => 'Legacy fallback & migration checks', 'detail' => 'Old 41-type records remain readable.', 'status' => 'Pending'],
-        ['task' => 'Security & QA pass', 'detail' => 'CSRF, ownership, uploads, no PDF endpoint.', 'status' => 'Pending'],
-    ],
-    'General' => [
-        ['task' => 'php -l on changed files', 'detail' => 'Run syntax checks before deploy.', 'status' => 'Ongoing'],
-        ['task' => 'Keep sidebars in sync', 'detail' => 'Update admin/UDC nav when adding pages.', 'status' => 'Ongoing'],
-        ['task' => 'Office profile completeness', 'detail' => 'Union code, contacts, logo/stamp before issuing certs.', 'status' => 'Pending'],
-    ],
-];
-
 admin_page_start('Changelog', 'changelog.php');
 admin_notice();
 ?>
@@ -253,66 +230,6 @@ admin_notice();
 
 <div class="dash-grid">
     <div class="dash-main">
-        <div class="panel">
-            <div class="panel-head">
-                Changelog
-                <span class="count"><?= count($changelog) ?> entries</span>
-            </div>
-            <div class="panel-body">
-                <ul class="cl-list">
-                    <?php foreach ($changelog as $entry): ?>
-                        <li class="cl-item">
-                            <div class="cl-item-head">
-                                <span class="cl-date"><?= e($entry['date']) ?></span>
-                                <span class="cl-title"><?= e($entry['title']) ?></span>
-                            </div>
-                            <ul class="cl-details">
-                                <?php foreach ($entry['details'] as $d): ?>
-                                    <li><?= e($d) ?></li>
-                                <?php endforeach; ?>
-                            </ul>
-                            <?php if (!empty($entry['links'])): ?>
-                                <div class="cl-links">
-                                    <?php foreach ($entry['links'] as $label => $url): ?>
-                                        <a class="cl-link" href="<?= e($url) ?>"><?= e($label) ?> ↗</a>
-                                    <?php endforeach; ?>
-                                </div>
-                            <?php endif; ?>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-        </div>
-
-        <div class="panel">
-            <div class="panel-head">
-                Notable plan
-                <span class="count"><?= count($plan) ?> items</span>
-            </div>
-            <div class="panel-body">
-                <?php foreach ($plan as $p): ?>
-                    <div class="cl-plan">
-                        <h3 class="cl-plan-title"><?= e($p['title']) ?></h3>
-                        <p class="cl-plan-summary"><?= e($p['summary']) ?></p>
-                        <ul class="cl-details">
-                            <?php foreach ($p['details'] as $d): ?>
-                                <li><?= e($d) ?></li>
-                            <?php endforeach; ?>
-                        </ul>
-                        <?php if (!empty($p['links'])): ?>
-                            <div class="cl-links">
-                                <?php foreach ($p['links'] as $label => $url): ?>
-                                    <a class="cl-link" href="<?= e($url) ?>"><?= e($label) ?> ↗</a>
-                                <?php endforeach; ?>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-        </div>
-    </div>
-
-    <div class="dash-side">
         <div class="panel">
             <div class="panel-head">
                 TODO
@@ -366,6 +283,66 @@ admin_notice();
         </div>
 
         <div class="panel">
+            <div class="panel-head">
+                Notable plan
+                <span class="count"><?= count($plan) ?> items</span>
+            </div>
+            <div class="panel-body">
+                <?php foreach ($plan as $p): ?>
+                    <div class="cl-plan">
+                        <h3 class="cl-plan-title"><?= e($p['title']) ?></h3>
+                        <p class="cl-plan-summary"><?= e($p['summary']) ?></p>
+                        <ul class="cl-details">
+                            <?php foreach ($p['details'] as $d): ?>
+                                <li><?= e($d) ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                        <?php if (!empty($p['links'])): ?>
+                            <div class="cl-links">
+                                <?php foreach ($p['links'] as $label => $url): ?>
+                                    <a class="cl-link" href="<?= e($url) ?>"><?= e($label) ?> ↗</a>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="dash-side">
+        <div class="panel">
+            <div class="panel-head">
+                Changelog
+                <span class="count"><?= count($changelog) ?> entries</span>
+            </div>
+            <div class="panel-body">
+                <ul class="cl-list">
+                    <?php foreach ($changelog as $entry): ?>
+                        <li class="cl-item">
+                            <div class="cl-item-head">
+                                <span class="cl-date"><?= e($entry['date']) ?></span>
+                                <span class="cl-title"><?= e($entry['title']) ?></span>
+                            </div>
+                            <ul class="cl-details">
+                                <?php foreach ($entry['details'] as $d): ?>
+                                    <li><?= e($d) ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                            <?php if (!empty($entry['links'])): ?>
+                                <div class="cl-links">
+                                    <?php foreach ($entry['links'] as $label => $url): ?>
+                                        <a class="cl-link" href="<?= e($url) ?>"><?= e($label) ?> ↗</a>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        </div>
+
+        <div class="panel">
             <div class="panel-head">Quick links</div>
             <div class="panel-body quick-grid">
                 <a class="quick-link" href="index.php"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#a-grid"/></svg>Dashboard</a>
@@ -411,10 +388,10 @@ admin_notice();
     .cl-plan:last-child { border-bottom: none; }
     .cl-plan-title { margin: 0 0 4px; font-size: 1rem; font-weight: 700; color: var(--text-primary, #1f2937); }
     .cl-plan-summary { margin: 0 0 6px; font-size: .86rem; color: var(--text-muted, #6b7280); }
-    .cl-todo-group { margin: 12px 0 6px; font-size: .86rem; font-weight: 700; color: var(--text-primary, #1f2937); }
-    .cl-todo-group:first-child { margin-top: 0; }
     .cl-todo-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
     .cl-todo-item { display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; align-items: baseline; padding: 8px 10px; border: 1px solid var(--border-color, #e2e4e9); border-radius: 8px; background: var(--bg-surface, #fff); }
+    .cl-todo-item.is-done { opacity: .6; }
+    .cl-todo-item.is-done .cl-todo-task { text-decoration: line-through; }
     .cl-todo-status {
         grid-row: 1 / 3;
         align-self: center;
@@ -428,11 +405,9 @@ admin_notice();
     .cl-status-pending { background: #fef3c7; color: #92400e; }
     .cl-status-ongoing { background: #dbeafe; color: #1e40af; }
     .cl-status-done { background: #dcfce7; color: #166534; }
+    .cl-todo-body { display: flex; flex-direction: column; gap: 2px; }
     .cl-todo-task { font-weight: 600; font-size: .86rem; color: var(--text-primary, #1f2937); }
     .cl-todo-detail { font-size: .78rem; color: var(--text-muted, #6b7280); }
-    .cl-todo-item.is-done { opacity: .6; }
-    .cl-todo-item.is-done .cl-todo-task { text-decoration: line-through; }
-    .cl-todo-body { display: flex; flex-direction: column; gap: 2px; }
     .cl-todo-actions { grid-column: 2; display: flex; gap: 6px; margin-top: 4px; }
     .todo-form { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
     .todo-input {
