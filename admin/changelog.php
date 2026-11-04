@@ -43,6 +43,51 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         } else {
             $response = ['ok' => false, 'message' => 'Task text is required.', 'action' => 'add'];
         }
+    } elseif ($action === 'add_subtask') {
+        $parentId = (string) ($_POST['parent_id'] ?? '');
+        $text = (string) ($_POST['subtask_text'] ?? '');
+        if (repdoc_todo_add_subtask($parentId, $text)) {
+            $updated = repdoc_todo_find($parentId);
+            $response = [
+                'ok' => true,
+                'message' => 'Sub-task added.',
+                'action' => 'update_item',
+                'parent_id' => $parentId,
+                'html' => $updated ? repdoc_todo_render_item($updated) : '',
+            ];
+        } else {
+            $response = ['ok' => false, 'message' => 'Sub-task text is required.', 'action' => 'add_subtask'];
+        }
+    } elseif ($action === 'toggle_subtask') {
+        $parentId = (string) ($_POST['parent_id'] ?? '');
+        $subId = (string) ($_POST['subtask_id'] ?? '');
+        if (repdoc_todo_toggle_subtask($parentId, $subId)) {
+            $updated = repdoc_todo_find($parentId);
+            $response = [
+                'ok' => true,
+                'message' => 'Sub-task updated.',
+                'action' => 'update_item',
+                'parent_id' => $parentId,
+                'html' => $updated ? repdoc_todo_render_item($updated) : '',
+            ];
+        } else {
+            $response = ['ok' => false, 'message' => 'Could not update sub-task.', 'action' => 'toggle_subtask'];
+        }
+    } elseif ($action === 'delete_subtask') {
+        $parentId = (string) ($_POST['parent_id'] ?? '');
+        $subId = (string) ($_POST['subtask_id'] ?? '');
+        if (repdoc_todo_delete_subtask($parentId, $subId)) {
+            $updated = repdoc_todo_find($parentId);
+            $response = [
+                'ok' => true,
+                'message' => 'Sub-task deleted.',
+                'action' => 'update_item',
+                'parent_id' => $parentId,
+                'html' => $updated ? repdoc_todo_render_item($updated) : '',
+            ];
+        } else {
+            $response = ['ok' => false, 'message' => 'Could not delete sub-task.', 'action' => 'delete_subtask'];
+        }
     } else {
         $id = (string) ($_POST['id'] ?? '');
         if ($action === 'toggle') {
@@ -443,6 +488,24 @@ admin_notice();
     .todo-modal h3 { margin: 0 0 8px; font-size: 1.05rem; color: var(--text-primary, #1f2937); }
     .todo-modal p { margin: 0 0 16px; font-size: .88rem; color: var(--text-muted, #6b7280); }
     .todo-modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
+    .cl-subtask-input { flex: 1; min-height: 32px; font-size: .8rem; }
+    .cl-progress-wrap { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+    .cl-progress-bar { flex: 1; height: 6px; background: var(--bg-base, #f6f7f9); border-radius: 999px; overflow: hidden; border: 1px solid var(--border-color, #e2e4e9); }
+    .cl-progress-fill { height: 100%; background: var(--primary, #2f7d5a); border-radius: 999px; transition: width .2s ease; }
+    .cl-progress-text { font-size: .72rem; color: var(--text-muted, #6b7280); font-family: var(--font-mono, monospace); white-space: nowrap; }
+    .cl-subtask-list { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+    .cl-subtask-item { display: flex; align-items: center; gap: 8px; padding: 4px 6px; border-radius: 6px; background: var(--bg-base, #f6f7f9); }
+    .cl-subtask-item.is-done .cl-subtask-text { text-decoration: line-through; opacity: .6; }
+    .cl-subtask-check {
+        width: 18px; height: 18px; border: 1px solid var(--border-color, #e2e4e9);
+        border-radius: 4px; background: #fff; cursor: pointer; font-size: .7rem;
+        display: grid; place-items: center; padding: 0; color: var(--primary, #2f7d5a);
+    }
+    .cl-subtask-check.is-checked { background: var(--primary, #2f7d5a); color: #fff; border-color: var(--primary, #2f7d5a); }
+    .cl-subtask-text { flex: 1; font-size: .82rem; color: var(--text-primary, #1f2937); }
+    .cl-subtask-del { border: none; background: transparent; color: var(--text-muted, #6b7280); cursor: pointer; font-size: 1rem; line-height: 1; padding: 0 4px; }
+    .cl-subtask-del:hover { color: var(--danger, #dc2626); }
+    .subtask-add-form { display: flex; gap: 6px; margin-top: 6px; }
 </style>
 <div class="todo-modal-backdrop" id="todoModalBackdrop" hidden>
     <div class="todo-modal" role="dialog" aria-modal="true" aria-labelledby="todoModalTitle">
@@ -498,9 +561,10 @@ admin_notice();
                 ensureList();
                 if (res.html && list) list.insertAdjacentHTML('afterbegin', res.html);
                 if (addForm) addForm.reset();
-            } else if (res.action === 'toggle') {
-                if (list) {
-                    var item = list.querySelector('li[data-id="' + res.id + '"]');
+            } else if (res.action === 'toggle' || res.action === 'update_item') {
+                var targetId = res.id || res.parent_id;
+                if (list && targetId) {
+                    var item = list.querySelector('li[data-id="' + targetId + '"]');
                     if (item && res.html) item.outerHTML = res.html;
                 }
             } else if (res.action === 'delete') {
@@ -527,6 +591,15 @@ admin_notice();
 
     function showModal(form) {
         pendingDeleteForm = form;
+        var title = document.getElementById('todoModalTitle');
+        var msg = document.querySelector('#todoModalBackdrop .todo-modal p');
+        if (form.classList.contains('subtask-delete-form')) {
+            if (title) title.textContent = 'Delete sub-task?';
+            if (msg) msg.textContent = 'Are you sure you want to delete this sub-task?';
+        } else {
+            if (title) title.textContent = 'Delete TODO?';
+            if (msg) msg.textContent = 'Are you sure you want to delete this task? This cannot be undone.';
+        }
         if (backdrop) backdrop.hidden = false;
     }
     function hideModal() {
@@ -560,7 +633,7 @@ admin_notice();
         if (!li) return;
         if (!list || !list.contains(li)) return;
         e.preventDefault();
-        if (form.classList.contains('todo-delete-form')) {
+        if (form.classList.contains('todo-delete-form') || form.classList.contains('subtask-delete-form')) {
             showModal(form);
         } else {
             submitForm(form);
