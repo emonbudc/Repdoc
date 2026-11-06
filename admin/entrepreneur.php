@@ -110,11 +110,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $db) {
                 $chairBn = trim((string) ($_POST['chairman_name_bn'] ?? ''));
                 $chairEn = trim((string) ($_POST['chairman_name_en'] ?? ''));
                 $officeSaved = save_office_profile($newUid, [
-                    'office_type'   => 'union',
-                    'office_name'   => trim((string) ($_POST['office_name'] ?? $union)),
-                    'chairman_name' => $chairBn !== '' ? $chairBn : $chairEn,
-                    'upazila'       => $upazila,
-                    'district'      => $district,
+                    'office_type'      => 'union',
+                    'office_name'      => trim((string) ($_POST['office_name'] ?? $union)),
+                    'office_name_en'   => trim((string) ($_POST['office_name_en'] ?? '')),
+                    'chairman_name'    => $chairBn !== '' ? $chairBn : $chairEn,
+                    'chairman_name_en' => $chairEn,
+                    'upazila'          => $upazila,
+                    'upazila_en'       => trim((string) ($_POST['upazila_en'] ?? '')),
+                    'district'         => $district,
+                    'district_en'      => trim((string) ($_POST['district_en'] ?? '')),
                 ]);
                 flash_set('ok', 'UDC অ্যাকাউন্ট তৈরি হয়েছে (লগইন: ' . $email . ')' . ($officeSaved ? '' : ' — অফিস তথ্য সেভ হয়নি।'));
                 break;
@@ -134,13 +138,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $db) {
                     $st->execute([$app['email']]);
                     $auid = (int) ($st->fetchColumn() ?: 0);
                     if ($auid > 0) {
-                        save_office_profile($auid, [
-                            'office_type'   => 'union',
-                            'office_name'   => (string) ($app['union_parishad'] ?? ''),
-                            'chairman_name' => (string) (($app['chairman_name_bn'] ?? '') !== '' ? $app['chairman_name_bn'] : ($app['chairman_name_en'] ?? '')),
-                            'upazila'       => (string) ($app['upazila'] ?? ''),
-                            'district'      => (string) ($app['district'] ?? ''),
-                        ]);
+                        $existing = office_profile($auid);
+                        save_office_profile($auid, array_merge($existing, [
+                            'office_type'      => 'union',
+                            'office_name'      => (string) ($app['union_parishad'] ?? ''),
+                            'chairman_name'    => (string) (($app['chairman_name_bn'] ?? '') !== '' ? $app['chairman_name_bn'] : ($app['chairman_name_en'] ?? '')),
+                            'chairman_name_en' => (string) ($app['chairman_name_en'] ?? ''),
+                            'upazila'          => (string) ($app['upazila'] ?? ''),
+                            'district'         => (string) ($app['district'] ?? ''),
+                        ]));
                     }
                 }
                 flash_set('ok', 'Application approved.');
@@ -265,13 +271,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $db) {
                     $auid = (int) ($st->fetchColumn() ?: 0);
                     if ($auid > 0) {
                         $prof = office_profile($auid);
-                        save_office_profile($auid, [
-                            'office_type'   => $prof['office_type'],
-                            'office_name'   => $prof['office_name'] !== '' ? $prof['office_name'] : $union,
-                            'chairman_name' => $chairBn !== '' ? $chairBn : $chairEn,
-                            'upazila'       => $upazila,
-                            'district'      => $district,
-                        ]);
+                        save_office_profile($auid, array_merge($prof, [
+                            'office_type'      => $prof['office_type'],
+                            'office_name'      => $prof['office_name'] !== '' ? $prof['office_name'] : $union,
+                            'chairman_name'    => $chairBn !== '' ? $chairBn : $chairEn,
+                            'chairman_name_en' => $chairEn !== '' ? $chairEn : $prof['chairman_name_en'],
+                            'upazila'          => $upazila,
+                            'district'         => $district,
+                        ]));
                     }
                 }
                 flash_set('ok', 'সব তথ্য আপডেট হয়েছে।');

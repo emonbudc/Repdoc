@@ -94,7 +94,9 @@ $addressFields = [
     'post_office_en' => 'Post office (English)', 'union_en' => 'Union (English)',
     'upazila_en' => 'Upazila (English)', 'district_en' => 'District (English)',
 ];
-$memberRows = $data['members'] !== [] ? $data['members'] : array_fill(0, 3, ['name' => '', 'relation' => '', 'age' => '', 'nid' => '', 'share' => '', 'occupation' => '']);
+$memberRows = $data['members'] !== [] ? $data['members'] : array_fill(0, 3, ['name' => '', 'relation' => '', 'dob' => '', 'age' => '', 'nid' => '', 'share' => '', 'occupation' => '']);
+$isShare = in_array(($type['members'] ?? ''), ['warish', 'succession'], true);
+$memberTitle = ($type['members'] ?? '') === 'warish' ? 'ওয়ারিশদের তালিকা' : (($type['members'] ?? '') === 'succession' ? 'উত্তরাধিকারদের তালিকা' : 'পারিবারিক সদস্য');
 $feeRows = $data['fees'] !== [] ? $data['fees'] : array_fill(0, 3, ['name' => '', 'amount' => '']);
 
 prottoyon_page_start($type['title'], 'form');
@@ -203,13 +205,13 @@ prottoyon_page_start($type['title'], 'form');
             <?php endif; ?>
 
             <?php if (!empty($type['members'])): ?>
-                <h3 style="margin:18px 0 8px;font-size:.95rem"><?= ($type['members'] ?? '') === 'warish' ? 'ওয়ারিশদের তালিকা' : 'পারিবারিক সদস্য' ?></h3>
+                <h3 style="margin:18px 0 8px;font-size:.95rem"><?= e($memberTitle) ?></h3>
                 <div class="pp-table-wrap">
                     <table class="pp-table">
-                        <thead><tr><th style="width:44px">#</th><th>নাম</th><th>সম্পর্ক</th><th style="width:80px">বয়স</th><th>এনআইডি</th><th><?= ($type['members'] ?? '') === 'warish' ? 'অংশ' : 'পেশা' ?></th><th style="width:54px"></th></tr></thead>
+                        <thead><tr><th style="width:44px">#</th><th>নাম</th><th>সম্পর্ক</th><th style="width:132px">জন্ম তারিখ</th><th style="width:80px">বয়স</th><th>এনআইডি</th><th><?= $isShare ? 'অংশ' : 'পেশা' ?></th><th style="width:54px"></th></tr></thead>
                         <tbody id="ppMemberRows">
                         <?php foreach ($memberRows as $i => $member): ?>
-                            <tr><td data-row-no><?= $i + 1 ?></td><td><input name="members[name][]" value="<?= e((string) ($member['name'] ?? '')) ?>"></td><td><input name="members[relation][]" value="<?= e((string) ($member['relation'] ?? '')) ?>" placeholder="পিতা/মাতা/পুত্র…"></td><td><input name="members[age][]" value="<?= e((string) ($member['age'] ?? '')) ?>" inputmode="numeric"></td><td><input name="members[nid][]" value="<?= e((string) ($member['nid'] ?? '')) ?>" inputmode="numeric"></td><td><input name="members[<?= ($type['members'] ?? '') === 'warish' ? 'share' : 'occupation' ?>][]" value="<?= e((string) (($type['members'] ?? '') === 'warish' ? ($member['share'] ?? '') : ($member['occupation'] ?? ''))) ?>"></td><td><button type="button" class="pp-btn" data-remove-row aria-label="সরান">×</button></td></tr>
+                            <tr><td data-row-no><?= $i + 1 ?></td><td><input name="members[name][]" value="<?= e((string) ($member['name'] ?? '')) ?>"></td><td><input name="members[relation][]" value="<?= e((string) ($member['relation'] ?? '')) ?>" placeholder="পিতা/মাতা/পুত্র…"></td><td><input type="date" name="members[dob][]" value="<?= e(prottoyon_date_input((string) ($member['dob'] ?? ''))) ?>"></td><td><input name="members[age][]" value="<?= e((string) ($member['age'] ?? '')) ?>" inputmode="numeric"></td><td><input name="members[nid][]" value="<?= e((string) ($member['nid'] ?? '')) ?>" inputmode="numeric"></td><td><input name="members[<?= $isShare ? 'share' : 'occupation' ?>][]" value="<?= e((string) ($isShare ? ($member['share'] ?? '') : ($member['occupation'] ?? ''))) ?>"></td><td><button type="button" class="pp-btn" data-remove-row aria-label="সরান">×</button></td></tr>
                         <?php endforeach; ?>
                         </tbody>
                     </table>
@@ -240,7 +242,7 @@ prottoyon_page_start($type['title'], 'form');
 </form>
 
 <template id="ppMemberTemplate">
-    <tr><td data-row-no>1</td><td><input name="members[name][]" value=""></td><td><input name="members[relation][]" value=""></td><td><input name="members[age][]" value="" inputmode="numeric"></td><td><input name="members[nid][]" value="" inputmode="numeric"></td><td><input name="members[<?= ($type['members'] ?? '') === 'warish' ? 'share' : 'occupation' ?>][]" value=""></td><td><button type="button" class="pp-btn" data-remove-row aria-label="সরান">×</button></td></tr>
+    <tr><td data-row-no>1</td><td><input name="members[name][]" value=""></td><td><input name="members[relation][]" value=""></td><td><input type="date" name="members[dob][]" value=""></td><td><input name="members[age][]" value="" inputmode="numeric"></td><td><input name="members[nid][]" value="" inputmode="numeric"></td><td><input name="members[<?= $isShare ? 'share' : 'occupation' ?>][]" value=""></td><td><button type="button" class="pp-btn" data-remove-row aria-label="সরান">×</button></td></tr>
 </template>
 <template id="ppFeeTemplate">
     <tr><td data-row-no>1</td><td><input name="fees[name][]" value=""></td><td><input name="fees[amount][]" value="" inputmode="decimal"></td><td><button type="button" class="pp-btn" data-remove-row aria-label="সরান">×</button></td></tr>

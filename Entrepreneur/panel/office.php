@@ -46,9 +46,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $canEdit) {
     $saved = save_office_profile((int) $me['id'], [
         'office_type' => (string) ($_POST['office_type'] ?? 'union'),
         'office_name' => prottoyon_clean($_POST['office_name'] ?? '', 190),
+        'office_name_en' => prottoyon_clean($_POST['office_name_en'] ?? '', 190),
         'chairman_name' => prottoyon_clean($_POST['chairman_name'] ?? '', 190),
+        'chairman_name_en' => prottoyon_clean($_POST['chairman_name_en'] ?? '', 190),
         'upazila' => prottoyon_clean($_POST['upazila'] ?? '', 190),
+        'upazila_en' => prottoyon_clean($_POST['upazila_en'] ?? '', 190),
         'district' => prottoyon_clean($_POST['district'] ?? '', 190),
+        'district_en' => prottoyon_clean($_POST['district_en'] ?? '', 190),
         'union_code' => $unionCode,
         'postcode' => prottoyon_clean($_POST['postcode'] ?? '', 16),
         'phone' => prottoyon_clean($_POST['phone'] ?? '', 32),
@@ -104,6 +108,17 @@ udc_notice();
 
                 <div class="field-row">
                     <div class="field">
+                        <label for="office_name_en">Office name (English)</label>
+                        <input type="text" id="office_name_en" name="office_name_en" value="<?= e((string) ($profile['office_name_en'] ?? '')) ?>" placeholder="e.g. Baluahat Union Parishad">
+                    </div>
+                    <div class="field">
+                        <label for="chairman_name_en">Chairman name (English)</label>
+                        <input type="text" id="chairman_name_en" name="chairman_name_en" value="<?= e((string) ($profile['chairman_name_en'] ?? '')) ?>">
+                    </div>
+                </div>
+
+                <div class="field-row">
+                    <div class="field">
                         <label for="chairman_name">চেয়ারম্যান / প্রশাসকের নাম <span style="color:var(--danger)">*</span></label>
                         <input type="text" id="chairman_name" name="chairman_name" value="<?= e((string) ($profile['chairman_name'] ?? '')) ?>" required>
                     </div>
@@ -111,6 +126,17 @@ udc_notice();
                         <label for="union_code">ইউনিয়ন কোড (৭ ডিজিট) <span style="color:var(--danger)">*</span></label>
                         <input type="text" id="union_code" name="union_code" value="<?= e((string) ($profile['union_code'] ?? '')) ?>" inputmode="numeric" maxlength="7" placeholder="যেমন: 1234567" required>
                         <span class="hint">সনদ নম্বরের ২য় অংশ — ১৭ ডিজিটের নম্বর তৈরি করতে ব্যবহৃত হয়।</span>
+                    </div>
+                </div>
+
+                <div class="field-row">
+                    <div class="field">
+                        <label for="upazila_en">Upazila (English)</label>
+                        <input type="text" id="upazila_en" name="upazila_en" value="<?= e((string) ($profile['upazila_en'] ?? '')) ?>">
+                    </div>
+                    <div class="field">
+                        <label for="district_en">District (English)</label>
+                        <input type="text" id="district_en" name="district_en" value="<?= e((string) ($profile['district_en'] ?? '')) ?>">
                     </div>
                 </div>
 

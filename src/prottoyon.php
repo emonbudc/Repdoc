@@ -118,8 +118,20 @@ function prottoyon_registry(): array
             'fees' => true,
             'fields' => [
                 $f('business_name', 'ব্যবসা প্রতিষ্ঠানের নাম', 'text', true),
+                $f('business_name_en', 'Business name (English)', 'text'),
                 $f('business_type', 'ব্যবসার ধরন', 'text', true),
+                $f('business_type_en', 'Business type (English)', 'text'),
                 $f('business_address', 'ব্যবসার ঠিকানা', 'textarea', true),
+                $f('business_address_en', 'Business address (English)', 'textarea'),
+                $f('business_nature', 'প্রতিষ্ঠানের প্রকৃতি', 'select', false, ['একক' => 'একক', 'যৌথ' => 'যৌথ', 'অন্যান্য' => 'অন্যান্য']),
+                $f('area', 'অঞ্চল (প্রযোজ্য ক্ষেত্রে)', 'text'),
+                $f('ward_no', 'ওয়ার্ড নং', 'text'),
+                $f('tin', 'টিআইএন', 'text'),
+                $f('bin', 'বিআইএন', 'text'),
+                $f('phone', 'মোবাইল নম্বর', 'tel'),
+                $f('email', 'ইমেইল', 'email'),
+                $f('schedule_serial', 'আদর্শ কর তফিসল ক্রমিক নং', 'text'),
+                $f('start_date', 'ব্যবসা শুরুর তারিখ', 'date'),
                 $f('license_year', 'লাইসেন্সের বছর', 'text'),
                 $f('capital', 'মূলধন', 'number'),
                 $f('fiscal_year', 'অর্থবছর', 'text', true),
@@ -228,6 +240,64 @@ function prottoyon_registry(): array
                 $f('previous_spouse_name', 'পূর্বের স্বামী/স্ত্রীর নাম', 'text'),
                 $f('spouse_death_date', 'পূর্বের স্বামী/স্ত্রীর মৃত্যুর তারিখ', 'date'),
                 $f('marriage_date', 'পুনর্বিবাহের তারিখ', 'date', true),
+            ],
+        ],
+        'holding-tax' => [
+            'title' => 'হোল্ডিং ট্যাক্স প্রত্যয়নপত্র',
+            'title_en' => 'Holding Tax Certificate',
+            'description' => 'হোল্ডিং কর পরিশোধ ও বকেয়ার প্রত্যয়ন।',
+            'group' => 'ভূমি ও সম্পত্তি',
+            'icon' => 'land',
+            'fields' => [
+                $f('ward_no', 'ওয়ার্ড নং', 'text', true),
+                $f('holding_no', 'হোল্ডিং নং', 'text', true),
+                $f('tax_year', 'করের বছর', 'text', true),
+                $f('holding_area', 'হোল্ডিং এর আয়তন (বর্গফুট)', 'number'),
+                $f('arrears', 'গত বছর পর্যন্ত বকেয়া', 'number'),
+                $f('current_tax', 'চলতি বছরের ধার্য্য', 'number'),
+                $f('rebate', 'ছাড়', 'number'),
+                $f('paid_amount', 'মোট পরিশোধিত', 'number', true),
+                $f('outstanding', 'বর্তমান বকেয়া', 'number'),
+                $f('payment_date', 'জমার তারিখ', 'date'),
+            ],
+        ],
+        'succession' => [
+            'title' => 'উত্তরাধিকার সনদপত্র',
+            'title_en' => 'Succession Certificate',
+            'description' => 'মৃত ব্যক্তির উত্তরাধিকারীদের তালিকা ও অংশ।',
+            'group' => 'পরিবার ও সমাজ',
+            'icon' => 'family',
+            'members' => 'succession',
+            'fields' => [
+                $f('deceased_name', 'মৃত ব্যক্তির নাম', 'text', true),
+                $f('death_date', 'মৃত্যুর তারিখ', 'date', true),
+            ],
+        ],
+        'non-remarriage' => [
+            'title' => 'পুনঃবিবাহ না হওয়ার প্রত্যয়নপত্র',
+            'title_en' => 'Non-Remarriage Certificate',
+            'description' => 'স্বামী/স্ত্রীর মৃত্যুর পর পুনঃবিবাহ না হওয়ার প্রত্যয়ন।',
+            'group' => 'পরিবার ও সমাজ',
+            'icon' => 'ring',
+            'fields' => [
+                $f('deceased_spouse_name', 'মৃত স্বামী/স্ত্রীর নাম', 'text', true),
+                $f('death_date', 'মৃত্যুর তারিখ', 'date', true),
+                $f('marriage_absence', 'অবস্থার বিবরণ', 'textarea'),
+            ],
+        ],
+        'parental-consent' => [
+            'title' => 'অভিভাবক সম্মতিপত্র',
+            'title_en' => 'Parental Consent Certificate',
+            'description' => 'অভিভাবকের সম্মতির প্রত্যয়ন।',
+            'group' => 'পরিবার ও সমাজ',
+            'icon' => 'family',
+            'fields' => [
+                $f('guardian_name', 'অভিভাবকের নাম', 'text', true),
+                $f('guardian_nid', 'অভিভাবকের এনআইডি', 'text'),
+                $f('minor_name', 'নাবালকের নাম', 'text', true),
+                $f('minor_dob', 'নাবালকের জন্ম তারিখ', 'date'),
+                $f('consent_subject', 'সম্মতির বিষয়', 'text', true),
+                $f('consent_details', 'বিস্তারিত', 'textarea'),
             ],
         ],
         'protibondi' => [
@@ -596,6 +666,7 @@ function prottoyon_collect_input(array $post): array
             $member = [
                 'name' => prottoyon_clean($name, 300),
                 'relation' => prottoyon_clean($post['members']['relation'][$i] ?? '', 200),
+                'dob' => prottoyon_clean($post['members']['dob'][$i] ?? '', 20),
                 'age' => prottoyon_clean($post['members']['age'][$i] ?? '', 50),
                 'nid' => prottoyon_en_digits(prottoyon_clean($post['members']['nid'][$i] ?? '', 50)),
                 'share' => prottoyon_clean($post['members']['share'][$i] ?? '', 100),
@@ -646,8 +717,8 @@ function prottoyon_collect_input(array $post): array
             $errors[] = $field['label'] . ' দিন।';
         }
     }
-    if (($type['members'] ?? '') === 'warish' && count($members) === 0) {
-        $errors[] = 'অন্তত একজন ওয়ারিশের নাম ও সম্পর্ক দিন।';
+    if (in_array(($type['members'] ?? ''), ['warish', 'succession'], true) && count($members) === 0) {
+        $errors[] = 'অন্তত একজন ওয়ারিশ/উত্তরাধিকারের নাম ও সম্পর্ক দিন।';
     }
     if (($type['members'] ?? '') === 'family' && count($members) === 0) {
         $errors[] = 'অন্তত একজন পারিবারিক সদস্যের তথ্য দিন।';
@@ -736,9 +807,13 @@ function prottoyon_office_defaults(): array
     return [
         'office_type' => 'union',
         'office_name' => '',
+        'office_name_en' => '',
         'chairman_name' => '',
+        'chairman_name_en' => '',
         'upazila' => '',
+        'upazila_en' => '',
         'district' => '',
+        'district_en' => '',
         'union_code' => '',
         'postcode' => '',
         'phone' => '',
@@ -784,7 +859,7 @@ function prottoyon_office_logo_uri(array $office): string
 {
     $uri = prottoyon_file_data_uri((string) ($office['logo_path'] ?? ''));
     if ($uri !== '') return $uri;
-    return prottoyon_file_data_uri('genaretor/prottoyon/assets/images/gov_logo.png');
+    return prottoyon_file_data_uri('genaretor/prottoyon/assets/images/pack-gov-logo.png');
 }
 
 function prottoyon_office_stamp_uri(array $office): string

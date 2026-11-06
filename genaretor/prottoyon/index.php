@@ -48,7 +48,7 @@ prottoyon_page_start('প্রত্যয়ন পত্র', 'home');
 <section class="pp-hero">
     <div class="pp-hero-copy">
         <span class="pp-kicker">Repdoc · প্রত্যয়ন</span>
-        <h1>২৩ ধরনের সনদ,<br>এক জায়গায়।</h1>
+        <h1><?= prottoyon_bn_digits((string) count(prottoyon_registry())) ?> ধরনের সনদ,<br>এক জায়গায়।</h1>
         <p>নাগরিকত্ব, ট্রেড লাইসেন্স, ওয়ারিশ, পারিবারিক, আয়, ভূমি ও আরও প্রত্যয়ন — তথ্য দিন, প্রিন্ট করুন, QR দিয়ে যাচাই করুন।</p>
         <div class="pp-hero-actions">
             <a class="btn btn-ledger" href="#ppTypes">সনদ বেছে নিন</a>
@@ -61,7 +61,7 @@ prottoyon_page_start('প্রত্যয়ন পত্র', 'home');
             <p>প্রতিটি সনদের দাম নিচে দেখানো হয়েছে। ব্যালেন্স থেকে কাটা হবে।</p>
         </div>
         <div>
-            <div class="pp-stat"><span>সনদের ধরন</span><b><?= prottoyon_bn_digits('23') ?></b></div>
+            <div class="pp-stat"><span>সনদের ধরন</span><b><?= prottoyon_bn_digits((string) count(prottoyon_registry())) ?></b></div>
             <div class="pp-stat"><span>আমার আবেদন</span><b><?= prottoyon_bn_digits((string) $count) ?></b></div>
             <div class="pp-stat"><span>ব্যালেন্স</span><b><?= prottoyon_bn_digits((string) user_balance((int) $me['id'])) ?></b></div>
         </div>

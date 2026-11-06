@@ -574,9 +574,13 @@ function repdoc_ensure_schema(PDO $db): void
         user_id INT PRIMARY KEY,
         office_type VARCHAR(32) NOT NULL DEFAULT 'union',
         office_name $text NOT NULL DEFAULT '',
+        office_name_en $text NOT NULL DEFAULT '',
         chairman_name $text NOT NULL DEFAULT '',
+        chairman_name_en $text NOT NULL DEFAULT '',
         upazila $text DEFAULT '',
+        upazila_en $text DEFAULT '',
         district $text DEFAULT '',
+        district_en $text DEFAULT '',
         union_code VARCHAR(7) NOT NULL DEFAULT '',
         postcode VARCHAR(16) DEFAULT '',
         phone VARCHAR(32) DEFAULT '',
@@ -645,6 +649,10 @@ function repdoc_ensure_schema(PDO $db): void
         ['entrepreneur_apps', 'applicant_role', "ALTER TABLE entrepreneur_apps ADD COLUMN applicant_role VARCHAR(100) NOT NULL DEFAULT ''"],
         ['entrepreneur_apps', 'id_address', 'ALTER TABLE entrepreneur_apps ADD COLUMN id_address TEXT'],
         ['entrepreneur_apps', 'id_doc_path', "ALTER TABLE entrepreneur_apps ADD COLUMN id_doc_path VARCHAR(255) NOT NULL DEFAULT ''"],
+        ['office_profiles', 'office_name_en', 'ALTER TABLE office_profiles ADD COLUMN office_name_en ' . ($mysql ? 'VARCHAR(190)' : 'TEXT') . ' NOT NULL DEFAULT \'\''],
+        ['office_profiles', 'chairman_name_en', 'ALTER TABLE office_profiles ADD COLUMN chairman_name_en ' . ($mysql ? 'VARCHAR(190)' : 'TEXT') . ' NOT NULL DEFAULT \'\''],
+        ['office_profiles', 'upazila_en', 'ALTER TABLE office_profiles ADD COLUMN upazila_en ' . ($mysql ? 'VARCHAR(190)' : 'TEXT') . ' NOT NULL DEFAULT \'\''],
+        ['office_profiles', 'district_en', 'ALTER TABLE office_profiles ADD COLUMN district_en ' . ($mysql ? 'VARCHAR(190)' : 'TEXT') . ' NOT NULL DEFAULT \'\''],
         ['office_profiles', 'union_code', 'ALTER TABLE office_profiles ADD COLUMN union_code VARCHAR(7) NOT NULL DEFAULT \'\''],
         ['office_profiles', 'postcode', 'ALTER TABLE office_profiles ADD COLUMN postcode ' . ($mysql ? 'VARCHAR(16)' : 'TEXT')],
         ['office_profiles', 'phone', 'ALTER TABLE office_profiles ADD COLUMN phone ' . ($mysql ? 'VARCHAR(32)' : 'TEXT')],
@@ -1426,6 +1434,9 @@ function repdoc_default_tools(): array
         'prottoyon_rohingya' => 'Prottoyon: Rohingya',
         'prottoyon_same_person' => 'Prottoyon: Same person',
         'prottoyon_succession' => 'Prottoyon: Succession',
+        'prottoyon_holding-tax' => 'Prottoyon: Holding tax',
+        'prottoyon_non-remarriage' => 'Prottoyon: Non-remarriage',
+        'prottoyon_parental-consent' => 'Prottoyon: Parental consent',
         'prottoyon_trade_license' => 'Prottoyon: Trade license',
         'prottoyon_tribal' => 'Prottoyon: Tribal',
         'prottoyon_unemployment' => 'Prottoyon: Unemployment',
@@ -1600,7 +1611,9 @@ function has_archive_access(): bool
 function office_profile(?int $userId = null): array
 {
     $out = [
-        'office_type' => 'union', 'office_name' => '', 'chairman_name' => '', 'upazila' => '', 'district' => '',
+        'office_type' => 'union', 'office_name' => '', 'office_name_en' => '',
+        'chairman_name' => '', 'chairman_name_en' => '',
+        'upazila' => '', 'upazila_en' => '', 'district' => '', 'district_en' => '',
         'union_code' => '', 'postcode' => '', 'phone' => '', 'email' => '', 'website' => '',
         'logo_path' => '', 'stamp_path' => '',
     ];
@@ -1612,7 +1625,7 @@ function office_profile(?int $userId = null): array
     $db = repdoc_db();
     if (!$db) return $out;
     try {
-        $st = $db->prepare('SELECT office_type, office_name, chairman_name, upazila, district, union_code, postcode, phone, email, website, logo_path, stamp_path FROM office_profiles WHERE user_id = ?');
+        $st = $db->prepare('SELECT office_type, office_name, office_name_en, chairman_name, chairman_name_en, upazila, upazila_en, district, district_en, union_code, postcode, phone, email, website, logo_path, stamp_path FROM office_profiles WHERE user_id = ?');
         $st->execute([$userId]);
         $row = $st->fetch();
         if ($row) {
@@ -1633,8 +1646,10 @@ function save_office_profile(int $userId, array $profile): bool
         ? (string) $profile['office_type'] : 'union';
     $vals = [
         $userId, $type,
-        (string) ($profile['office_name'] ?? ''), (string) ($profile['chairman_name'] ?? ''),
-        (string) ($profile['upazila'] ?? ''), (string) ($profile['district'] ?? ''),
+        (string) ($profile['office_name'] ?? ''), (string) ($profile['office_name_en'] ?? ''),
+        (string) ($profile['chairman_name'] ?? ''), (string) ($profile['chairman_name_en'] ?? ''),
+        (string) ($profile['upazila'] ?? ''), (string) ($profile['upazila_en'] ?? ''),
+        (string) ($profile['district'] ?? ''), (string) ($profile['district_en'] ?? ''),
         substr(preg_replace('/\D/', '', (string) ($profile['union_code'] ?? '')) ?? '', 0, 7),
         (string) ($profile['postcode'] ?? ''), (string) ($profile['phone'] ?? ''),
         (string) ($profile['email'] ?? ''), (string) ($profile['website'] ?? ''),
@@ -1644,18 +1659,22 @@ function save_office_profile(int $userId, array $profile): bool
     try {
         $mysql = ($db->getAttribute(PDO::ATTR_DRIVER_NAME) === 'mysql');
         if ($mysql) {
-            $db->prepare('INSERT INTO office_profiles (user_id, office_type, office_name, chairman_name, upazila, district, union_code, postcode, phone, email, website, logo_path, stamp_path, updated_at)
-                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            $db->prepare('INSERT INTO office_profiles (user_id, office_type, office_name, office_name_en, chairman_name, chairman_name_en, upazila, upazila_en, district, district_en, union_code, postcode, phone, email, website, logo_path, stamp_path, updated_at)
+                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                           ON DUPLICATE KEY UPDATE office_type = VALUES(office_type), office_name = VALUES(office_name),
-                          chairman_name = VALUES(chairman_name), upazila = VALUES(upazila), district = VALUES(district),
+                          office_name_en = VALUES(office_name_en), chairman_name = VALUES(chairman_name),
+                          chairman_name_en = VALUES(chairman_name_en), upazila = VALUES(upazila),
+                          upazila_en = VALUES(upazila_en), district = VALUES(district), district_en = VALUES(district_en),
                           union_code = VALUES(union_code), postcode = VALUES(postcode), phone = VALUES(phone),
                           email = VALUES(email), website = VALUES(website), logo_path = VALUES(logo_path),
                           stamp_path = VALUES(stamp_path), updated_at = VALUES(updated_at)')->execute($vals);
         } else {
-            $db->prepare('INSERT INTO office_profiles (user_id, office_type, office_name, chairman_name, upazila, district, union_code, postcode, phone, email, website, logo_path, stamp_path, updated_at)
-                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            $db->prepare('INSERT INTO office_profiles (user_id, office_type, office_name, office_name_en, chairman_name, chairman_name_en, upazila, upazila_en, district, district_en, union_code, postcode, phone, email, website, logo_path, stamp_path, updated_at)
+                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                           ON CONFLICT(user_id) DO UPDATE SET office_type = excluded.office_type, office_name = excluded.office_name,
-                          chairman_name = excluded.chairman_name, upazila = excluded.upazila, district = excluded.district,
+                          office_name_en = excluded.office_name_en, chairman_name = excluded.chairman_name,
+                          chairman_name_en = excluded.chairman_name_en, upazila = excluded.upazila,
+                          upazila_en = excluded.upazila_en, district = excluded.district, district_en = excluded.district_en,
                           union_code = excluded.union_code, postcode = excluded.postcode, phone = excluded.phone,
                           email = excluded.email, website = excluded.website, logo_path = excluded.logo_path,
                           stamp_path = excluded.stamp_path, updated_at = excluded.updated_at')->execute($vals);

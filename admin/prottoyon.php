@@ -90,7 +90,7 @@ admin_notice();
 <div class="admin-page-head">
     <div>
         <h1 class="admin-title">Prottoyon Logs</h1>
-        <p class="admin-sub">23 current + 41 historical templates (60 unique keys) — <?= number_format($total) ?> submissions total. Newest first.</p>
+        <p class="admin-sub"><?= count(prottoyon_registry()) ?> current + <?= count(prottoyon_legacy_types()) ?> historical templates (<?= count(prottoyon_all_types()) ?> unique keys) — <?= number_format($total) ?> submissions total. Newest first.</p>
     </div>
     <a class="btn btn-primary btn-sm" href="pricing.php">প্রাইস সেট</a>
 </div>

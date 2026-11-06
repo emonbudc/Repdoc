@@ -2,16 +2,14 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/prottoyon.php';
+require_once __DIR__ . '/prottoyon_pack.php';
 
 function prottoyon_render_saved(array $row, array $options = []): string
 {
     $data = prottoyon_decode_row($row);
     $typeKey = (string) ($data['type'] ?? prottoyon_type_from_tool_key((string) ($row['tool_key'] ?? '')));
-    if ($typeKey === 'trade' || $typeKey === 'trade-license') {
-        return prottoyon_render_certificate_legacy($row, $data, $options);
-    }
-    if ((int) ($data['v'] ?? 1) >= 2 && prottoyon_type($typeKey) !== null) {
-        return prottoyon_render_certificate_v2($row, $data, $options);
+    if ((int) ($data['v'] ?? 1) >= 2 && (prottoyon_type($typeKey) !== null || $typeKey === 'trade-license')) {
+        return prottoyon_render_pack($row, $data, $options);
     }
     return prottoyon_render_certificate_legacy($row, $data, $options);
 }
@@ -208,7 +206,7 @@ function prottoyon_certificate_paragraph(array $data, string $typeKey, bool $isE
         $base = 'This is to certify that ' . $name . ', son/daughter of ' . ($father !== '' ? $father : '—') . ' and ' . ($mother !== '' ? $mother : '—') . ', a resident of ' . ($address !== '' ? $address : '—') . ', is known to me. ';
         switch ($typeKey) {
             case 'nagorik': return $base . 'He/She is a citizen of Bangladesh by ' . ($g('citizenship') !== '' ? strtolower($g('citizenship')) : 'birth') . '.';
-            case 'trade': return $base . 'He/She operates the business "' . $g('business_name') . '" (' . $g('business_type') . ') at ' . $g('business_address') . '. The licence year is ' . $g('license_year') . ' and the fiscal year is ' . $g('fiscal_year') . '.';
+            case 'trade': return $base . 'He/She operates the business "' . ($g('business_name_en') !== '' ? $g('business_name_en') : $g('business_name')) . '" (' . ($g('business_type_en') !== '' ? $g('business_type_en') : $g('business_type')) . ') at ' . ($g('business_address_en') !== '' ? $g('business_address_en') : $g('business_address')) . '. The licence year is ' . $g('license_year') . ' and the fiscal year is ' . $g('fiscal_year') . '.';
             case 'warish': return 'This is to certify that the following persons are the heirs of the late ' . $g('deceased_name') . ', who died on ' . $d('death_date') . '. ' . $base;
             case 'family': return $base . 'The members of his/her family are listed below.';
             case 'death': return 'This is to certify that ' . $g('deceased_name') . ' died on ' . $d('death_date') . ' at ' . $g('death_place') . '. ' . $base;
@@ -216,6 +214,10 @@ function prottoyon_certificate_paragraph(array $data, string $typeKey, bool $isE
             case 'bibahito': return $base . 'He/She married ' . $g('spouse_name') . ' on ' . $d('marriage_date') . '.';
             case 'ekoinam': return $base . 'He/She is also known as ' . $g('previous_name') . ' and is the same person.';
             case 'punobibaho': return $base . 'He/She remarried on ' . $d('marriage_date') . '.';
+            case 'non-remarriage': return $base . 'His/Her spouse ' . ($g('deceased_spouse_name') !== '' ? $g('deceased_spouse_name') : '—') . ' died on ' . $d('death_date') . ' and he/she has not remarried since. ' . $g('marriage_absence');
+            case 'parental-consent': return 'I, ' . ($g('guardian_name') !== '' ? $g('guardian_name') : $name) . ', guardian of minor ' . ($g('minor_name') !== '' ? $g('minor_name') : '—') . ', hereby give my consent for: ' . $g('consent_subject') . '. ' . $g('consent_details');
+            case 'holding-tax': return $base . 'Holding no. ' . $g('holding_no') . ' in ward no. ' . $g('ward_no') . ' is assessed for the tax year ' . $g('tax_year') . '; the paid amount is BDT ' . $g('paid_amount') . ' and the outstanding amount is BDT ' . $g('outstanding') . '.';
+            case 'succession': return 'This is to certify that the following persons are the heirs of the late ' . $g('deceased_name') . ', who died on ' . $d('death_date') . '. ' . $base;
             case 'protibondi': return $base . 'He/She has ' . $g('disability_type') . ' disability' . ($g('disability_percent') !== '' ? ' (' . $g('disability_percent') . '%)' : '') . '.';
             case 'prottyon': return 'I, ' . ($g('certified_by') !== '' ? $g('certified_by') : $name) . ', certify that ' . $base . ($g('certificate_text') !== '' ? ' ' . $g('certificate_text') : '');
             case 'vumihin': return $base . 'He/She is landless. ' . $g('land_description');
@@ -245,6 +247,10 @@ function prottoyon_certificate_paragraph(array $data, string $typeKey, bool $isE
         case 'bibahito': return $base . 'তিনি ' . $g('spouse_name') . '-এর সাথে ' . $d('marriage_date') . ' তারিখে বিবাহবন্ধনে আবদ্ধ হন।';
         case 'ekoinam': return $base . 'তিনি “‘' . $g('previous_name') . '”' . ' নামেও পরিচিত এবং উভয় নাম একই ব্যক্তিকে নির্দেশ করে।';
         case 'punobibaho': return $base . 'তিনি ' . $d('marriage_date') . ' তারিখে পুনর্বিবাহ করেন।';
+        case 'non-remarriage': return $base . 'তাঁর স্বামী/স্ত্রী ' . ($g('deceased_spouse_name') !== '' ? $g('deceased_spouse_name') : '—') . ' ' . $d('death_date') . ' তারিখে মৃত্যুবরণ করেন এবং তিনি তৎপরবর্তীতে পুনঃবিবাহ করেন নাই। ' . $g('marriage_absence');
+        case 'parental-consent': return 'আমি, ' . ($g('guardian_name') !== '' ? $g('guardian_name') : $name) . ', নাবালক ' . ($g('minor_name') !== '' ? $g('minor_name') : '—') . '-এর অভিভাবক হিসেবে নিম্নোক্ত বিষয়ে সম্মতি প্রদান করছি: ' . $g('consent_subject') . '। ' . $g('consent_details');
+        case 'holding-tax': return $base . 'ওয়ার্ড নং ' . $g('ward_no') . '-এর হোল্ডিং নং ' . $g('holding_no') . ' এর কর বছর ' . $g('tax_year') . '; পরিশোধিত ' . $g('paid_amount') . ' টাকা এবং বকেয়া ' . $g('outstanding') . ' টাকা।';
+        case 'succession': return 'এই মর্মে প্রত্যয়ন করা যাইতেছে যে, মৃত ' . $g('deceased_name') . ' ' . $d('death_date') . ' তারিখে মৃত্যুবরণ করেন। তাঁর উত্তরাধিকারগণ নিম্নে তালিকাভুক্ত। ' . $base;
         case 'protibondi': return $base . 'তিনি ' . $g('disability_type') . ' ধরনের প্রতিবন্ধিতায় আক্রান্ত' . ($g('disability_percent') !== '' ? ' (' . prottoyon_bn_digits($g('disability_percent')) . '%)' : '') . '।';
         case 'prottyon': return 'আমি, ' . ($g('certified_by') !== '' ? $g('certified_by') : $name) . ', এই মর্মে প্রত্যয়ন করছি যে, ' . $base . ($g('certificate_text') !== '' ? ' ' . $g('certificate_text') : '');
         case 'vumihin': return $base . 'তিনি ভূমিহীন। ' . $g('land_description');
